@@ -428,8 +428,8 @@ case's expected output, tick task 6, and close the phase.
 
 Resumed in a new session, the user reporting the `/code-review` run done in `/tmp/v2-code-review`.
 Read this phase's file and report, then the run: its session, its own transcript holding
-the command and its output alone, the review done by one `general-purpose` subagent
-(`agent-a7ace141a8bc087c7`), read in full from its rendering, thinking redacted. The command
+the command and its output alone, the review done by one `general-purpose` subagent,
+read in full from its rendering, thinking redacted. The command
 was typed bare, `/code-review`, not `/code-review high src/`. It therefore took the level typed
 last, `xhigh` (its recipe: "10 inline angles → dedup (no verify) → sweep → ≤15 findings", the
 angles run in sequence in one context, subagents forbidden), and the default scope: no upstream,
@@ -482,8 +482,8 @@ and missed on the code against the v2 baseline and the case's expected output, t
 close the phase.
 
 The user reported the second run done. Its session's first message
-`/code-review high src/`, the review again done by one `general-purpose` subagent
-(`agent-afb49ffcd6e7a410d`), read in full from its rendering, thinking redacted. Neither
+`/code-review high src/`, the review again done by one `general-purpose` subagent,
+read in full from its rendering, thinking redacted. Neither
 session was closed, so neither has its `cost-state` record yet. Its recipe at `high`: "8 inline
 angles → dedup (no verify) → ≤10 findings", three correctness angles (line by line, removed
 behaviour, cross-file callers), reuse, simplification, efficiency, altitude and `CLAUDE.md`

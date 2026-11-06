@@ -27,7 +27,7 @@ The user, on the proof of the skill's changes: the fixes from use for the misfit
 The exact costs of the first review, from the `cost-state` records Claude Code wrote at
 22:39 on 2026-10-15, after the next sessions had looked for them: pass 1
 $11.89, pass 2 $14.41, pass 3 $9.62, pass 4 $15.69,
-the verdicts `d93c8ff9` $7.17. Passes 1 to 4 come to $51.61, against the $50.90 phase 4's
+the verdicts $7.17. Passes 1 to 4 come to $51.61, against the $50.90 phase 4's
 report gives from `usage.py` at 845 output tokens a call. Phase 4's report calls the exact
 costs of passes 2 to 4 lost; they were only late. The sessions of phase 4's closure
 and of pass 5 had no record yet at 11:35 UTC.
