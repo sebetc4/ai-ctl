@@ -1,0 +1,8 @@
+[1/356] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+[2/356] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[3/356] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[178/356] Building CXX object src/CMakeFiles/llama.dir/llama-impl.cpp.o
+[179/356] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/template-instances/mmf-instance-ncols_5.cu.o
+[354/356] Linking CXX static library tools/server/libserver-context.a
+[355/356] Linking CXX static library tools/server/libllama-server-impl.a
+[356/356] Linking CXX executable bin/llama-server

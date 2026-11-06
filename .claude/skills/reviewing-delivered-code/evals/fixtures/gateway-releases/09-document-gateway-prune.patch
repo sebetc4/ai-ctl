@@ -1,0 +1,68 @@
+diff --git a/docs/commands.md b/docs/commands.md
+index a1058c3..6991770 100644
+--- a/docs/commands.md
++++ b/docs/commands.md
+@@ -14,6 +14,7 @@ Every command of ai-ctl, with its arguments, options, defaults, output and exit
+ | [`build prune`](#build-prune) | Remove all but the newest builds |
+ | [`gateway install`](#gateway-install) | Download a llama-swap release, verify it and make it current |
+ | [`gateway config`](#gateway-config) | Print the configuration `up` gives llama-swap |
++| [`gateway prune`](#gateway-prune) | Remove all but the newest llama-swap releases |
+ | [`up`](#up) | Start the gateway, and return once it answers |
+ | [`down`](#down) | Stop the gateway and its models, and return once their GPU memory is released |
+ | [`status`](#status) | Show whether the gateway runs, its models and the GPU memory in use |
+@@ -73,7 +74,7 @@ path.
+ | `~/.local/share/ai-ctl/work/<project>/` | `build` | The CMake build tree: removed after a build that installs, kept after one that fails, until the next build |
+ | `~/.local/share/ai-ctl/builds/<project>/<id>/` | `build` | One build: its binary, `build.json`, `build.log`, and `patches/`, a copy of each patch its recipe applied to the sources |
+ | `~/.local/share/ai-ctl/builds/<project>/current` | `build`, `build use` | Link to the current build |
+-| `~/.local/share/ai-ctl/llama-swap/v<N>/llama-swap` | `gateway install` | One llama-swap release |
++| `~/.local/share/ai-ctl/llama-swap/v<N>/llama-swap` | `gateway install`, removed by `gateway prune` | One llama-swap release |
+ | `~/.local/share/ai-ctl/llama-swap/current` | `gateway install` | Link to the current release |
+ | `~/.local/share/ai-ctl/bench/<run>.json` | `bench run` | One saved run |
+ | `~/.local/state/ai-ctl/api-key` | `up` | The API key every client of the gateway sends, readable by the user only |
+@@ -93,8 +94,8 @@ saying what the other ai-ctl is doing, as that one wrote it in the lock's file;
+ | Lock | Taken by |
+ |---|---|
+ | The builds' | `build`, `build use`, `build prune` |
+-| The gateway's | `up`, `down`, `build prune`, `build --force` while it installs over a build, and `status` while it removes a stale record |
+-| llama-swap's releases' | `gateway install` |
++| The gateway's | `up`, `down`, `build prune`, `gateway prune`, `build --force` while it installs over a build, and `status` while it removes a stale record |
++| llama-swap's releases' | `gateway install`, `gateway prune` |
+ 
+ ## init
+ 
+@@ -260,7 +261,7 @@ ai-ctl build prune --keep 0 llama.cpp   # only the current build is left
+ ## gateway
+ 
+ ```text
+-ai-ctl gateway <install|config>
++ai-ctl gateway <install|config|prune>
+ ```
+ 
+ ### gateway install
+@@ -290,6 +291,26 @@ ai-ctl gateway install
+ ai-ctl gateway install --version 264 --sha256 <hex>
+ ```
+ 
++### gateway prune
++
++```text
++ai-ctl gateway prune --keep <N>
++```
++
++Removes every llama-swap release but the `N` newest and the current one, which is always kept,
++and prints what it removed and the megabytes freed. Nothing is removed when the running gateway
++runs one of the releases to remove: the error names `ai-ctl down` then `ai-ctl up`, which restart
++it on the current release. A removal that fails stops the prune, and its error names the releases
++removed before it.
++
++| Option | Value | Default | Meaning |
++|---|---|---|---|
++| `--keep` | `N`, zero or more | required | How many of the newest releases to keep, besides the current one |
++
++```bash
++ai-ctl gateway prune --keep 1
++```
++
+ ### gateway config
+ 
+ ```text

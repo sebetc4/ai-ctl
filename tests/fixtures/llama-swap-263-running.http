@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Content-Type: application/json
+Date: Sat, 10 Oct 2026 19:52:40 GMT
+Content-Length: 639
+
+{"running":[{"model":"qwen3.6-35b-a3b","state":"ready","cmd":"/home/seb/.local/share/ai-ctl/builds/llama.cpp/b11538/llama-server\n--host 127.0.0.1\n--port 5800\n--alias qwen3.6-35b-a3b\n--metrics\n--model /ai/models/llm/qwen3.6-35b-a3b/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf\n--mmproj /ai/models/llm/qwen3.6-35b-a3b/mmproj-F16.gguf\n--ctx-size 131072\n--batch-size 2048\n--cache-ram 16384\n--fit-target 1024\n--flash-attn on\n--min-p 0\n--no-mmproj-offload\n--parallel 1\n--presence-penalty 0\n--repeat-penalty 1\n--temp 0.6\n--top-k 20\n--top-p 0.95\n--ubatch-size 1024\n","proxy":"http://127.0.0.1:5800","ttl":1800,"name":"","description":""}]}

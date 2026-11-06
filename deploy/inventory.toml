@@ -1,0 +1,417 @@
+# =====================================================================
+#  ai-ctl inventory - RTX 5090 Laptop 24 GB / 64 GB RAM
+#  SEQUENTIAL profile: one request at a time, with the whole context.
+#
+#  The backends and models llama-swap serves. `ai-ctl init --models-dir
+#  <dir>` installs this file into ~/.config/ai-ctl/inventory.toml with
+#  models_dir filled in; ai-ctl generates the gateway configuration from
+#  the installed copy. Each model runs as its own server behind
+#  llama-swap (docs/gpu/llama-swap.md): llama-server for the LLMs,
+#  whisper-server, audiocpp_server and sd-server for speech and images.
+#  Flags are the server's long options without the leading dashes:
+#  llama-server's spelled with `-`, `batch-size`, never `batch_size`;
+#  `true` passes a flag alone.
+# =====================================================================
+
+version = 1
+
+# Model directories below are relative to this one. One directory per
+# model, grouped by use (llm/, stt/, tts/, image/), so every backend
+# shares this root and an image mounts it once.
+models_dir = "${MODELS_DIR}"
+
+[gateway]
+# The address every client uses (OpenCode, OpenWebUI, the orchestrator),
+# on the loopback: other machines cannot reach it. An address they can
+# reach is refused unless expose = true is set here; ai-ctl's API key
+# guards every request but /health either way.
+listen = "127.0.0.1:8080"
+# GPU memory in MiB that models running together leave free: the gateway
+# runs models side by side only when their vram_mib and this margin fit in
+# the GPU's usable memory. Keep it at least fit-target below; raise it if
+# the display runs on the NVIDIA GPU.
+vram_margin_mib = 1024
+
+
+# ---------------------------------------------------------------------
+#  Flags every llama-server model gets, whatever its backend, so native
+#  builds and official images run with the same settings.
+#  A model's own flags override these.
+# ---------------------------------------------------------------------
+[defaults.llama-server]
+# --- GPU ---
+flash-attn = "on"
+batch-size = 2048
+# A larger ubatch speeds up prefill, at the cost of a little VRAM.
+ubatch-size = 1024
+# --fit (on by default) adjusts what is NOT set here to fit in VRAM, keeping
+# this margin in MiB. When memory runs short it moves layers to the CPU
+# (slower) instead of failing: check the logs on the first start.
+# Raise to 1536 if the display runs on the NVIDIA GPU.
+fit-target = 1024
+
+# --- Concurrency: sequential ---
+# One slot: the active request gets the whole context, the others wait.
+# To chat in OpenWebUI while an agent runs: parallel = 2 AND
+# kv-unified = true (otherwise the context is split in two).
+parallel = 1
+
+# --- Prompt cache in RAM ---
+# Essential when sequential: orchestrator -> sub-agent A -> OpenCode -> back
+# to A. The context of sessions set aside stays in RAM (16 GiB of 64) so a
+# returning session does not redo its whole prefill.
+cache-ram = 16384
+
+# --- Vision ---
+# The image projector stays on the CPU: about 1 GB of VRAM saved, for a slow
+# image reading: 24 to 30 s for a 1024x1024 image, 231 s for 2048x2048 or a
+# phone's photo, llama-server's default cap of 4096 tokens (27B, 2026-10-30).
+# OpenWebUI compresses the images it sends to 1024 a side (docs/openwebui.md).
+no-mmproj-offload = true
+
+# --- Sampling recommended by Qwen (thinking, precise code) ---
+# Clients can override per request (e.g. temp 1.0 for free-form text).
+temp = 0.6
+top-p = 0.95
+top-k = 20
+min-p = 0.0
+presence-penalty = 0.0
+repeat-penalty = 1.0
+
+
+# ---------------------------------------------------------------------
+#  Backends: where llama-server comes from.
+# ---------------------------------------------------------------------
+
+# The current native build of llama.cpp, for sm_120a (default runtime).
+[[backends]]
+id = "llama-native"
+kind = "llama-server"
+source = { build = "llama.cpp" }
+
+# Official images, kept as a second runtime for comparison benches. Each
+# is pinned by digest, which no registry can move as it moves a tag: the
+# linux/amd64 images of build b11541, whose CUDA 13 image the bench
+# compared with the native build. To compare another build, pull its tag
+# and pin the digest `podman image inspect --format '{{.Digest}}' <image>`
+# prints; `ai-ctl up` warns of an image named by its tag only.
+[[backends]]
+id = "llama-cuda12"
+kind = "llama-server"
+source = { image = "ghcr.io/ggml-org/llama.cpp:server-cuda-b11541@sha256:e1483fa3edd47a527c3939139409f7e3b60bd59878152b64825852d040570f9b" }
+
+[[backends]]
+id = "llama-cuda13"
+kind = "llama-server"
+source = { image = "ghcr.io/ggml-org/llama.cpp:server-cuda13-b11541@sha256:42e80867b03cc22e8cf744c07e0b3194f078838ab6c476095ecdc1621271ec95" }
+
+# The current native builds of the speech and image servers; each runs
+# from its build only, never from an image.
+[[backends]]
+id = "whisper-native"
+kind = "whisper-server"
+source = { build = "whisper.cpp" }
+
+[[backends]]
+id = "audio-native"
+kind = "audiocpp_server"
+source = { build = "audio.cpp" }
+
+[[backends]]
+id = "sd-native"
+kind = "sd-server"
+source = { build = "stable-diffusion.cpp" }
+
+
+# ---------------------------------------------------------------------
+#  Main model: quality + speed (sub-agents, OpenCode, chat)
+#  Dense 27B, hybrid attention (only 16 of 64 layers keep a KV cache)
+#  Estimated VRAM: weights 15.4 GiB + MTP ~2 GiB + KV q8_0 96K 3.2 GiB
+#                  + DeltaNet state ~0.15 GiB + buffers ~1.5 GiB = ~22.2 GiB
+# ---------------------------------------------------------------------
+[[models]]
+id = "qwen3.8-27b"
+backend = "llama-native"
+repo = "unsloth/Qwen3.8-27B-GGUF"
+dir = "llm/qwen3.8-27b"
+# 96K tokens for the active request
+ctx_size = 98304
+vram_mib = 22733
+# The gateway stops it after 30 minutes idle; the next request restarts it.
+ttl = 1800
+# Loaded when the gateway starts.
+preload = true
+
+[models.files]
+model = "Qwen3.8-27B-UD-Q4_K_M.gguf"
+mmproj = "mmproj-F16.gguf"
+# Speculative decoding with the model's MTP head (~1.4x announced on dense
+# models). Check on startup that draft-mtp is loaded; if anything goes
+# wrong, remove this line and the two spec-* flags (the rest works without
+# them).
+model-draft = "MTP/mtp-Qwen3.8-27B-Q4_0.gguf"
+
+[models.flags]
+spec-type = "draft-mtp"
+spec-draft-n-max = 2
+# KV in q8_0 (near lossless, half the VRAM of f16).
+# If outputs turn incoherent or generation gets very slow: switch to f16
+# AND lower ctx_size to 49152.
+cache-type-k = "q8_0"
+cache-type-v = "q8_0"
+# Qwen3.8 thinks at "xhigh" by default: too long on a laptop.
+# medium by default; override per request with "reasoning_effort"
+# ("low", "high"... or "none" to turn thinking off).
+reasoning-effort = "medium"
+
+# "Long context" variant: same weights, no MTP, ~160K tokens (estimated).
+# Uncomment to add it; switching reloads the model (~10-20 s).
+# [[models]]
+# id = "qwen3.8-27b-long"
+# backend = "llama-native"
+# repo = "unsloth/Qwen3.8-27B-GGUF"
+# dir = "llm/qwen3.8-27b"
+# ctx_size = 163840
+# vram_mib = 22733
+# ttl = 1800
+#
+# [models.files]
+# model = "Qwen3.8-27B-UD-Q4_K_M.gguf"
+# mmproj = "mmproj-F16.gguf"
+#
+# [models.flags]
+# cache-type-k = "q8_0"
+# cache-type-v = "q8_0"
+# reasoning-effort = "medium"
+
+
+# ---------------------------------------------------------------------
+#  Fast model: MoE 35B, ~3B active parameters
+#  For simple tasks in volume (much faster than the 27B, one notch below
+#  in quality). Fits entirely in VRAM in IQ4_XS; very light KV (hybrid
+#  attention: 10 of 40 layers keep a KV cache, 20 KiB per token in f16).
+#  Estimated VRAM: weights 16.5 GiB + KV f16 128K 2.5 GiB
+#                  + DeltaNet state ~0.06 GiB + buffers ~1.5 GiB = ~20.6 GiB
+# ---------------------------------------------------------------------
+[[models]]
+id = "qwen3.6-35b-a3b"
+backend = "llama-native"
+repo = "unsloth/Qwen3.6-35B-A3B-GGUF"
+dir = "llm/qwen3.6-35b-a3b"
+ctx_size = 131072
+vram_mib = 21094
+ttl = 1800
+
+[models.files]
+model = "Qwen3.6-35B-A3B-UD-IQ4_XS.gguf"
+mmproj = "mmproj-F16.gguf"
+
+
+# ---------------------------------------------------------------------
+#  Speech-to-text: three readers, each kept for a use
+#  (docs/audio/whisper-cpp.md §4). VRAM budgets are each model's peak,
+#  measured with its server alone on the GPU; the small ones run side by
+#  side when they fit. whisper-server gets `language = "auto"` from
+#  ai-ctl: a request without `language` is not decoded as English.
+# ---------------------------------------------------------------------
+
+# Fast and light.
+[[models]]
+id = "whisper-large-v3-turbo"
+backend = "whisper-native"
+repo = "ggerganov/whisper.cpp"
+dir = "stt/whisper-large-v3-turbo"
+vram_mib = 2213
+ttl = 1800
+
+[models.files]
+model = "ggml-large-v3-turbo.bin"
+
+# Slower, perhaps more accurate.
+[[models]]
+id = "whisper-large-v3"
+backend = "whisper-native"
+repo = "ggerganov/whisper.cpp"
+dir = "stt/whisper-large-v3"
+vram_mib = 3895
+ttl = 1800
+
+[models.files]
+model = "ggml-large-v3.bin"
+
+# The transcript closest to the audio, hesitations included. audio.cpp
+# reads the whole directory, Qwen's safetensors, and transcribes WAV only:
+# OpenWebUI, which sends MP3 or WebM, needs a whisper model. It reads
+# audio in 30 s chunks: its budget is a full chunk's peak.
+[[models]]
+id = "qwen3-asr-1.7b"
+backend = "audio-native"
+repo = "Qwen/Qwen3-ASR-1.7B-hf"
+dir = "stt/qwen3-asr-1.7b"
+family = "qwen3_asr"
+task = "asr"
+vram_mib = 5548
+ttl = 1800
+
+
+# ---------------------------------------------------------------------
+#  Text-to-speech, under audio.cpp (docs/audio/audio-cpp.md §5)
+#  Voxtral speaks with its 20 preset voices. Qwen3-TTS and Fish S2 Pro
+#  clone a reference voice: a request's `voice` names <voice>.wav in
+#  `voices`, a directory of models_dir, and its transcript is the line
+#  <voice>|<transcript> of voices/prompt_text. A request naming no
+#  reference fails. Their budgets are the peaks with a 40 s reference and
+#  a long text: a longer reference needs more, Fish's above all, which
+#  fails a request it cannot encode ("failed to allocate Fish DAC codec
+#  encode graph"); measure again before adding one.
+# ---------------------------------------------------------------------
+
+# Preset voices, such as fr_male and fr_female; nine languages.
+[[models]]
+id = "voxtral-4b-tts"
+backend = "audio-native"
+repo = "audio-cpp/audio.cpp-gguf"
+dir = "tts/voxtral-4b-tts"
+family = "voxtral_tts"
+task = "tts"
+vram_mib = 8459
+ttl = 1800
+
+[models.files]
+model = "Voxtral-4B-TTS-2603-GGUF/voxtral-4b-tts-2603-bf16.gguf"
+
+# The most natural in French. Two entries over the same files: native
+# precision, and quantized to q8_0 at load, lighter.
+[[models]]
+id = "qwen3-tts"
+backend = "audio-native"
+repo = "Qwen/Qwen3-TTS-12Hz-1.7B-Base"
+dir = "tts/qwen3-tts-1.7b-base"
+family = "qwen3_tts"
+task = "tts"
+voices = "voices"
+vram_mib = 6914
+ttl = 1800
+
+[[models]]
+id = "qwen3-tts-q8"
+backend = "audio-native"
+repo = "Qwen/Qwen3-TTS-12Hz-1.7B-Base"
+dir = "tts/qwen3-tts-1.7b-base"
+family = "qwen3_tts"
+task = "tts"
+voices = "voices"
+vram_mib = 5542
+ttl = 1800
+
+[models.session_options]
+"qwen3_tts.weight_type" = "q8_0"
+
+# Copies the voice well; its English gains emotion with inline tags such
+# as [excited] or [short pause]. Q8_0 and BF16, each its own entry.
+[[models]]
+id = "fish-s2-pro-q8"
+backend = "audio-native"
+repo = "audio-cpp/audio.cpp-gguf"
+dir = "tts/fish-audio-s2-pro"
+family = "fish_audio"
+task = "tts"
+voices = "voices"
+vram_mib = 10310
+ttl = 1800
+
+[models.files]
+model = "Fish-Audio-S2-Pro-GGUF/fish-audio-s2-pro-q8_0.gguf"
+
+[[models]]
+id = "fish-s2-pro-bf16"
+backend = "audio-native"
+repo = "audio-cpp/audio.cpp-gguf"
+dir = "tts/fish-audio-s2-pro"
+family = "fish_audio"
+task = "tts"
+voices = "voices"
+vram_mib = 12768
+ttl = 1800
+
+[models.files]
+model = "Fish-Audio-S2-Pro-GGUF/fish-audio-s2-pro-bf16.gguf"
+
+
+# ---------------------------------------------------------------------
+#  Image generation, under stable-diffusion.cpp
+#  (docs/image/stable-diffusion-cpp.md §4, which gives each file's
+#  download: a model's files come from several repositories, so no
+#  `repo` is set). sd-server loads the weights before it reports ready.
+#  Each model keeps its weights in RAM, 16 to 21 GiB, and the GPU takes
+#  them at each step for 1 to 4 % more time: the VAE then has the GPU to
+#  itself and decodes an image whole up to 2048x2048, in tiles above.
+#  Each budget is the peak of a 4096x4096 image, the largest size
+#  sd-server makes, or of an edit when higher, so that a request of any
+#  size passes.
+# ---------------------------------------------------------------------
+
+# The fast one, and the one that follows a layout: about 10 s an image
+# at 1024x1024, 53 s at 2048x2048, 72 s an edit at 2048x2048.
+[[models]]
+id = "flux-3-image-klein"
+backend = "sd-native"
+dir = "image/flux-3-image-klein"
+vram_mib = 23384
+ttl = 1800
+
+[models.files]
+diffusion-model = "model.safetensors"
+vae = "ae.safetensors"
+llm = "Qwen3VL-4B-Instruct-Q8_0.gguf"
+
+[models.flags]
+offload-to-cpu = true
+cfg-scale = 1.0
+sampling-method = "euler"
+steps = 16
+
+# Another style, legible text: about 30 s an image at 1024x1024, 3
+# minutes at 2048x2048, 8 an edit at 2048x2048. An edit tries to keep the
+# reference's prefix cache in VRAM and fills the GPU before releasing it:
+# its budget is that peak.
+[[models]]
+id = "qwen-image-2.1"
+backend = "sd-native"
+dir = "image/qwen-image-2.1"
+vram_mib = 22773
+ttl = 1800
+
+[models.files]
+diffusion-model = "qwen_image_2.1-Q8_0.gguf"
+vae = "vae/diffusion_pytorch_model.safetensors"
+llm = "Qwen3VL-8B-Instruct-Q8_0.gguf"
+llm_vision = "mmproj-Qwen3VL-8B-Instruct-F16.gguf"
+
+[models.flags]
+offload-to-cpu = true
+cfg-scale = 6.0
+sampling-method = "euler"
+
+# The finest rendering at 50 steps: about two minutes an image at
+# 1024x1024, 10 at 2048x2048, 27 an edit at 2048x2048. The negative
+# prompt is Bria's for text-to-image, a JSON caption.
+[[models]]
+id = "fibo-2.0-dev"
+backend = "sd-native"
+dir = "image/fibo-2.0-dev"
+vram_mib = 23514
+ttl = 1800
+
+[models.files]
+diffusion-model = "transformer/diffusion_pytorch_model.safetensors.index.json"
+vae = "vae/diffusion_pytorch_model.safetensors"
+llm = "Qwen3VL-4B-Instruct-Q8_0.gguf"
+llm_vision = "mmproj-Qwen3VL-4B-Instruct-F16.gguf"
+
+[models.flags]
+offload-to-cpu = true
+cfg-scale = 5.0
+sampling-method = "euler"
+steps = 50
+negative-prompt = '{"short_description":"","objects":[{"description":"the main subject","texture":"smooth, featureless, plastic-like, airbrushed, no fine surface detail","appearance_details":"soft blurred edges, simplified shapes, no fine detail","skin_tone_and_texture":"waxy airbrushed skin, poreless, plastic smooth"}],"background_setting":"a plain seamless studio backdrop, perfectly smooth gradient, blurred and featureless, no visible texture","lighting":{},"aesthetics":{"artifacts":["oversaturated colours","neon colour cast","overexposed highlights","lens flare","slight blur","motion blur","haze"]},"photographic_characteristics":{"depth_of_field":"shallow, heavy bokeh obscuring most of the frame","focus":"soft, slightly out of focus, lacking fine texture"},"style_medium":"","context":"","artistic_style":""}'

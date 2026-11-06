@@ -1,0 +1,5 @@
+# The one toolchain that checks and builds ai-ctl, here and in the CI (docs/toolchain.md).
+[toolchain]
+channel = "1.99.1"
+profile = "minimal"
+components = ["clippy", "rustfmt"]

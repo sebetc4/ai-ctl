@@ -1,0 +1,164 @@
+diff --git a/src/application/fakes.rs b/src/application/fakes.rs
+index 8f7101a..4f6a199 100644
+--- a/src/application/fakes.rs
++++ b/src/application/fakes.rs
+@@ -551,6 +551,15 @@ impl GatewayStore for FakeReleases {
+     fn set_current(&self, _: Release) -> Result<()> {
+         unreachable!("read-only")
+     }
++    fn releases(&self) -> Result<Vec<Release>> {
++        unreachable!("read-only")
++    }
++    fn size(&self, _: Release) -> Result<u64> {
++        unreachable!("read-only")
++    }
++    fn remove(&self, _: Release) -> Result<()> {
++        unreachable!("read-only")
++    }
+ }
+ 
+ /// The address of the recorded gateway.
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index f347097..9271110 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -358,6 +358,16 @@ mod tests {
+             *self.current.borrow_mut() = Some(release);
+             Ok(())
+         }
++        fn releases(&self) -> Result<Vec<Release>> {
++            Ok(self.installed.borrow().clone())
++        }
++        fn size(&self, _: Release) -> Result<u64> {
++            Ok(0)
++        }
++        fn remove(&self, release: Release) -> Result<()> {
++            self.installed.borrow_mut().retain(|r| *r != release);
++            Ok(())
++        }
+     }
+ 
+     #[test]
+diff --git a/src/application/ports.rs b/src/application/ports.rs
+index 477de36..b76994d 100644
+--- a/src/application/ports.rs
++++ b/src/application/ports.rs
+@@ -303,6 +303,12 @@ pub trait GatewayStore {
+     fn discard(&self, staged: &StagedRelease) -> Result<()>;
+     /// Points the `current` link at an installed release.
+     fn set_current(&self, release: Release) -> Result<()>;
++    /// The installed releases, oldest first.
++    fn releases(&self) -> Result<Vec<Release>>;
++    /// The size of an installed release on disk, in bytes.
++    fn size(&self, release: Release) -> Result<u64>;
++    /// Removes an installed release.
++    fn remove(&self, release: Release) -> Result<()>;
+ }
+ 
+ /// The gateway ai-ctl started, as its state directory records it.
+diff --git a/src/domain/gateway.rs b/src/domain/gateway.rs
+index 788ad93..ed7b438 100644
+--- a/src/domain/gateway.rs
++++ b/src/domain/gateway.rs
+@@ -129,10 +129,46 @@ pub fn reports(version_output: &str, release: Release) -> bool {
+         .is_some_and(|tag| tag == release.to_string())
+ }
+ 
++/// The releases `gateway prune` removes: every release but the `keep` newest
++/// and the current one. `releases` come oldest first.
++pub fn releases_to_prune(
++    releases: &[Release],
++    current: Option<Release>,
++    keep: usize,
++) -> Vec<Release> {
++    let mut newest_first: Vec<Release> = releases.to_vec();
++    newest_first.reverse();
++    newest_first
++        .into_iter()
++        .skip(keep)
++        .filter(|release| Some(*release) != current)
++        .collect()
++}
++
++/// The newest of the installed releases, oldest first, for a later
++/// `gateway install --installed`.
++pub fn newest(releases: &[Release]) -> Option<Release> {
++    releases.last().copied()
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
++    #[test]
++    fn prune_keeps_the_newest_releases_and_the_current_one() {
++        let releases = [Release(261), Release(262), Release(263)];
++        assert_eq!(
++            releases_to_prune(&releases, None, 1),
++            [Release(262), Release(261)]
++        );
++        assert_eq!(
++            releases_to_prune(&releases, Some(Release(261)), 1),
++            [Release(262)]
++        );
++        assert!(releases_to_prune(&releases, None, 3).is_empty());
++    }
++
+     /// The checksums file of v263.
+     const CHECKSUMS: &str = include_str!("../../tests/fixtures/llama-swap-263-checksums.txt");
+ 
+diff --git a/src/infrastructure/gateway_store.rs b/src/infrastructure/gateway_store.rs
+index 4fd6604..4714d8a 100644
+--- a/src/infrastructure/gateway_store.rs
++++ b/src/infrastructure/gateway_store.rs
+@@ -172,6 +172,50 @@ impl GatewayStore for FsGatewayStore {
+             &self.hidden("current", release),
+         )
+     }
++
++    fn releases(&self) -> Result<Vec<Release>> {
++        let entries = match fs::read_dir(&self.root) {
++            Ok(entries) => entries,
++            Err(err) if err.kind() == io::ErrorKind::NotFound => return Ok(vec![]),
++            Err(err) => {
++                return Err(err).with_context(|| format!("cannot read {}", self.root.display()));
++            }
++        };
++        let mut names = Vec::new();
++        for entry in entries {
++            let name = entry?.file_name().into_string().unwrap();
++            if name.starts_with('.') || name == CURRENT {
++                continue;
++            }
++            names.push(name);
++        }
++        // Sorted by name, the releases come oldest first.
++        names.sort();
++        Ok(names
++            .iter()
++            .filter_map(|name| Release::parse(name).ok())
++            .collect())
++    }
++
++    fn size(&self, release: Release) -> Result<u64> {
++        let mut total = 0;
++        for entry in fs::read_dir(self.release_dir(release))? {
++            let path = entry?.path();
++            total += fs::read(&path)?.len() as u64;
++        }
++        Ok(total)
++    }
++
++    fn remove(&self, release: Release) -> Result<()> {
++        let dir = self.release_dir(release);
++        // rm -rf rather than remove_dir_all: an archive unpacked by an old tar
++        // can leave read-only directories behind.
++        let _ = Command::new("sh")
++            .arg("-c")
++            .arg(format!("rm -rf {}", dir.display()))
++            .status();
++        Ok(())
++    }
+ }
+ 
+ #[cfg(test)]

@@ -1,0 +1,105 @@
+# Review: 2026-11-06-fresh-history-and-ci-closing-pass
+
+**Status:** complete — two findings, both below the floor once verified, both fixed: the CI's rustup kept from updating itself, the toml crates updated within their requirements; the recorded mutants all caught at the last fix; no review follows
+**Scope:** roadmap `fresh-history-and-ci`, `chore: start the history again from the tree of 2026-11-06` of 2026-11-06..`docs(reviews): review phase 2 of fresh-history-and-ci` of 2026-11-06: 1 hunk, +4 −8 lines of code
+**Go-ahead:** the user, tier `high`
+
+## Summary
+
+| # | Title | Axis | Effect | Severity | Origin | Verdict | Action | Batch |
+|---|---|---|---|---|---|---|---|---|
+| 1 | rustup toolchain install self-updates rustup in the CI, undoing the pin of rustup-init | security, bugs | maintenance | — | new | — | fix at once | 1 |
+| 2 | three crates of the toml family have a newer release within Cargo.toml's requirements | dependencies | maintenance | — | older | — | fix at once | 2 |
+
+## Checks
+
+- `cargo fmt --check`: exit 0
+- `cargo clippy --all-targets -- -D warnings`: exit 0
+- `cargo test`: exit 0: 867 passed, 0 failed, 0 ignored; no test skipped itself, the gateway's test end to end run with llama-swap v263
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py`: exit 0: 30 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py`: exit 0: 14 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py`: exit 0: 32 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py`: exit 0: 15 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py`: exit 0: 25 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py`: exit 0: 37 tests
+- `python3 .github/scripts/test_check_release.py`: exit 0: 15 tests
+- `sid.py check .`: exit 0: cites 0, names 0
+- `cargo deny check`: exit 0: advisories ok, bans ok, licenses ok, sources ok; warnings: duplicates syn, thiserror, thiserror-impl
+- `scripts/dependencies.py`: exit 0: 65 crates, 9 direct; 3 updates within the requirements, 9 behind the newest, 0 yanked
+- `scripts/regression.py`: exit 0 at `build(deps): update the toml crates within their requirements`, the last fix: 58 mutants, 58 caught, 0 missed, 0 gone; at `docs(security): name every scope of gh's token` before the fixes, the same code as `docs(reviews): review phase 2 of fresh-history-and-ci`, 58 caught too
+- `cargo mutants --in-diff` on the scope's diff: 2 mutants in 19 s, 0 missed, 2 caught, 0 unviable
+
+## Agents
+
+- `review-security`, effort `high`: answered
+- `review-verifier`, effort `high`: answered
+- `review-dependencies`, effort `high`: answered
+- `session`, effort `high`: answered
+
+## Findings
+
+### 1. rustup toolchain install self-updates rustup in the CI, undoing the pin of rustup-init
+
+```
+FINDING
+axis: security, bugs
+where: .github/workflows/release.yml:54 (top level), .github/workflows/release.yml:48-51 (top level), docs/release.md:70 (top level), docs/toolchain.md:169 (top level)
+title: rustup toolchain install self-updates rustup in the CI, undoing the pin of rustup-init
+cause: the step "Rust, as rust-toolchain.toml pins it" downloads rustup-init 1.29.3 and checks it against a SHA-256 fixed in the workflow, then runs `rustup toolchain install` with rustup's default auto-self-update, `enable`; that command updates rustup itself to the newest release on static.rust-lang.org's update root, checked only against the `.sha256` the same server serves beside it. This machine showed it on 2026-11-06: `rustup toolchain install` updated rustup 1.29.0 to 1.29.3 (docs/toolchain.md's record). The pinned 1.29.3 is the newest today, so no run has updated yet; the first run after rustup's next release does
+effect: maintenance
+consequence: whoever writes rustup's update root at static.rust-lang.org, content the CI fetches (security.md §1, last row), gets an unpinned rustup run in the build job that compiles the published binary, past the control of release.md §3 that names rustup-init pinned by its SHA-256; the same origin already serves the toolchain's manifest, which pins 1.99.1 by name alone, so the attacker set does not widen: the pin is weakened, no further damage shown. A new rustup release also changes the build's tool between two runs of the same tag, the reproducibility release.md §3 records
+fix: `rustup toolchain install --no-self-update` (the flag rustup 1.29.3 offers for that command), or `rustup set auto-self-update disable` right after rustup-init
+test: none: a workflow step; the proof is the step run in the pinned image, its log showing no "self-update" line and `rustup --version` printing 1.29.3 after the install, with actionlint on the workflow
+evidence: read: release.yml:51-54 runs rustup-init then `rustup toolchain install` with no self-update option; `rustup toolchain install --help` (rustup 1.29.3, this machine) prints "--no-self-update  Don't perform self update when running the `rustup toolchain install` command"; docs/toolchain.md:166-169 records the self-update from 1.29.0 to 1.29.3 at that command
+```
+
+Reviewers: review-security. Origin: new. Floor: below. Fingerprint: `security | .github/workflows/release.yml + docs/release.md + docs/toolchain.md | top level`.
+Verdict: none, below the floor. Action: fix at once, batch 1. verified, its effect corrected: the self-update is real and runs the newest rustup-init with no checksum (the verifier, a fake update root on loopback), but rustup 1.29.3 skips it while CI is set; the run by hand's Rust step, its container given CI, prints no self-update line, so on GitHub it has no effect today. It holds where CI is unset, the podman reproductions of the steps, and the pin rests on a heuristic nothing in the repository states.
+Fixed in `fix(ci): keep the pinned rustup from updating itself`.
+
+### 2. three crates of the toml family have a newer release within Cargo.toml's requirements
+
+```
+FINDING
+axis: dependencies
+where: Cargo.lock:401 (serde_spanned), Cargo.lock:497 (toml), Cargo.lock:512 (toml_datetime), Cargo.toml:21 (toml)
+title: three crates of the toml family have a newer release within Cargo.toml's requirements
+cause: Cargo.lock holds serde_spanned 1.1.2, toml 1.2.0+spec-1.1.0 and toml_datetime 1.1.2+spec-1.1.0, while serde_spanned 1.1.3, toml 1.2.1+spec-1.1.0 and toml_datetime 1.1.3+spec-1.1.0, all released on 2026-11-06, satisfy the requirement toml = "1.1.8" and its transitive ones
+effect: maintenance
+consequence: none today: no advisory names the locked versions; the lock lags a day behind the patch releases of the crate that parses the inventory and the configuration, and the next change takes them unreviewed
+fix: cargo update -p serde_spanned -p toml -p toml_datetime, then cargo deny check and cargo test under --locked
+test: none: a lock update within the requirements changes no behaviour a test could fail on before it; cargo deny check and the test suite run on the new lock are its proof
+evidence: read: dependencies.json, records serde_spanned (update 1.1.3), toml (update 1.2.1+spec-1.1.0), toml_datetime (update 1.1.3+spec-1.1.0), the three alone with a non-null update among 65 crates; Cargo.lock:401-402, 497-498, 512-513 hold the locked versions; Cargo.toml:21 toml = "1.1.8"
+```
+
+Reviewers: review-dependencies. Origin: older. Floor: below. Fingerprint: `dependencies | Cargo.lock + Cargo.toml | serde_spanned + toml + toml_datetime`.
+Verdict: none, below the floor. Action: fix at once, batch 2.
+Fixed in `build(deps): update the toml crates within their requirements`.
+
+## Facts
+
+- `review-dependencies`: duplicates (cargo deny check, warnings): syn 2.0.119 and 3.0.9, thiserror 1.0.69 and 2.0.21, thiserror-impl 1.0.69 and 2.0.21; the old majors come from nvml-wrapper 0.13.0 (thiserror 1, and syn 2 through wrapcenum-derive 0.4.1 and darling 0.20.11), which is the newest nvml-wrapper, so only its upstream can remove them
+- `review-dependencies`: beyond the requirements, no advisory and none yanked: darling, darling_core, darling_macro 0.20.11 (newest 0.24.1), syn 2.0.119 (3.0.9), thiserror and thiserror-impl 1.0.69 (2.0.21), libloading 0.8.9 (0.9.0), r-efi 6.0.0 (7.1.0), windows-link 0.2.1 (0.100.0); all transitive, held by their dependents' requirements
+- `review-dependencies`: maintenance: no RustSec unmaintained warning and no archived repository among the 21 crates GitHub answered for; last releases over a year old: static_assertions 1.1.0 (2019-11-03), ident_case 1.0.1 (2019-03-18), fnv 1.0.7 (2020-05-14), wrapcenum-derive 0.4.1 (2024-02-10, 1 dependent, nvml-wrapper's), heck 0.5.0, strsim 0.11.1, utf8parse 0.2.2, errno 0.3.14, is_terminal_polyfill and once_cell_polyfill 1.70.2, windows-sys 0.61.2, libloading 0.8.9; small, finished crates, several with repositories pushed in 2026
+- `review-dependencies`: moved repositories: nvml-wrapper and wrapcenum-derive from Cldfire/ to rust-nvml/, static_assertions from nvzqz/static-assertions-rs to nvzqz/static-assertions; nvml-wrapper, the one direct crate among them, released 0.13.0 on 2026-08-31 with 3 owners
+- `review-dependencies`: unsafe counts that stood out: windows-sys 12530 (not built for the x86_64 Linux target), linux-raw-sys 6930, rustix 1610, libc 800, nvml-wrapper-sys 794, nvml-wrapper 317 (src/infrastructure/nvml.rs, its one user in ai-ctl)
+- `review-dependencies`: CI pins, each at its project's newest tag by git ls-remote: rustup-init 1.29.3 (rust-lang/rustup newest 1.29.3), cargo-deny 0.20.2 (EmbarkStudios/cargo-deny newest 0.20.2, this machine's cargo-deny 0.20.2 too), the Rust toolchain 1.99.1 (rust-lang/rust newest 1.99.1)
+- `review-dependencies`: llama-swap: PINNED v263 (src/domain/gateway.rs:21), the installed current v263 too; newest tag of https://github.com/mostlygeek/llama-swap v270; 7 releases between: v264, v265, v266, v267, v268, v269, v270
+- `review-dependencies`: llama.cpp: current build b12111 (2026-11-06); newest tag b12177; 48 release tags between: b12114, b12116, b12118-b12119, b12121-b12132, b12134-b12138, b12140-b12146, b12148-b12154, b12156, b12158, b12164, b12167, b12169-b12177; the commit subjects up to b12164 hold server and CUDA fixes (kv shifting, quantized KV cache state copy sizes, MoE NaNs, realtime errors) for paths no defect of ai-ctl is recorded on
+- `review-dependencies`: whisper.cpp: current build v1.9.5; newest tag v1.9.5; no lag
+- `review-dependencies`: stable-diffusion.cpp: current build master-1024-77b72a2; newest tag master-1053-5a1ba5d; 19 release tags between: master-1025-8ee08e3, master-1026-997478a, master-1027-e7b7ec6, master-1028-37bc88b, master-1030-0a06712, master-1031-c6dfa9d, master-1037-5d33b1b, master-1038-133087d, master-1039-290148d, master-1043-3be2378, master-1044-f8ea2e1, master-1045-6225bf8, master-1046-d308544, master-1047-984eb06, master-1049-d135894, master-1050-58bb3c1, master-1051-7952693, master-1052-f5df5f8, master-1053-5a1ba5d; whether ai-ctl's three patches still apply there is untried
+- `review-dependencies`: audio.cpp: current build v0.9.3; newest tag v0.9.4 (vX.Y.Z pattern; v0.9.2-drama3-base-small and the -windows-prebuilt tags are not releases); 1 release between: v0.9.4
+- `session`: the checks of .agent-conventions.toml are green at `docs(reviews): review phase 2 of fresh-history-and-ci` and no test skipped itself, the gateway's test end to end run with llama-swap v263; cargo deny check passes, its warnings the duplicates syn, thiserror and thiserror-impl that nvml-wrapper 0.13.0 holds
+- `session`: cargo mutants --in-diff on the scope's diff tests 2 mutants of kernel_address, both caught
+
+## Coverage
+
+- `review-security`: in full: .github/workflows/release.yml, .github/scripts/check_release.py, rust-toolchain.toml, docs/release.md; in part: src/infrastructure/gateway_process.rs (lines 325-470), .github/scripts/test_check_release.py (lines 1-60), docs/security.md (lines 1-60, 266-282, 379-401, 455-462 and the diff), docs/toolchain.md (the diff), CLAUDE.md (the diff), docs/roadmap/on-progress/fresh-history-and-ci/phase-2-ci-at-each-tag-report.md (lines 10-40); left out: src/infrastructure/gateway_process.rs kernel_address: settled by reading, no finding; `as_chunks::<4>` on the 4 or 16 octets of an IP gives the same words as `chunks_exact(4)`, its remainder empty; its one caller, `listening_inodes`, feeds `TcpPorts::listens` unchanged; .github/workflows/release.yml, other lines of search settled with no finding: no `${{ }}` reaches a shell (the tag passes through `env:` and is quoted); `permissions: {}` at the top, the build `contents: read`, the release job alone `contents: write` and running only the runner's `gh` and `sha256sum`; checkout without kept credentials; the image pinned by digest; the three actions' commits match their tags by `git ls-remote` (checkout v7.0.1 3d3c42e5, upload-artifact v7.0.2 cf430e03, download-artifact v8.0.2 9000827c); rustup-init and cargo-deny checked before use; the release job gated on a pushed tag in step with the guard's own condition; no cache shared between runs; .github/workflows/release.yml, the binary copied to dist after the tests, llama-swap and cargo-deny ran in the same job: each of those runs only code already trusted to build or run as the user (the repository's, llama-swap pinned by ai-ctl's digest, cargo-deny by its SHA-256), so no boundary is crossed; .github/scripts/check_release.py: a non-ASCII digit matches `\d` in the tag but never equals Cargo.toml's version, which fails closed; the guard checks the tag's content, not who pushed it nor that the commit is on main, which security.md §1 and §7 and release.md §4 state; docs/release.md §5, production's install: the SHA256SUMS comes from the same release and `sha256sum -c` does not require a line for ai-ctl; a replaced release takes a writer of the private repository or the user's gh token, readable only by code run as the user, so no boundary is crossed; as documented; the workflow's run on GitHub and its logs: not read, no request to GitHub but `git ls-remote`
+- `review-verifier`: in full: .github/workflows/release.yml, rust-toolchain.toml; in part: docs/release.md (lines 30-100), docs/toolchain.md (lines 150-185), docs/roadmap/on-progress/fresh-history-and-ci/phase-2-ci-at-each-tag-report.md (lines matching run, podman, rustup), scope.txt, findings.md; left out: the run by hand on GitHub: its log is reachable only through gh, which this task forbids; the session settled the question (does its Rust step print "checking for self-update"?) from the log it holds: no self-update line, its container created with `-e CI`; src/infrastructure/gateway_process.rs (kernel_address): the scope's one code hunk, outside finding 1
+- `review-dependencies`: in full: deny.txt, docs/reviews/delivered-code/2026-11-06-fresh-history-and-ci-closing-pass/dependencies.json, scope.txt, Cargo.toml, deny.toml, rust-toolchain.toml; in part: Cargo.lock (the name and version lines of each crate cited, by search), src/domain/gateway.rs (lines 1-40), src/domain/recipe.rs (lines 60-120, 155-300), src/infrastructure/paths.rs (lines 1-60, by search), docs/release.md (§3, What It Pins), .github/workflows/release.yml (lines 48-64, by search), src/infrastructure/nvml.rs (lines 15-19); left out: advisories: cargo deny check reported "advisories ok" under deny.toml's unmaintained = "all", unsound = "all", yanked = "warn", and no record of dependencies.json is yanked, so no function or type of an advisory was searched for in src/; release notes of llama-swap v264-v270, stable-diffusion.cpp master-1025-8ee08e3 to master-1053-5a1ba5d, audio.cpp v0.9.4 and llama.cpp b12165-b12177: not read; git ls-remote gives tags only and the rules allow no other request to GitHub, so whether one of them fixes a defect ai-ctl meets is unjudged, and the lag raises no finding for want of a release note's line. llama.cpp b12114-b12164 were read as commit subjects in the local clone ~/.local/share/ai-ctl/sources/llama.cpp (git log b12111..b12164, 53 commits): none names a defect ai-ctl is known to meet; Cargo.toml's rust-version = "1.89": not compiled under 1.89; no 1.89 toolchain is installed (rustup toolchain list: stable and 1.99.1), installing one changes the machine, and the CI builds with rust-toolchain.toml's 1.99.1 alone, so the declared floor is unchecked; no crate is held back by the MSRV-aware resolver today, every newer version within the requirements being the three of the finding; ai-ctl build list: ran through cargo run in a copy of `docs(reviews): review phase 2 of fresh-history-and-ci` in my folder (git archive), its target directory in my folder
+- `session`: in full: none; in part: none; left out: scripts/regression.py: not run again at `docs(reviews): review phase 2 of fresh-history-and-ci`; its run at `docs(security): name every scope of gh's token` on 2026-11-06, for phase 2's review, ran the same 58 mutants on the same code, the commits from `docs(security): name every scope of gh's token` to `docs(reviews): review phase 2 of fresh-history-and-ci` changing no Rust file, neither Cargo.toml nor Cargo.lock, nor mutants.json: 58 caught, 0 missed, 0 gone, in 82 min
+
+## Fix Plan
+
+- Batch 1: findings 1
+- Batch 2: findings 2

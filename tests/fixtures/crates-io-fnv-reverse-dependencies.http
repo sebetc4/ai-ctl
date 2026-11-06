@@ -1,0 +1,21 @@
+HTTP/2 200 
+access-control-allow-origin: *
+content-type: application/json
+nel: {"report_to":"heroku-nel","response_headers":["Via"],"max_age":3600,"success_fraction":0.01,"failure_fraction":0.1}
+report-to: {"group":"heroku-nel","endpoints":[{"url":"https://nel.heroku.com/reports?s=CCgkwuO03Z9FhTdL1SDc51OsWM01DBa9LZsLbhVV6Bs%3D\u0026sid=af571f24-03ee-46d1-9f90-ab9030c2c74c\u0026ts=1793633605"}],"max_age":3600}
+reporting-endpoints: heroku-nel="https://nel.heroku.com/reports?s=CCgkwuO03Z9FhTdL1SDc51OsWM01DBa9LZsLbhVV6Bs%3D&sid=af571f24-03ee-46d1-9f90-ab9030c2c74c&ts=1793633605"
+server: Heroku
+via: 1.1 heroku-router, 1.1 varnish
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+accept-ranges: bytes
+date: Mon, 02 Nov 2026 15:33:25 GMT
+x-served-by: cache-par-lfpb1150091-PAR
+x-cache: MISS
+x-cache-hits: 0
+vary: accept-encoding
+strict-transport-security: max-age=31536000; includeSubDomains
+content-length: 2133
+
+{"dependencies":[{"id":25922134,"version_id":2371454,"crate_id":"fnv","req":"^1.0.7","optional":false,"default_features":true,"features":[],"target":null,"kind":"dev","downloads":2934592101}],"versions":[{"id":2371454,"crate":"hashbrown","num":"0.17.1","dl_path":"/api/v1/crates/hashbrown/0.17.1/download","readme_path":"/api/v1/crates/hashbrown/0.17.1/readme","updated_at":"2026-05-09T04:35:04.251Z","created_at":"2026-05-09T04:35:04.251Z","downloads":301073218,"features":{"default":["default-hasher","inline-more","allocator-api2","equivalent","raw-entry"],"default-hasher":["dep:foldhash"],"inline-more":[],"nightly":["foldhash?/nightly","bumpalo/allocator_api"],"raw-entry":[],"rustc-dep-of-std":["nightly","core","alloc","rustc-internal-api"],"rustc-internal-api":[],"serde":["dep:serde_core","dep:serde"]},"yanked":false,"yank_message":null,"lib_links":null,"license":"MIT OR Apache-2.0","links":{"dependencies":"/api/v1/crates/hashbrown/0.17.1/dependencies","version_downloads":"/api/v1/crates/hashbrown/0.17.1/downloads","authors":"/api/v1/crates/hashbrown/0.17.1/authors"},"crate_size":155512,"published_by":{"id":55123,"login":"rust-lang-owner","name":null,"avatar":"https://avatars.githubusercontent.com/u/53090244?v=4","url":"https://github.com/rust-lang-owner","github_username_matches":true,"created_at":"2019-07-19T14:45:57Z"},"audit_actions":[{"action":"publish","user":{"id":55123,"login":"rust-lang-owner","name":null,"avatar":"https://avatars.githubusercontent.com/u/53090244?v=4","url":"https://github.com/rust-lang-owner","github_username_matches":true,"created_at":"2019-07-19T14:45:57Z"},"time":"2026-05-09T04:35:04.251Z"}],"checksum":"ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a","rust_version":"1.85.0","has_lib":true,"bin_names":[],"edition":"2024","description":"A Rust port of Google's SwissTable hash map","homepage":null,"documentation":null,"repository":"https://github.com/rust-lang/hashbrown","trustpub_data":null,"linecounts":{"languages":{"Rust":{"code_lines":11315,"comment_lines":1128,"files":28}},"total_code_lines":11315,"total_comment_lines":1128}}],"meta":{"total":837}}

@@ -1,0 +1,107 @@
+diff --git a/docs/roadmap/on-progress/gateway-releases/README.md b/docs/roadmap/on-progress/gateway-releases/README.md
+index 09d5d1d..438d000 100644
+--- a/docs/roadmap/on-progress/gateway-releases/README.md
++++ b/docs/roadmap/on-progress/gateway-releases/README.md
+@@ -15,12 +15,12 @@
+ ## Overall Progress
+ 
+ ```
+-Phase 1  Prune                      🟡 ███████████████████░ 100%  (4/4)
+-Phase 2  Install From An Archive    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
++Phase 1  Prune                      🟢 ████████████████████ 100%  (4/4)
++Phase 2  Install From An Archive    🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/3)
+ TOTAL                                  ███████████░░░░░░░░░  57%  (4/7)
+ ```
+ 
+-**Current Phase:** Phase 1: Prune
++**Current Phase:** Phase 2: Install From An Archive
+ **Blocked By:** —
+ 
+ ---
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+index 856d9ec..e845b36 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+@@ -29,10 +29,21 @@ the last fix.
+ 
+ ## Decisions
+ 
++- **The `clean` alias removed**, the user's answer to the review's hard case: no obligation keeps
++  llm-ctl's name.
++- **Findings 6 and 16 registered:** the shared selection reaches build's domain, and the lock's
++  activity is a change of the port; neither is this phase's.
++
+ ---
+ 
+ ## Deviations
+ 
++- Finding 12, below the floor, fixed with batch 1, which rewrote the same lines for finding 10.
++
+ ---
+ 
+ ## Assessment
++
++`gateway prune --keep <N>` removes the old releases, by number, sparing the current one and the one
++a running gateway runs, under both locks. Phase 2 needs first: `stage` is the only way into the
++releases' directory, and `publish` renames what it staged.
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
+index 0a391ed..a35876d 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
+@@ -4,9 +4,9 @@
+ 
+ ## Status
+ 
+-**Current Status:** 🟡 In Progress (100% — 4/4)
++**Current Status:** 🟢 Done (100% — 4/4)
+ **Started:** 2026-10-31
+-**Completed:** {{COMPLETION_DATE}}
++**Completed:** 2026-10-31
+ **Blocked By:** —
+ 
+ ---
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
+new file mode 100644
+index 0000000..422943b
+--- /dev/null
++++ b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
+@@ -0,0 +1,24 @@
++# Phase 2 Report: Install From An Archive
++
++**Phase:** [phase-2-install-from-an-archive.md](phase-2-install-from-an-archive.md)
++**Start Commit:** {{commit:10}}
++
++---
++
++## Work Log
++
++### 2026-10-31
++
++Phase opened.
++
++---
++
++## Decisions
++
++---
++
++## Deviations
++
++---
++
++## Assessment
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
+index c3a9dca..91df966 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
+@@ -4,8 +4,8 @@
+ 
+ ## Status
+ 
+-**Current Status:** 🔴 Not Started (0% — 0/3)
+-**Started:** {{START_DATE}}
++**Current Status:** 🟡 In Progress (0% — 0/3)
++**Started:** 2026-10-31
+ **Completed:** {{COMPLETION_DATE}}
+ **Blocked By:** —
+ 

@@ -1,0 +1,4 @@
+    Updating crates.io index
+     Locking 0 packages to latest Rust 1.89 compatible versions
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run

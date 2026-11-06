@@ -1,0 +1,249 @@
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 0ac0ffd..0ab72e7 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -7,9 +7,10 @@ failure paths come before anything else. The project was called llm-ctl until 20
+ 
+ ## Where Things Are
+ 
+-- **Current work**: the roadmaps in `docs/roadmap/` (contract in `.agent-conventions.toml`). None
+-  is open: `audio-image-backends`, which added the audio and image backends, closed on
+-  2026-10-30. Each closed roadmap's `summary.md`, under `completed/`, says what it left open.
++- **Current work**: the roadmaps in `docs/roadmap/` (contract in `.agent-conventions.toml`). Open:
++  `gateway-releases` in `on-progress/`, on its branch, which adds `gateway prune` and
++  `gateway install --from`. Each closed roadmap's `summary.md`, under `completed/`, says what it
++  left open.
+   When a roadmap is open, read its open phase file and report before working.
+ - **Documentation**: `docs/README.md` indexes it by domain, with its rules. Read a domain's
+   document before changing that domain: `docs/gpu/llama-swap.md` before anything about backends,
+diff --git a/docs/roadmap/on-progress/gateway-releases/README.md b/docs/roadmap/on-progress/gateway-releases/README.md
+new file mode 100644
+index 0000000..b5e5ef5
+--- /dev/null
++++ b/docs/roadmap/on-progress/gateway-releases/README.md
+@@ -0,0 +1,78 @@
++# Roadmap: Gateway Releases
++
++---
++
++## Status Indicators
++
++- 🔴 Not Started
++- 🟡 In Progress
++- 🟢 Done
++- ⏸️ Blocked
++- ⚠️ Needs Review
++
++---
++
++## Overall Progress
++
++```
++Phase 1  Prune                      🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/4)
++Phase 2  Install From An Archive    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
++TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
++```
++
++**Current Phase:** Phase 1: Prune
++**Blocked By:** —
++
++---
++
++## Why This Roadmap Exists
++
++`gateway install` adds a release under `~/.local/share/ai-ctl/llama-swap/` at each new llama-swap
++version, and nothing removes the old ones: about 43 MB each. `build prune` does it for the builds.
++A machine without the network, or a release fetched by another tool, cannot be installed either:
++`gateway install` always downloads.
++
++---
++
++## Decisions Taken At Opening
++
++- **`gateway prune --keep <N>`**, as `build prune`: every release but the `N` newest and the
++  current one removed.
++- **`gateway install --from <ARCHIVE>`**: the archive's digest checked against `--sha256` or the
++  pinned one, never against checksums that came with it.
++- **Branch:** `roadmap/gateway-releases`.
++
++---
++
++## Deliberately Out Of Scope
++
++- A `gateway list` command: `ls` shows the releases.
++- Removing a release by name.
++
++---
++
++## Phases
++
++- [Phase 1: Prune](phase-1-prune.md)
++- [Phase 2: Install From An Archive](phase-2-install-from-an-archive.md)
++
++---
++
++## Dependencies
++
++- Phase 2 builds on phase 1's store methods.
++
++---
++
++## Related Documentation
++
++- [docs/commands.md](../../../commands.md) — `build prune`, the model for `gateway prune`
++- [docs/security.md](../../../security.md) — the pinning of llama-swap's releases
++
++---
++
++## Metadata
++
++**Roadmap Status:** 🟡 In Progress
++**Created:** 2026-10-31
++**Branch:** roadmap/gateway-releases, from main at {{commit:0}}
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+new file mode 100644
+index 0000000..5dc3e57
+--- /dev/null
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+@@ -0,0 +1,24 @@
++# Phase 1 Report: Prune
++
++**Phase:** [phase-1-prune.md](phase-1-prune.md)
++**Start Commit:** {{commit:0}}
++
++---
++
++## Work Log
++
++### 2026-10-31
++
++Phase opened.
++
++---
++
++## Decisions
++
++---
++
++## Deviations
++
++---
++
++## Assessment
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
+new file mode 100644
+index 0000000..5f28fce
+--- /dev/null
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
+@@ -0,0 +1,53 @@
++# Phase 1: Prune
++
++---
++
++## Status
++
++**Current Status:** 🟡 In Progress (0% — 0/4)
++**Started:** 2026-10-31
++**Completed:** {{COMPLETION_DATE}}
++**Blocked By:** —
++
++---
++
++## Objective
++
++Remove the old llama-swap releases with `gateway prune --keep <N>`, as `build prune` removes the
++old builds.
++
++### Out of Scope
++Removing a release by name.
++
++---
++
++## Tasks
++
++### Prune
++- [ ] The releases a prune removes: every one but the `N` newest and the current one
++  Proof: domain tests
++- [ ] The store lists, measures and removes the installed releases
++  Proof: tests on the store
++- [ ] `gateway prune --keep <N>`: the use case and the command, printing what it removed and freed
++  Proof: tests on the use case and the command line
++- [ ] The command in `docs/commands.md` and the README
++  Proof: a reading of both
++
++---
++
++## Technical Details
++
++### Files to Modify
++```
++src/domain/gateway.rs
++src/application/gateway.rs, ports.rs, fakes.rs
++src/infrastructure/gateway_store.rs
++src/presentation/cli.rs, gateway.rs
++docs/commands.md, README.md
++```
++
++### Dependencies
++None.
++
++### Constraints
++- The current release is always kept: `up` runs it.
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
+new file mode 100644
+index 0000000..c3a9dca
+--- /dev/null
++++ b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
+@@ -0,0 +1,52 @@
++# Phase 2: Install From An Archive
++
++---
++
++## Status
++
++**Current Status:** 🔴 Not Started (0% — 0/3)
++**Started:** {{START_DATE}}
++**Completed:** {{COMPLETION_DATE}}
++**Blocked By:** —
++
++---
++
++## Objective
++
++Install a llama-swap release from an archive already on disk, and say which release a running
++gateway still runs once another one is current.
++
++### Out of Scope
++Archives for another platform than Linux x86_64.
++
++---
++
++## Tasks
++
++### Install
++- [ ] `gateway install --from <ARCHIVE>`: the release installed from a local archive, its digest checked against `--sha256` or the pinned one
++  Proof: tests on the use case and the command line
++- [ ] `gateway install` names the release the running gateway runs when it is not the new current one, with `ai-ctl down` then `ai-ctl up` to switch
++  Proof: tests on the use case
++
++### Documentation
++- [ ] Both in `docs/commands.md` and the README
++  Proof: a reading of both
++
++---
++
++## Technical Details
++
++### Files to Modify
++```
++src/application/gateway.rs, ports.rs, fakes.rs
++src/infrastructure/gateway_store.rs
++src/presentation/cli.rs, gateway.rs
++docs/commands.md, README.md
++```
++
++### Dependencies
++Phase 1's store methods.
++
++### Constraints
++- No digest from the archive's own directory: a checksums file beside it proves nothing.

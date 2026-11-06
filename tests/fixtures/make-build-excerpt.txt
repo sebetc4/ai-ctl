@@ -1,0 +1,7 @@
+[ 40%] Building CXX object CMakeFiles/common.dir/b.cpp.o
+[ 40%] Building CXX object CMakeFiles/common.dir/a.cpp.o
+[ 60%] Linking CXX static library libcommon.a
+[ 60%] Built target common
+[ 80%] Building CXX object CMakeFiles/app.dir/main.cpp.o
+[100%] Linking CXX executable app
+[100%] Built target app

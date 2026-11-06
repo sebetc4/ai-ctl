@@ -1,0 +1,5 @@
+/target
+/.agent-conventions.toml
+/study
+/.eval-runs
+/notes/

@@ -1,0 +1,64 @@
+diff --git a/docs/roadmap/on-progress/gateway-releases/README.md b/docs/roadmap/on-progress/gateway-releases/README.md
+index b5e5ef5..09d5d1d 100644
+--- a/docs/roadmap/on-progress/gateway-releases/README.md
++++ b/docs/roadmap/on-progress/gateway-releases/README.md
+@@ -15,9 +15,9 @@
+ ## Overall Progress
+ 
+ ```
+-Phase 1  Prune                      🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/4)
++Phase 1  Prune                      🟡 ███████████████████░ 100%  (4/4)
+ Phase 2  Install From An Archive    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
+-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
++TOTAL                                  ███████████░░░░░░░░░  57%  (4/7)
+ ```
+ 
+ **Current Phase:** Phase 1: Prune
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+index 5dc3e57..16b598d 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+@@ -11,6 +11,12 @@
+ 
+ Phase opened.
+ 
++The domain's selection, then the store's three methods: the releases listed oldest first, a
++release's size, its removal by `rm -rf`, which also takes the read-only directories an old `tar`
++leaves. The use case keeps the current release whatever `--keep` says; the command prints what it
++removed and the megabytes freed. Every task done, the checks green; the phase waits for its
++review before its closure.
++
+ ---
+ 
+ ## Decisions
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
+index 5f28fce..0a391ed 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune.md
+@@ -4,7 +4,7 @@
+ 
+ ## Status
+ 
+-**Current Status:** 🟡 In Progress (0% — 0/4)
++**Current Status:** 🟡 In Progress (100% — 4/4)
+ **Started:** 2026-10-31
+ **Completed:** {{COMPLETION_DATE}}
+ **Blocked By:** —
+@@ -24,13 +24,13 @@ Removing a release by name.
+ ## Tasks
+ 
+ ### Prune
+-- [ ] The releases a prune removes: every one but the `N` newest and the current one
++- [x] The releases a prune removes: every one but the `N` newest and the current one
+   Proof: domain tests
+-- [ ] The store lists, measures and removes the installed releases
++- [x] The store lists, measures and removes the installed releases
+   Proof: tests on the store
+-- [ ] `gateway prune --keep <N>`: the use case and the command, printing what it removed and freed
++- [x] `gateway prune --keep <N>`: the use case and the command, printing what it removed and freed
+   Proof: tests on the use case and the command line
+-- [ ] The command in `docs/commands.md` and the README
++- [x] The command in `docs/commands.md` and the README
+   Proof: a reading of both
+ 
+ ---

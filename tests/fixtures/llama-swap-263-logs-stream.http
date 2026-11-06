@@ -1,0 +1,10 @@
+HTTP/1.0 200 OK
+Content-Type: text/plain
+X-Accel-Buffering: no
+X-Content-Type-Options: nosniff
+Date: Sun, 11 Oct 2026 07:36:28 GMT
+
+fake: loading model
+fake: "GET /health HTTP/1.1" 200 -
+fake: "POST /v1/chat/completions HTTP/1.1" 200 -
+fake: "GET /v1/models HTTP/1.1" 200 -

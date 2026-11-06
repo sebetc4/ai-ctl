@@ -1,0 +1,32 @@
+udp UNCONN 0      0                                     0.0.0.0:5353  0.0.0.0:*                                                                            
+udp UNCONN 0      0                                     0.0.0.0:5355  0.0.0.0:*                                                                            
+udp UNCONN 0      0                                     0.0.0.0:50450 0.0.0.0:* users:(("wsdd",pid=19329,fd=9))                                            
+udp UNCONN 0      0                                  127.0.0.54:53    0.0.0.0:*                                                                            
+udp UNCONN 0      0                               127.0.0.53%lo:53    0.0.0.0:*                                                                            
+udp UNCONN 0      0                                   127.0.0.1:323   0.0.0.0:*                                                                            
+udp UNCONN 0      0                               192.0.2.1:3702  0.0.0.0:* users:(("wsdd",pid=19329,fd=10))                                           
+udp UNCONN 0      0                             239.255.255.250:3702  0.0.0.0:* users:(("wsdd",pid=19329,fd=8))                                            
+udp UNCONN 0      0                                        [::]:5353     [::]:*                                                                            
+udp UNCONN 0      0                                        [::]:5355     [::]:*                                                                            
+udp UNCONN 0      0                                           *:41658       *:* users:(("floorp",pid=2933369,fd=108))                                      
+udp UNCONN 0      0                                           *:44283       *:* users:(("floorp",pid=2933369,fd=204))                                      
+udp UNCONN 0      0                                           *:49692       *:* users:(("floorp",pid=2933369,fd=99))                                       
+udp UNCONN 0      0                                           *:51154       *:* users:(("floorp",pid=2933369,fd=143))                                      
+udp UNCONN 0      0                                           *:54104       *:* users:(("wsdd",pid=19329,fd=12))                                           
+udp UNCONN 0      0                                       [::1]:56765    [::]:* users:(("probe server",pid=3972728,fd=6))                                  
+udp UNCONN 0      0                                       [::1]:323      [::]:*                                                                            
+udp UNCONN 0      0      [fe80::1]%wlp130s0f0:546      [::]:*                                                                            
+udp UNCONN 0      0      [fe80::1]%wlp130s0f0:3702     [::]:* users:(("wsdd",pid=19329,fd=13))                                           
+udp UNCONN 0      0                        [ff02::c]%wlp130s0f0:3702     [::]:* users:(("wsdd",pid=19329,fd=11))                                           
+tcp LISTEN 0      4096                            127.0.0.53%lo:53    0.0.0.0:*                                                                            
+tcp LISTEN 0      4096                                127.0.0.1:631   0.0.0.0:*                                                                            
+tcp LISTEN 0      10                                    0.0.0.0:27500 0.0.0.0:*                                                                            
+tcp LISTEN 0      511                                 127.0.0.1:41919 0.0.0.0:* users:(("code-insiders",pid=2525034,fd=40))                                
+tcp LISTEN 0      511                                 127.0.0.1:44585 0.0.0.0:* users:(("code-insiders",pid=2526341,fd=27))                                
+tcp LISTEN 0      4096                               127.0.0.54:53    0.0.0.0:*                                                                            
+tcp LISTEN 0      128                                 127.0.0.1:49803 0.0.0.0:* users:(("probe server",pid=3972728,fd=5),("probe server",pid=3972728,fd=4))
+tcp LISTEN 0      511                                 127.0.0.1:18046 0.0.0.0:* users:(("code-insiders",pid=2745251,fd=38))                                
+tcp LISTEN 0      4096                                  0.0.0.0:5355  0.0.0.0:*                                                                            
+tcp LISTEN 0      511                                 127.0.0.1:27874 0.0.0.0:* users:(("code-insiders",pid=2525063,fd=38))                                
+tcp LISTEN 0      4096                                    [::1]:631      [::]:*                                                                            
+tcp LISTEN 0      4096                                     [::]:5355     [::]:*                                                                            

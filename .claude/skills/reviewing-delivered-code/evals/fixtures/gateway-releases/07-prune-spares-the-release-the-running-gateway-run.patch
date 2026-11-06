@@ -1,0 +1,192 @@
+diff --git a/docs/reviews/delivered-code/mutants.json b/docs/reviews/delivered-code/mutants.json
+index c6a0513..044637a 100644
+--- a/docs/reviews/delivered-code/mutants.json
++++ b/docs/reviews/delivered-code/mutants.json
+@@ -9,6 +9,26 @@
+       "test": "infrastructure::gateway_store::tests::releases_come_by_number",
+       "review": "2026-10-31-gateway-releases-phase-1",
+       "finding": 4
++    },
++    {
++      "id": "M2",
++      "kind": "a lock not taken",
++      "file": "src/application/gateway.rs",
++      "text": "    let _gateway_lock = gateway.lock(\"removing llama-swap releases\")?;\n",
++      "replacement": "",
++      "test": "application::gateway::tests::prune_waits_for_no_gateway_start",
++      "review": "2026-10-31-gateway-releases-phase-1",
++      "finding": 14
++    },
++    {
++      "id": "M3",
++      "kind": "an if guard forced false",
++      "file": "src/application/gateway.rs",
++      "text": ".find(|release| store.binary(**release) == record.binary)",
++      "replacement": ".find(|_| false)",
++      "test": "application::gateway::tests::prune_spares_the_release_the_gateway_runs",
++      "review": "2026-10-31-gateway-releases-phase-1",
++      "finding": 14
+     }
+   ]
+ }
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index d068885..3b8895a 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -10,7 +10,8 @@ use crate::domain::gateway::{
+ };
+ 
+ use super::build::{current_or_none, summary};
+-use super::ports::{Downloads, GatewayStore, Programs, StagedRelease};
++use super::lifecycle::live_record;
++use super::ports::{Downloads, GatewayProcess, GatewayStore, Programs, StagedRelease};
+ 
+ /// A step of an installation, for the user to follow.
+ #[derive(Debug, Clone, PartialEq, Eq)]
+@@ -225,14 +226,22 @@ pub struct PrunedReleases {
+     pub freed: u64,
+ }
+ 
+-/// Removes every release but the `keep` newest and the current one. A
+-/// removal that fails stops the prune; its error names what is gone already.
+-pub fn prune(store: &dyn GatewayStore, keep: usize) -> Result<PrunedReleases> {
++/// Removes every release but the `keep` newest and the current one, and
++/// nothing when the running gateway runs one of them. A removal that fails
++/// stops the prune; its error names what is gone already.
++pub fn prune(
++    store: &dyn GatewayStore,
++    gateway: &dyn GatewayProcess,
++    keep: usize,
++) -> Result<PrunedReleases> {
+     let _lock = store.lock()?;
++    // Held so that no gateway starts on a release being removed.
++    let _gateway_lock = gateway.lock("removing llama-swap releases")?;
+     let releases = store.releases()?;
+     // On garde toujours la release courante, même avec --keep 0 : `up` en a besoin.
+     let current = store.current()?;
+     let doomed = releases_to_prune(&releases, current, keep);
++    refuse_running(store, gateway, &doomed)?;
+     let mut freed = 0;
+     let mut removed: Vec<String> = Vec::new();
+     for release in &doomed {
+@@ -257,6 +266,27 @@ pub fn prune(store: &dyn GatewayStore, keep: usize) -> Result<PrunedReleases> {
+     })
+ }
+ 
++/// Fails when the running gateway runs one of `doomed`.
++fn refuse_running(
++    store: &dyn GatewayStore,
++    gateway: &dyn GatewayProcess,
++    doomed: &[Release],
++) -> Result<()> {
++    let Some(record) = live_record(gateway)? else {
++        return Ok(());
++    };
++    if let Some(release) = doomed
++        .iter()
++        .find(|release| store.binary(**release) == record.binary)
++    {
++        bail!(
++            "the running gateway runs llama-swap {release}, which prune would remove; nothing is \
++             removed. `ai-ctl down` then `ai-ctl up` restarts it on the current release"
++        );
++    }
++    Ok(())
++}
++
+ #[cfg(test)]
+ mod tests {
+     use std::any::Any;
+@@ -265,8 +295,8 @@ mod tests {
+     use anyhow::bail;
+ 
+     use super::*;
+-    use crate::application::fakes::printed;
+-    use crate::application::ports::ProgramOutput;
++    use crate::application::fakes::{FakeGateway, printed};
++    use crate::application::ports::{GatewayRecord, Liveness, ProgramOutput};
+ 
+     const V262_SHA256: &str = "871b3ed7891f8ce057428f5a34d38298e06c36c6848c1136e05308eb4303af50";
+ 
+@@ -799,7 +829,7 @@ mod tests {
+     #[test]
+     fn prune_removes_all_but_the_newest_and_the_current_one() {
+         let store = four_releases();
+-        let pruned = prune(&store, 2).unwrap();
++        let pruned = prune(&store, &FakeGateway::default(), 2).unwrap();
+         assert_eq!(pruned.removed, [release_of("262"), release_of("261")]);
+         assert_eq!(pruned.kept, 2);
+         assert_eq!(pruned.freed, 86_000_000);
+@@ -813,7 +843,10 @@ mod tests {
+     fn prune_stops_at_a_failed_removal() {
+         let mut store = four_releases();
+         store.remove_fails = Some(release_of("261"));
+-        let message = format!("{:#}", prune(&store, 2).unwrap_err());
++        let message = format!(
++            "{:#}",
++            prune(&store, &FakeGateway::default(), 2).unwrap_err()
++        );
+         assert_eq!(
+             message,
+             "cannot remove llama-swap v261, after removing v262: cannot remove \
+@@ -821,4 +854,46 @@ mod tests {
+         );
+         assert!(store.installed.borrow().contains(&release_of("261")));
+     }
++
++    /// A gateway running `release`'s binary.
++    fn running(store: &FakeStore, release: &str) -> FakeGateway {
++        let gateway = FakeGateway {
++            liveness: Some(Liveness::Running),
++            ..FakeGateway::default()
++        };
++        *gateway.record.borrow_mut() = Some(GatewayRecord {
++            pid: 4242,
++            binary: store.binary(release_of(release)),
++            listen: "127.0.0.1:8080".parse().unwrap(),
++        });
++        gateway
++    }
++
++    #[test]
++    fn prune_spares_the_release_the_gateway_runs() {
++        let store = four_releases();
++        let gateway = running(&store, "262");
++        let message = prune(&store, &gateway, 2).unwrap_err().to_string();
++        assert!(
++            message
++                .starts_with("the running gateway runs llama-swap v262, which prune would remove"),
++            "{message}"
++        );
++        assert_eq!(store.installed.borrow().len(), 4);
++        assert!(prune(&store, &running(&store, "263"), 2).is_ok());
++    }
++
++    #[test]
++    fn prune_waits_for_no_gateway_start() {
++        let store = four_releases();
++        let gateway = FakeGateway {
++            locked: true,
++            ..FakeGateway::default()
++        };
++        assert!(prune(&store, &gateway, 2).is_err());
++        assert_eq!(store.installed.borrow().len(), 4);
++        let gateway = FakeGateway::default();
++        prune(&store, &gateway, 2).unwrap();
++        assert_eq!(*gateway.locks.borrow(), ["removing llama-swap releases"]);
++    }
+ }
+diff --git a/src/presentation/gateway.rs b/src/presentation/gateway.rs
+index 57731c2..27dd90c 100644
+--- a/src/presentation/gateway.rs
++++ b/src/presentation/gateway.rs
+@@ -34,7 +34,8 @@ pub fn run(action: GatewayAction, services: &Services) -> Result<ExitCode> {
+         }
+         GatewayAction::Config => services.configurator().generate()?.to_yaml(),
+         GatewayAction::Prune { keep } => {
+-            let pruned = gateway::prune(services.releases.as_ref(), keep)?;
++            let pruned =
++                gateway::prune(services.releases.as_ref(), services.gateway.as_ref(), keep)?;
+             render_pruned(&pruned, &Paths::from_env()?.gateway_dir())
+         }
+     };

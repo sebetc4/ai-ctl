@@ -1,0 +1,308 @@
+diff --git a/docs/reviews/delivered-code/mutants.json b/docs/reviews/delivered-code/mutants.json
+new file mode 100644
+index 0000000..c6a0513
+--- /dev/null
++++ b/docs/reviews/delivered-code/mutants.json
+@@ -0,0 +1,14 @@
++{
++  "mutants": [
++    {
++      "id": "M1",
++      "kind": "a let … else taking its else",
++      "file": "src/infrastructure/gateway_store.rs",
++      "text": "let Some(name) = file_name.to_str() else {",
++      "replacement": "let Some(name) = None::<&str> else {",
++      "test": "infrastructure::gateway_store::tests::releases_come_by_number",
++      "review": "2026-10-31-gateway-releases-phase-1",
++      "finding": 4
++    }
++  ]
++}
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index a8c7ae7..d068885 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -225,7 +225,8 @@ pub struct PrunedReleases {
+     pub freed: u64,
+ }
+ 
+-/// Removes every release but the `keep` newest and the current one.
++/// Removes every release but the `keep` newest and the current one. A
++/// removal that fails stops the prune; its error names what is gone already.
+ pub fn prune(store: &dyn GatewayStore, keep: usize) -> Result<PrunedReleases> {
+     let _lock = store.lock()?;
+     let releases = store.releases()?;
+@@ -233,9 +234,21 @@ pub fn prune(store: &dyn GatewayStore, keep: usize) -> Result<PrunedReleases> {
+     let current = store.current()?;
+     let doomed = releases_to_prune(&releases, current, keep);
+     let mut freed = 0;
++    let mut removed: Vec<String> = Vec::new();
+     for release in &doomed {
+-        freed += store.size(*release)?;
+-        store.remove(*release)?;
++        let size = store.size(*release)?;
++        store.remove(*release).with_context(|| {
++            if removed.is_empty() {
++                format!("cannot remove llama-swap {release}")
++            } else {
++                format!(
++                    "cannot remove llama-swap {release}, after removing {}",
++                    removed.join(", ")
++                )
++            }
++        })?;
++        removed.push(release.to_string());
++        freed += size;
+     }
+     Ok(PrunedReleases {
+         kept: releases.len() - doomed.len(),
+@@ -311,6 +324,8 @@ mod tests {
+         publish_fails: bool,
+         discard_fails: bool,
+         set_current_fails: bool,
++        /// The release whose removal fails.
++        remove_fails: Option<Release>,
+     }
+ 
+     impl FakeStore {
+@@ -326,6 +341,7 @@ mod tests {
+                 publish_fails: false,
+                 discard_fails: false,
+                 set_current_fails: false,
++                remove_fails: None,
+             }
+         }
+     }
+@@ -392,9 +408,13 @@ mod tests {
+             Ok(self.installed.borrow().clone())
+         }
+         fn size(&self, _: Release) -> Result<u64> {
+-            Ok(0)
++            Ok(43_000_000)
+         }
+         fn remove(&self, release: Release) -> Result<()> {
++            ensure!(
++                self.remove_fails != Some(release),
++                "cannot remove /data/llama-swap/{release}: Permission denied (os error 13)"
++            );
+             self.installed.borrow_mut().retain(|r| *r != release);
+             Ok(())
+         }
+@@ -765,15 +785,40 @@ mod tests {
+         assert_eq!(world.install(None).0.unwrap().outcome, Outcome::Unchanged);
+     }
+ 
+-    #[test]
+-    fn prune_removes_old_releases() {
++    /// A store holding v261 to v264, v264 current.
++    fn four_releases() -> FakeStore {
+         let store = FakeStore::new();
+-        store.installed.borrow_mut().extend([
+-            release_of("261"),
+-            release_of("262"),
+-            release_of("263"),
+-        ]);
+-        *store.current.borrow_mut() = Some(release_of("263"));
+-        assert!(prune(&store, 1).is_ok());
++        store
++            .installed
++            .borrow_mut()
++            .extend(["261", "262", "263", "264"].map(release_of));
++        *store.current.borrow_mut() = Some(release_of("264"));
++        store
++    }
++
++    #[test]
++    fn prune_removes_all_but_the_newest_and_the_current_one() {
++        let store = four_releases();
++        let pruned = prune(&store, 2).unwrap();
++        assert_eq!(pruned.removed, [release_of("262"), release_of("261")]);
++        assert_eq!(pruned.kept, 2);
++        assert_eq!(pruned.freed, 86_000_000);
++        assert_eq!(
++            *store.installed.borrow(),
++            [release_of("263"), release_of("264")]
++        );
++    }
++
++    #[test]
++    fn prune_stops_at_a_failed_removal() {
++        let mut store = four_releases();
++        store.remove_fails = Some(release_of("261"));
++        let message = format!("{:#}", prune(&store, 2).unwrap_err());
++        assert_eq!(
++            message,
++            "cannot remove llama-swap v261, after removing v262: cannot remove \
++             /data/llama-swap/v261: Permission denied (os error 13)"
++        );
++        assert!(store.installed.borrow().contains(&release_of("261")));
+     }
+ }
+diff --git a/src/domain/gateway.rs b/src/domain/gateway.rs
+index ed7b438..0a134a7 100644
+--- a/src/domain/gateway.rs
++++ b/src/domain/gateway.rs
+@@ -169,6 +169,15 @@ mod tests {
+         assert!(releases_to_prune(&releases, None, 3).is_empty());
+     }
+ 
++    #[test]
++    fn prune_goes_by_release_number() {
++        let releases = [Release(99), Release(100), Release(263)];
++        assert_eq!(
++            releases_to_prune(&releases, Some(Release(263)), 1),
++            [Release(100), Release(99)]
++        );
++    }
++
+     /// The checksums file of v263.
+     const CHECKSUMS: &str = include_str!("../../tests/fixtures/llama-swap-263-checksums.txt");
+ 
+diff --git a/src/infrastructure/gateway_store.rs b/src/infrastructure/gateway_store.rs
+index 4714d8a..e8f73c9 100644
+--- a/src/infrastructure/gateway_store.rs
++++ b/src/infrastructure/gateway_store.rs
+@@ -181,45 +181,51 @@ impl GatewayStore for FsGatewayStore {
+                 return Err(err).with_context(|| format!("cannot read {}", self.root.display()));
+             }
+         };
+-        let mut names = Vec::new();
++        let mut releases = Vec::new();
+         for entry in entries {
+-            let name = entry?.file_name().into_string().unwrap();
+-            if name.starts_with('.') || name == CURRENT {
++            let entry = entry.with_context(|| format!("cannot read {}", self.root.display()))?;
++            let file_name = entry.file_name();
++            // A name that is not UTF-8 is no release of ai-ctl's.
++            let Some(name) = file_name.to_str() else {
+                 continue;
++            };
++            // `current`, the hidden entries and `v0263` are no release either.
++            match Release::parse(name) {
++                Ok(release) if release.to_string() == name => releases.push(release),
++                _ => {}
+             }
+-            names.push(name);
+         }
+-        // Sorted by name, the releases come oldest first.
+-        names.sort();
+-        Ok(names
+-            .iter()
+-            .filter_map(|name| Release::parse(name).ok())
+-            .collect())
++        // By number: v99 is older than v263.
++        releases.sort();
++        Ok(releases)
+     }
+ 
+     fn size(&self, release: Release) -> Result<u64> {
++        let dir = self.release_dir(release);
+         let mut total = 0;
+-        for entry in fs::read_dir(self.release_dir(release))? {
+-            let path = entry?.path();
+-            total += fs::read(&path)?.len() as u64;
++        for entry in fs::read_dir(&dir).with_context(|| format!("cannot read {}", dir.display()))? {
++            let entry = entry.with_context(|| format!("cannot read {}", dir.display()))?;
++            let metadata = entry
++                .metadata()
++                .with_context(|| format!("cannot read {}", entry.path().display()))?;
++            total += metadata.len();
+         }
+         Ok(total)
+     }
+ 
+     fn remove(&self, release: Release) -> Result<()> {
+-        let dir = self.release_dir(release);
+-        // rm -rf rather than remove_dir_all: an archive unpacked by an old tar
+-        // can leave read-only directories behind.
+-        let _ = Command::new("sh")
+-            .arg("-c")
+-            .arg(format!("rm -rf {}", dir.display()))
+-            .status();
+-        Ok(())
++        let target = self.release_dir(release);
++        let doomed = self.hidden("removing", release);
++        // Out of sight first: an interrupted removal leaves no half release.
++        fs::rename(&target, &doomed)
++            .with_context(|| format!("cannot remove {}", target.display()))?;
++        remove_dir_if_present(&doomed)
+     }
+ }
+ 
+ #[cfg(test)]
+ mod tests {
++    use std::os::unix::ffi::OsStrExt;
+     use std::os::unix::fs::PermissionsExt;
+ 
+     use super::*;
+@@ -437,6 +443,70 @@ mod tests {
+         assert!(f.store.set_current(release("263")).is_err());
+     }
+ 
++    #[test]
++    fn releases_come_by_number() {
++        let f = fixture();
++        for name in ["v100", "v263", "v99", "v0264", ".staging-v264-42", "notes"] {
++            fs::create_dir_all(f.store.root.join(name)).unwrap();
++        }
++        let not_utf8 = std::ffi::OsStr::from_bytes(b"v26\xff");
++        fs::create_dir_all(f.store.root.join(not_utf8)).unwrap();
++        std::os::unix::fs::symlink("v263", f.store.root.join(CURRENT)).unwrap();
++        assert_eq!(
++            f.store.releases().unwrap(),
++            [release("99"), release("100"), release("263")]
++        );
++    }
++
++    #[test]
++    fn no_directory_holds_no_release() {
++        assert!(fixture().store.releases().unwrap().is_empty());
++    }
++
++    #[test]
++    fn a_release_measures_its_files() {
++        let f = fixture();
++        let dir = f.store.root.join("v263");
++        fs::create_dir_all(&dir).unwrap();
++        fs::write(dir.join(BINARY), [0; 1000]).unwrap();
++        fs::write(dir.join("LICENSE"), [0; 24]).unwrap();
++        assert_eq!(f.store.size(release("263")).unwrap(), 1024);
++    }
++
++    #[test]
++    fn a_removed_release_leaves_nothing() {
++        let f = fixture();
++        let dir = f.store.root.join("v262");
++        fs::create_dir_all(&dir).unwrap();
++        fs::write(dir.join(BINARY), "llama-swap").unwrap();
++        f.store.remove(release("262")).unwrap();
++        assert_eq!(fs::read_dir(&f.store.root).unwrap().count(), 0);
++    }
++
++    #[test]
++    fn a_removal_under_a_path_with_a_space_removes_the_release_alone() {
++        let root = tempfile::tempdir().unwrap();
++        let store = FsGatewayStore::new(root.path().join("My Data/llama-swap"));
++        let beside = root.path().join("My");
++        fs::create_dir_all(&beside).unwrap();
++        fs::create_dir_all(store.root.join("v262")).unwrap();
++        store.remove(release("262")).unwrap();
++        assert!(beside.is_dir());
++        assert!(!store.root.join("v262").exists());
++    }
++
++    #[test]
++    fn a_release_that_is_not_there_is_not_removed() {
++        let f = fixture();
++        fs::create_dir_all(&f.store.root).unwrap();
++        let message = format!("{:#}", f.store.remove(release("262")).unwrap_err());
++        assert!(message.starts_with("cannot remove "), "{message}");
++        assert!(
++            message.ends_with("No such file or directory (os error 2)"),
++            "{message}"
++        );
++    }
++
+     #[test]
+     fn a_second_lock_is_refused() {
+         let f = fixture();

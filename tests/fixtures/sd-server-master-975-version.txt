@@ -1,0 +1,1 @@
+stable-diffusion.cpp version master-975-95b3090, commit 95b3090

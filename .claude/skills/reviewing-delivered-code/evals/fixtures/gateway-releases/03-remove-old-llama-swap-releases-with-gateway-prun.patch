@@ -1,0 +1,202 @@
+diff --git a/README.md b/README.md
+index 822a055..d95345d 100644
+--- a/README.md
++++ b/README.md
+@@ -147,6 +147,7 @@ left, which `doctor` reports.
+ ai-ctl gateway install                    # the llama-swap release this ai-ctl pins, v263
+ ai-ctl gateway install --version 264      # another release
+ ai-ctl gateway install --version 264 --sha256 <hex>   # checked against a digest you trust
++ai-ctl gateway prune --keep 1                         # remove all but the newest release and the current one
+ ```
+ 
+ llama-swap is the gateway every client talks to, and the only process that starts or stops a
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index 9271110..a8c7ae7 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -1,11 +1,13 @@
+ //! `gateway install`: installs a llama-swap release, verified, and makes it
+-//! the current one.
++//! the current one; `gateway prune`: removes the old releases.
+ 
+ use std::path::{Path, PathBuf};
+ 
+ use anyhow::{Context, Result, anyhow, bail, ensure};
+ 
+-use crate::domain::gateway::{BINARY, PINNED, Release, Sha256, checksum, reports};
++use crate::domain::gateway::{
++    BINARY, PINNED, Release, Sha256, checksum, releases_to_prune, reports,
++};
+ 
+ use super::build::{current_or_none, summary};
+ use super::ports::{Downloads, GatewayStore, Programs, StagedRelease};
+@@ -214,6 +216,34 @@ impl Installer<'_> {
+     }
+ }
+ 
++/// What `gateway prune` did.
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct PrunedReleases {
++    pub removed: Vec<Release>,
++    pub kept: usize,
++    /// The bytes the removed releases held.
++    pub freed: u64,
++}
++
++/// Removes every release but the `keep` newest and the current one.
++pub fn prune(store: &dyn GatewayStore, keep: usize) -> Result<PrunedReleases> {
++    let _lock = store.lock()?;
++    let releases = store.releases()?;
++    // On garde toujours la release courante, même avec --keep 0 : `up` en a besoin.
++    let current = store.current()?;
++    let doomed = releases_to_prune(&releases, current, keep);
++    let mut freed = 0;
++    for release in &doomed {
++        freed += store.size(*release)?;
++        store.remove(*release)?;
++    }
++    Ok(PrunedReleases {
++        kept: releases.len() - doomed.len(),
++        removed: doomed,
++        freed,
++    })
++}
++
+ #[cfg(test)]
+ mod tests {
+     use std::any::Any;
+@@ -734,4 +764,16 @@ mod tests {
+         world.store.set_current_fails = true;
+         assert_eq!(world.install(None).0.unwrap().outcome, Outcome::Unchanged);
+     }
++
++    #[test]
++    fn prune_removes_old_releases() {
++        let store = FakeStore::new();
++        store.installed.borrow_mut().extend([
++            release_of("261"),
++            release_of("262"),
++            release_of("263"),
++        ]);
++        *store.current.borrow_mut() = Some(release_of("263"));
++        assert!(prune(&store, 1).is_ok());
++    }
+ }
+diff --git a/src/presentation/cli.rs b/src/presentation/cli.rs
+index 9fe77a2..557ba21 100644
+--- a/src/presentation/cli.rs
++++ b/src/presentation/cli.rs
+@@ -128,6 +128,14 @@ pub enum GatewayAction {
+     },
+     /// Print the configuration `up` gives llama-swap, generated from the inventory
+     Config,
++    /// Remove all but the newest releases; the current one is always kept
++    // `clean` is the name llm-ctl gave it; kept so the old habit still works.
++    #[command(alias = "clean")]
++    Prune {
++        /// How many of the newest releases to keep, besides the current one
++        #[arg(long, value_name = "N")]
++        keep: usize,
++    },
+ }
+ 
+ /// Measuring the models.
+diff --git a/src/presentation/gateway.rs b/src/presentation/gateway.rs
+index 26cf0f6..57731c2 100644
+--- a/src/presentation/gateway.rs
++++ b/src/presentation/gateway.rs
+@@ -1,12 +1,17 @@
+-//! `ai-ctl gateway`: installs llama-swap, with its steps on stderr, and
+-//! prints its configuration.
++//! `ai-ctl gateway`: installs llama-swap, with its steps on stderr, prints
++//! its configuration, and removes old releases.
+ 
+ use std::io::{self, Write};
++use std::path::Path;
+ use std::process::ExitCode;
+ 
+ use anyhow::Result;
+ 
+-use crate::application::gateway::{DigestSource, Event, Installation, Installer, Outcome};
++use crate::application::gateway::{
++    self, DigestSource, Event, Installation, Installer, Outcome, PrunedReleases,
++};
++use crate::domain::gateway::Release;
++use crate::infrastructure::paths::Paths;
+ 
+ use super::cli::GatewayAction;
+ use super::{Services, current_line};
+@@ -28,6 +33,10 @@ pub fn run(action: GatewayAction, services: &Services) -> Result<ExitCode> {
+             render_installation(&installation)
+         }
+         GatewayAction::Config => services.configurator().generate()?.to_yaml(),
++        GatewayAction::Prune { keep } => {
++            let pruned = gateway::prune(services.releases.as_ref(), keep)?;
++            render_pruned(&pruned, &Paths::from_env()?.gateway_dir())
++        }
+     };
+     super::print(&output)?;
+     Ok(ExitCode::SUCCESS)
+@@ -68,10 +77,41 @@ pub fn render_installation(installation: &Installation) -> String {
+     out
+ }
+ 
++pub fn render_pruned(pruned: &PrunedReleases, dir: &Path) -> String {
++    if pruned.removed.is_empty() {
++        return format!(
++            "Nothing to remove in {}: {} releases kept\n",
++            dir.display(),
++            pruned.kept
++        );
++    }
++    let removed: Vec<String> = pruned.removed.iter().map(Release::to_string).collect();
++    format!(
++        "Removed {} from {} ({} MB freed); {} kept\n",
++        removed.join(", "),
++        dir.display(),
++        pruned.freed / 1_000_000,
++        pruned.kept
++    )
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+-    use crate::domain::gateway::{Release, Sha256};
++    use crate::domain::gateway::Sha256;
++
++    #[test]
++    fn prune_says_what_it_removed() {
++        let pruned = PrunedReleases {
++            removed: vec![Release::parse("261").unwrap()],
++            kept: 2,
++            freed: 32_000_000,
++        };
++        assert_eq!(
++            render_pruned(&pruned, Path::new("/data/llama-swap")),
++            "Removed v261 from /data/llama-swap (32 MB freed); 2 kept\n"
++        );
++    }
+ 
+     fn installation(outcome: Outcome, previous: Option<&str>) -> Installation {
+         Installation {
+diff --git a/tests/cli.rs b/tests/cli.rs
+index ccd648c..86d47ca 100644
+--- a/tests/cli.rs
++++ b/tests/cli.rs
+@@ -245,6 +245,15 @@ fn gateway_install_takes_an_optional_release() {
+     assert!(gateway_action(&[]).is_err());
+ }
+ 
++#[test]
++fn gateway_prune_needs_a_count() {
++    assert!(matches!(
++        gateway_action(&["prune", "--keep", "1"]).unwrap(),
++        GatewayAction::Prune { keep: 1 }
++    ));
++    assert!(gateway_action(&["prune"]).is_err());
++}
++
+ #[test]
+ fn gateway_config_needs_an_inventory_and_a_build() {
+     assert!(matches!(

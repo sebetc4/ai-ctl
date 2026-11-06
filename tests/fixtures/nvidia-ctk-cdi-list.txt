@@ -1,0 +1,3 @@
+nvidia.com/gpu=0
+nvidia.com/gpu=GPU-00000000-0000-0000-0000-000000000000
+nvidia.com/gpu=all

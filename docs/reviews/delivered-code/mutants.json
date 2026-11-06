@@ -1,0 +1,584 @@
+{
+  "mutants": [
+    {
+      "id": "M1",
+      "kind": "an if guard forced false",
+      "file": "src/domain/safetensors.rs",
+      "text": "        if escape_controls(shard) != shard {",
+      "replacement": "        if false {",
+      "test": "domain::safetensors::tests::a_shard_that_would_drive_the_terminal_is_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 22
+    },
+    {
+      "id": "M2",
+      "kind": "an if guard forced false",
+      "file": "src/domain/safetensors.rs",
+      "text": "    if shards.is_empty() {",
+      "replacement": "    if false {",
+      "test": "domain::safetensors::tests::an_index_without_a_weight_map_of_shards_is_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 22
+    },
+    {
+      "id": "M3",
+      "kind": "a filter removed",
+      "file": "src/domain/safetensors.rs",
+      "text": "shard.as_str().filter(|shard| !shard.is_empty())",
+      "replacement": "shard.as_str()",
+      "test": "domain::safetensors::tests::an_index_without_a_weight_map_of_shards_is_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 22
+    },
+    {
+      "id": "M4",
+      "kind": "an if guard forced false",
+      "file": "src/domain/inventory.rs",
+      "text": "        && !number.is_finite()",
+      "replacement": "        && false",
+      "test": "domain::inventory::tests::a_number_value_must_be_finite_for_every_server",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 52
+    },
+    {
+      "id": "M5",
+      "kind": "a call removed",
+      "file": "src/domain/inventory.rs",
+      "text": "        check_finite(&scope, option, value, errors);",
+      "replacement": "        let _ = (&scope, option, value);",
+      "test": "domain::inventory::tests::a_session_option_must_be_finite",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 52
+    },
+    {
+      "id": "M6",
+      "kind": "a call removed",
+      "file": "src/domain/inventory.rs",
+      "text": "        check_finite(scope, flag, value, errors);",
+      "replacement": "        let _ = value;",
+      "test": "domain::inventory::tests::a_number_value_must_be_finite_for_every_server",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 52
+    },
+    {
+      "id": "M7",
+      "kind": "a sort removed",
+      "file": "src/infrastructure/git.rs",
+      "text": "    parents.sort_by_key(|parent| parent.split('/').filter(|part| !part.is_empty()).count());\n",
+      "replacement": "",
+      "test": "infrastructure::git::tests::named_submodules_are_checked_out_at_any_depth_in_any_order",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 35
+    },
+    {
+      "id": "M8",
+      "kind": "the longest match taken as the first",
+      "file": "src/infrastructure/git.rs",
+      "text": "        .max_by_key(|parent| parent.len())",
+      "replacement": "        .next()",
+      "test": "infrastructure::git::tests::named_submodules_are_checked_out_at_any_depth_in_any_order",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 35
+    },
+    {
+      "id": "M9",
+      "kind": "a prefix check loosened",
+      "file": "src/infrastructure/git.rs",
+      "text": ".is_some_and(|rest| rest.starts_with('/'))",
+      "replacement": ".is_some_and(|rest| !rest.is_empty())",
+      "test": "infrastructure::git::tests::named_submodules_are_checked_out_at_any_depth_in_any_order",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 35
+    },
+    {
+      "id": "M10",
+      "kind": "a guard removed",
+      "file": "src/infrastructure/git.rs",
+      "text": "mode.starts_with(\"160000 \") && staged == relative(path)",
+      "replacement": "!mode.is_empty() && staged == relative(path)",
+      "test": "infrastructure::git::tests::named_submodules_are_checked_out_at_any_depth_in_any_order",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 35
+    },
+    {
+      "id": "M11",
+      "kind": "a quoting removed",
+      "file": "src/application/doctor.rs",
+      "text": "            words.extend(names.iter().map(|name| shell_quote(name)));",
+      "replacement": "            words.extend(names.iter().map(|name| Cow::Borrowed(name.as_str())));",
+      "test": "application::doctor::tests::a_shard_name_the_shell_would_read_is_quoted_in_the_download_command",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 29
+    },
+    {
+      "id": "M12",
+      "kind": "a quoting removed",
+      "file": "src/application/doctor.rs",
+      "text": "            let mut words = vec![shell_quote(repo)];",
+      "replacement": "            let mut words = vec![Cow::Borrowed(repo.as_str())];",
+      "test": "application::doctor::tests::a_repository_the_shell_would_read_is_quoted_in_the_download_command",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 29
+    },
+    {
+      "id": "M13",
+      "kind": "a stream left unread",
+      "file": "src/application/build.rs",
+      "text": "    let printed = output.stdout.contains(test.prints) || output.stderr.contains(test.prints);",
+      "replacement": "    let printed = output.stderr.contains(test.prints);",
+      "test": "application::build::tests::a_server_that_prints_on_stdout_passes_its_smoke_test",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 31
+    },
+    {
+      "id": "M14",
+      "kind": "a check removed",
+      "file": "src/domain/gateway_config.rs",
+      "text": "    entry.insert(\"path\".into(), Value::from(text.path(&weights)));",
+      "replacement": "    entry.insert(\"path\".into(), Value::from(weights.to_string_lossy().into_owned()));",
+      "test": "domain::gateway_config::tests::an_audiocpp_path_the_yaml_cannot_hold_is_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 33
+    },
+    {
+      "id": "M15",
+      "kind": "a check removed",
+      "file": "src/domain/gateway_config.rs",
+      "text": "        vec![\"--config\".to_owned(), text.path(&path)],",
+      "replacement": "        vec![\"--config\".to_owned(), path.to_string_lossy().into_owned()],",
+      "test": "domain::gateway_config::tests::an_audiocpp_path_the_yaml_cannot_hold_is_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 33
+    },
+    {
+      "id": "M16",
+      "kind": "another binary tested",
+      "file": "src/application/build.rs",
+      "text": "        let installed = self.smoke_test(recipe, &staged.binary).and_then(|()| {",
+      "replacement": "        let installed = self.smoke_test(recipe, &self.store.binary(recipe.project, &id, recipe.binary())).and_then(|()| {",
+      "test": "application::build::tests::the_smoke_test_runs_the_staged_binary_not_the_installed_one",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 34
+    },
+    {
+      "id": "M17",
+      "kind": "another binary tested",
+      "file": "src/application/doctor.rs",
+      "text": "        let binary = self.builds.binary(project, current, recipe.binary());",
+      "replacement": "        let binary = self.builds.binary(project, current, \"llama-server\");",
+      "test": "application::doctor::tests::each_projects_current_build_is_run_from_its_own_binary",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 34
+    },
+    {
+      "id": "M18",
+      "kind": "a ? swallowing its error",
+      "file": "src/infrastructure/git.rs",
+      "text": "    updated.with_context(|| format!(\"cannot check out the submodules {}\", held.join(\", \")))?;",
+      "replacement": "    updated\n        .with_context(|| format!(\"cannot check out the submodules {}\", held.join(\", \")))\n        .ok();",
+      "test": "infrastructure::git::tests::a_submodule_that_cannot_be_fetched_fails_the_checkout",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 36
+    },
+    {
+      "id": "M19",
+      "kind": "an option removed",
+      "file": "src/domain/recipe.rs",
+      "text": "\n        (\"AUDIOCPP_DEPLOYMENT_BUILD\", \"ON\"),",
+      "replacement": "",
+      "test": "domain::recipe::tests::each_new_recipe_keeps_the_repository_and_options_it_is_built_with",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 37
+    },
+    {
+      "id": "M20",
+      "kind": "an option removed",
+      "file": "src/domain/recipe.rs",
+      "text": "\n        (\"SD_SERVER_BUILD_FRONTEND\", \"OFF\"),",
+      "replacement": "",
+      "test": "domain::recipe::tests::each_new_recipe_keeps_the_repository_and_options_it_is_built_with",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 37
+    },
+    {
+      "id": "M21",
+      "kind": "another repository",
+      "file": "src/domain/recipe.rs",
+      "text": "    repository: \"https://github.com/0xShug0/audio.cpp.git\",",
+      "replacement": "    repository: \"https://github.com/someone/audio.cpp.git\",",
+      "test": "domain::recipe::tests::each_new_recipe_keeps_the_repository_and_options_it_is_built_with",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 37
+    },
+    {
+      "id": "M22",
+      "kind": "another directory",
+      "file": "src/application/doctor.rs",
+      "text": "            files_dir: self.gateway.files_dir(),",
+      "replacement": "            files_dir: Path::new(\"/elsewhere\"),",
+      "test": "application::doctor::tests::a_gateway_serving_an_audiocpp_model_runs_the_configuration_doctor_generates",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 38
+    },
+    {
+      "id": "M23",
+      "kind": "a separator changed",
+      "file": "src/domain/text.rs",
+      "text": "        .join(\"; \")",
+      "replacement": "        .join(\" \")",
+      "test": "domain::gateway_config::tests::the_message_of_several_errors_sets_them_apart",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 39
+    },
+    {
+      "id": "M24",
+      "kind": "a ? swallowing its error",
+      "file": "src/infrastructure/build_store.rs",
+      "text": "                    fs::write(&copy, patch.diff)\n                        .with_context(|| format!(\"cannot write {}\", copy.display()))?;",
+      "replacement": "                    let _ = fs::write(&copy, patch.diff);",
+      "test": "infrastructure::build_store::store_tests::a_patch_that_cannot_be_kept_leaves_nothing_staged",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 40
+    },
+    {
+      "id": "M25",
+      "kind": "a ? swallowing its error",
+      "file": "src/infrastructure/gateway_process.rs",
+      "text": "        replace_file(path, &file.content)\n",
+      "replacement": "        let _ = replace_file(path, &file.content);\n        Ok(())\n",
+      "test": "infrastructure::gateway_process::tests::a_file_that_cannot_be_written_starts_nothing",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 41
+    },
+    {
+      "id": "M26",
+      "kind": "a ? swallowing its error",
+      "file": "src/infrastructure/gateway_process.rs",
+      "text": "        self.write(CONFIG, config)?;",
+      "replacement": "        let _ = self.write(CONFIG, config);",
+      "test": "infrastructure::gateway_process::tests::a_configuration_that_cannot_be_written_starts_nothing",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 41
+    },
+    {
+      "id": "M27",
+      "kind": "an option removed",
+      "file": "src/domain/recipe.rs",
+      "text": "\n        (\"LLAMA_USE_PREBUILT_UI\", \"OFF\"),",
+      "replacement": "",
+      "test": "domain::recipe::tests::llama_cpp_is_the_shipped_recipe",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 1
+    },
+    {
+      "id": "M28",
+      "kind": "an if let taking its else",
+      "file": "src/application/doctor.rs",
+      "text": "        if let Some(unlike) = unlike_recipe(recipe, &build) {",
+      "replacement": "        if let Some(unlike) = None::<String> {",
+      "test": "application::doctor::tests::a_current_build_without_one_of_its_recipes_patches_is_built_again",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 3
+    },
+    {
+      "id": "M29",
+      "kind": "an if let taking its else",
+      "file": "src/application/gateway_config.rs",
+      "text": "                        if let Some(unlike) = unlike_recipe(recipe, &build) {",
+      "replacement": "                        if let Some(unlike) = None::<String> {",
+      "test": "application::gateway_config::tests::a_current_build_without_one_of_its_recipes_patches_is_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 3
+    },
+    {
+      "id": "M30",
+      "kind": "a guard removed",
+      "file": "src/domain/inventory.rs",
+      "text": "            && flag != \"tokenizer\"\n",
+      "replacement": "",
+      "test": "application::doctor::tests::an_sd_server_tokenizer_json_is_no_index",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 5
+    },
+    {
+      "id": "M31",
+      "kind": "the comparison with the path as written",
+      "file": "src/application/doctor.rs",
+      "text": ".strip_prefix(&normal_dir)",
+      "replacement": ".strip_prefix(dir)",
+      "test": "application::doctor::tests::an_index_under_a_models_dir_holding_dot_dot_counts_its_shards",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 6
+    },
+    {
+      "id": "M32",
+      "kind": "a match arm removed",
+      "file": "src/domain/safetensors.rs",
+      "text": "            Component::ParentDir => {\n                normal.pop();\n            }\n",
+      "replacement": "",
+      "test": "domain::safetensors::tests::a_shard_is_read_from_the_indexs_directory_unless_absolute",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 6
+    },
+    {
+      "id": "M33",
+      "kind": "an if guard forced false",
+      "file": "src/application/doctor.rs",
+      "text": "                if relative.as_os_str().as_encoded_bytes().starts_with(b\"-\") {",
+      "replacement": "                if false {",
+      "test": "application::doctor::tests::a_shard_hf_would_read_as_an_option_never_reaches_the_download_command",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 30
+    },
+    {
+      "id": "M34",
+      "kind": "the backends declared taken for the models'",
+      "file": "src/application/doctor.rs",
+      "text": "                    .models()\n                    .iter()\n                    .filter_map(|model| inventory.backend(&model.backend))\n",
+      "replacement": "                    .backends()\n                    .iter()\n",
+      "test": "application::doctor::tests::a_backend_no_model_uses_needs_no_build",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 7
+    },
+    {
+      "id": "M35",
+      "kind": "a match arm removed",
+      "file": "src/application/doctor.rs",
+      "text": "            Ok(Current::None) if used == Some(false) => {\n                return Check::skip(project, \"no build; the inventory does not run one\");\n            }\n",
+      "replacement": "",
+      "test": "application::doctor::tests::a_backend_no_model_uses_needs_no_build",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 8
+    },
+    {
+      "id": "M36",
+      "kind": "an ensure forced true",
+      "file": "src/application/bench.rs",
+      "text": "            backend.kind == BackendKind::LlamaServer,",
+      "replacement": "            true,",
+      "test": "application::bench::tests::a_model_of_another_server_than_llama_server_is_refused_before_any_request",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 9
+    },
+    {
+      "id": "M37",
+      "kind": "an if guard forced true",
+      "file": "src/application/build.rs",
+      "text": "let why = if err.downcast_ref::<PatchRefused>().is_some() {",
+      "replacement": "let why = if true {",
+      "test": "application::build::tests::a_patch_that_cannot_be_tried_sends_to_no_other_release",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 10
+    },
+    {
+      "id": "M38",
+      "kind": "an if guard forced false",
+      "file": "src/application/build.rs",
+      "text": "let why = if err.downcast_ref::<PatchRefused>().is_some() {",
+      "replacement": "let why = if false {",
+      "test": "application::build::tests::a_release_a_patch_does_not_apply_to_cannot_be_built",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 10
+    },
+    {
+      "id": "M39",
+      "kind": "a refusal's type lost",
+      "file": "src/infrastructure/git.rs",
+      "text": "            return Err(PatchRefused(output.failure()).into());",
+      "replacement": "            bail!(output.failure());",
+      "test": "infrastructure::git::tests::a_patch_applies_whole_or_not_at_all",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 10
+    },
+    {
+      "id": "M40",
+      "kind": "a guard loosened",
+      "file": "src/infrastructure/git.rs",
+      "text": "            || !module.join(\"HEAD\").is_file()",
+      "replacement": "            && !module.join(\"HEAD\").is_file()",
+      "test": "infrastructure::git::tests::only_a_named_submodule_killed_in_its_first_clone_is_removed",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 11
+    },
+    {
+      "id": "M41",
+      "kind": "a guard loosened",
+      "file": "src/infrastructure/git.rs",
+      "text": "            || rev_parse(&module, \"HEAD\")?.is_some()",
+      "replacement": "            && rev_parse(&module, \"HEAD\")?.is_some()",
+      "test": "infrastructure::git::tests::a_submodule_with_commits_is_kept_when_its_update_fails",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 11
+    },
+    {
+      "id": "M42",
+      "kind": "an if guard forced false",
+      "file": "src/infrastructure/git.rs",
+      "text": "        Err(err) if remove_unborn(&repository, &relatives).unwrap_or(false) => {",
+      "replacement": "        Err(err) if false => {",
+      "test": "infrastructure::git::tests::a_submodule_whose_first_clone_was_killed_is_checked_out_next_time",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 11
+    },
+    {
+      "id": "M43",
+      "kind": "a filter removed",
+      "file": "src/infrastructure/git.rs",
+      "text": "            Path::new(name)\n                .components()\n                .all(|component| matches!(component, Component::Normal(_)))\n                .then_some((name, path))",
+      "replacement": "            Some((name, path))",
+      "test": "infrastructure::git::tests::a_submodule_named_upstream_to_climb_out_is_left_out",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 11
+    },
+    {
+      "id": "M44",
+      "kind": "an if guard forced false",
+      "file": "src/application/doctor.rs",
+      "text": "        } else if model.files.is_empty() {",
+      "replacement": "        } else if false {",
+      "test": "application::doctor::tests::an_empty_model_directory_fails_with_the_download_command",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 12
+    },
+    {
+      "id": "M45",
+      "kind": "an exception removed",
+      "file": "src/application/doctor.rs",
+      "text": "Ok(names) if names.iter().all(|name| name == \".cache\") => {",
+      "replacement": "Ok(names) if names.is_empty() => {",
+      "test": "application::doctor::tests::an_empty_model_directory_fails_with_the_download_command",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 12
+    },
+    {
+      "id": "M46",
+      "kind": "an error swallowed",
+      "file": "src/application/doctor.rs",
+      "text": "                Err(err) => details.push(format!(\"{err:#}\")),",
+      "replacement": "                Err(_) => {}",
+      "test": "application::doctor::tests::a_model_directory_that_cannot_be_read_fails",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 12
+    },
+    {
+      "id": "M47",
+      "kind": "an empty remedy given",
+      "file": "src/application/doctor.rs",
+      "text": "let remedy = (!remedies.is_empty()).then(|| remedies.join(\"; \"));",
+      "replacement": "let remedy = Some(remedies.join(\"; \"));",
+      "test": "application::doctor::tests::a_model_directory_that_cannot_be_read_fails",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 12
+    },
+    {
+      "id": "M48",
+      "kind": "an if guard forced true",
+      "file": "src/infrastructure/host.rs",
+      "text": "        bytes.len() as u64 <= limit,",
+      "replacement": "        true,",
+      "test": "infrastructure::host::tests::a_text_file_is_read_up_to_its_limit",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 42
+    },
+    {
+      "id": "M49",
+      "kind": "the text decoded before the size is checked",
+      "file": "src/infrastructure/host.rs",
+      "text": ".and_then(|file| file.take(limit + 1).read_to_end(&mut bytes))",
+      "replacement": ".and_then(|file| file.take(limit + 1).read_to_end(&mut bytes))\n        .and_then(|_| std::str::from_utf8(&bytes).map(|_| ()).map_err(io::Error::other))",
+      "test": "infrastructure::host::tests::a_text_over_its_limit_is_told_so_when_the_limit_cuts_a_character",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 42
+    },
+    {
+      "id": "M50",
+      "kind": "a ? swallowing its error",
+      "file": "src/infrastructure/host.rs",
+      "text": "    String::from_utf8(bytes).with_context(|| format!(\"cannot read {}\", path.display()))",
+      "replacement": "    Ok(String::from_utf8(bytes).unwrap_or_default())",
+      "test": "infrastructure::host::tests::a_text_file_is_read_up_to_its_limit",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 42
+    },
+    {
+      "id": "M51",
+      "kind": "an if guard forced false",
+      "file": "src/domain/gateway_config.rs",
+      "text": "    if sets.len() > MAX_SETS {\n        // The models that fit beside another one make the sets grow.",
+      "replacement": "    if false {\n        // The models that fit beside another one make the sets grow.",
+      "test": "domain::gateway_config::tests::the_sets_of_models_that_run_alone_count_toward_the_bound",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 26
+    },
+    {
+      "id": "M52",
+      "kind": "an error dropped",
+      "file": "src/domain/gateway_config.rs",
+      "text": "            errors.push(err);\n",
+      "replacement": "",
+      "test": "domain::gateway_config::tests::models_that_share_the_gpu_in_too_many_sets_are_refused",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 26
+    },
+    {
+      "id": "M53",
+      "kind": "a filter removed",
+      "file": "src/domain/gateway_config.rs",
+      "text": "            .filter(|&i| (0..sizes.len()).any(|j| j != i && sizes[i] + sizes[j] <= budget))\n",
+      "replacement": "",
+      "test": "domain::gateway_config::tests::the_sets_of_models_that_run_alone_count_toward_the_bound",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 26
+    },
+    {
+      "id": "M54",
+      "kind": "an if guard forced false",
+      "file": "src/application/build.rs",
+      "text": "    if !missing.is_empty() {\n        differences.push(",
+      "replacement": "    if false {\n        differences.push(",
+      "test": "application::build::tests::a_build_lacks_each_patch_its_recipe_applies_now",
+      "review": "2026-11-06-review-skill-v2-closing-pass",
+      "finding": 1
+    },
+    {
+      "id": "M55",
+      "kind": "an if guard forced false",
+      "file": "src/application/build.rs",
+      "text": "    if !unset.is_empty() {",
+      "replacement": "    if false {",
+      "test": "application::build::tests::a_build_lacks_each_cmake_option_its_recipe_sets_now",
+      "review": "2026-11-06-review-skill-v2-closing-pass",
+      "finding": 1
+    },
+    {
+      "id": "M56",
+      "kind": "a match arm removed",
+      "file": "src/application/build.rs",
+      "text": "            None => unset.push(format!(\"{name}={value}\")),",
+      "replacement": "            None => {}",
+      "test": "application::build::tests::a_build_lacks_each_cmake_option_its_recipe_sets_now",
+      "review": "2026-11-06-review-skill-v2-closing-pass",
+      "finding": 1
+    },
+    {
+      "id": "M57",
+      "kind": "a match arm removed",
+      "file": "src/application/build.rs",
+      "text": "            Some(built) => differences.push(format!(\n                \"with {name}={built}, where its recipe sets {value}\"\n            )),",
+      "replacement": "            Some(_) => {}",
+      "test": "application::build::tests::a_build_lacks_each_cmake_option_its_recipe_sets_now",
+      "review": "2026-11-06-review-skill-v2-closing-pass",
+      "finding": 1
+    },
+    {
+      "id": "M58",
+      "kind": "a separator changed",
+      "file": "src/application/build.rs",
+      "text": "differences.join(\", and \")",
+      "replacement": "differences.join(\", \")",
+      "test": "application::build::tests::a_build_lacking_a_patch_and_an_option_names_both",
+      "review": "2026-11-06-review-skill-v2-closing-pass",
+      "finding": 1
+    }
+  ]
+}

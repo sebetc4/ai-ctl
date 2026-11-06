@@ -1,0 +1,34 @@
+[package]
+name = "ai-ctl"
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.89"
+authors = ["sebetc4"]
+description = "Diagnose, build, serve and benchmark local AI backends on a single GPU"
+license = "MIT"
+readme = "README.md"
+keywords = ["llm", "llama-cpp", "gpu", "inference", "cli"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.6", features = ["derive"] }
+clap_complete = "4.6"
+nvml-wrapper = "0.13.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
+toml = "1.2.1+spec-1.1.0"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+# Its own main: the binary is also the fake llama-server the gateway runs.
+[[test]]
+name = "gateway_lifecycle"
+harness = false

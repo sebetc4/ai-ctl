@@ -1,0 +1,360 @@
+diff --git a/docs/commands.md b/docs/commands.md
+index 6991770..729c303 100644
+--- a/docs/commands.md
++++ b/docs/commands.md
+@@ -267,7 +267,7 @@ ai-ctl gateway <install|config|prune>
+ ### gateway install
+ 
+ ```text
+-ai-ctl gateway install [--version <N>] [--sha256 <HEX>]
++ai-ctl gateway install [--version <N>] [--sha256 <HEX>] [--from <ARCHIVE>]
+ ```
+ 
+ Downloads a llama-swap release's Linux x86_64 archive from GitHub with `curl`, HTTPS only, checks
+@@ -281,6 +281,7 @@ release it replaces.
+ |---|---|---|---|
+ | `--version` | `N`: a release number above zero, with or without its `v` | `263`, the release ai-ctl pins | Release to install |
+ | `--sha256` | `HEX`: 64 lower-case hexadecimal digits | see below | The archive's SHA-256, from a source you trust |
++| `--from` | `ARCHIVE`, a path | none: a download | A release's archive already on disk, installed without the network; it needs `--sha256` unless it is the pinned release |
+ 
+ The archive is checked against the first of: the digest given with `--sha256`; the digest ai-ctl
+ carries for the pinned release; the `checksums.txt` published with the release, which sits on the
+diff --git a/src/application/fakes.rs b/src/application/fakes.rs
+index 4f6a199..5d3e7f5 100644
+--- a/src/application/fakes.rs
++++ b/src/application/fakes.rs
+@@ -536,6 +536,9 @@ impl GatewayStore for FakeReleases {
+     fn stage(&self, _: Release) -> Result<StagedRelease> {
+         unreachable!("read-only")
+     }
++    fn stage_from(&self, _: Release, _: &Path) -> Result<StagedRelease> {
++        unreachable!("read-only")
++    }
+     fn sha256(&self, _: &Path) -> Result<Sha256> {
+         unreachable!("read-only")
+     }
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index e302e69..a426dc3 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -76,13 +76,15 @@ pub struct Installer<'a> {
+ 
+ impl Installer<'_> {
+     /// Installs `release`, or the pinned one, and makes it current. A
+-    /// release not installed yet is downloaded, its archive's SHA-256
+-    /// checked against `sha256`, the pinned digest or the release's own
+-    /// checksums, and its binary run; nothing is installed when a step fails.
++    /// release not installed yet is downloaded, or taken from `from`, its
++    /// archive's SHA-256 checked against `sha256`, the pinned digest or, for
++    /// a download, the release's own checksums, and its binary run; nothing
++    /// is installed when a step fails.
+     pub fn install(
+         &self,
+         release: Option<Release>,
+         sha256: Option<Sha256>,
++        from: Option<&Path>,
+         events: &mut dyn FnMut(Event),
+     ) -> Result<Installation> {
+         ensure!(
+@@ -99,10 +101,16 @@ impl Installer<'_> {
+         );
+ 
+         let outcome = if !self.store.is_installed(release)? {
+-            let (expected, source) = self.expected_sha256(release, sha256, events)?;
+-            let staged = self.store.stage(release)?;
++            let (expected, source) = match from {
++                Some(_) => archive_sha256(release, sha256)?,
++                None => self.expected_sha256(release, sha256, events)?,
++            };
++            let staged = match from {
++                Some(archive) => self.store.stage_from(release, archive)?,
++                None => self.store.stage(release)?,
++            };
+             let installed = self
+-                .fetch(&staged, &expected, source, events)
++                .fetch(&staged, &expected, source, from.is_none(), events)
+                 .and_then(|()| self.store.publish(&staged));
+             if let Err(err) = installed {
+                 if let Err(discard) = self.store.discard(&staged) {
+@@ -163,20 +171,24 @@ impl Installer<'_> {
+         Ok((sha256, DigestSource::Published))
+     }
+ 
+-    /// Downloads the archive into the staged directory, checks it against
+-    /// `expected`, which `source` gave, unpacks the binary and runs it.
++    /// Downloads the archive into the staged directory unless it is there
++    /// already, checks it against `expected`, which `source` gave, unpacks
++    /// the binary and runs it.
+     fn fetch(
+         &self,
+         staged: &StagedRelease,
+         expected: &Sha256,
+         source: DigestSource,
++        download: bool,
+         events: &mut dyn FnMut(Event),
+     ) -> Result<()> {
+         let release = staged.release;
+         let archive = release.archive();
+-        let url = release.url(&archive);
+-        events(Event::Downloading { url: url.clone() });
+-        self.downloads.download(&url, &staged.archive)?;
++        if download {
++            let url = release.url(&archive);
++            events(Event::Downloading { url: url.clone() });
++            self.downloads.download(&url, &staged.archive)?;
++        }
+         let actual = self.store.sha256(&staged.archive)?;
+         if actual != *expected {
+             // Checksums published beside the archive are replaced with it.
+@@ -217,6 +229,20 @@ impl Installer<'_> {
+     }
+ }
+ 
++/// The digest an archive given with `--from` is checked against: the one
++/// given, or the pinned release's. Checksums found beside an archive prove
++/// nothing.
++fn archive_sha256(release: Release, given: Option<Sha256>) -> Result<(Sha256, DigestSource)> {
++    if let Some(given) = given {
++        return Ok((given, DigestSource::Given));
++    }
++    ensure!(
++        release == PINNED.release,
++        "an archive needs --sha256: llama-swap {release} is not the release ai-ctl pins"
++    );
++    Ok((Sha256::parse(PINNED.sha256)?, DigestSource::Pinned))
++}
++
+ /// What `gateway prune` did.
+ #[derive(Debug, Clone, PartialEq, Eq)]
+ pub struct PrunedReleases {
+@@ -402,6 +428,14 @@ mod tests {
+                 archive: format!("/data/llama-swap/.staging/{}", release.archive()).into(),
+             })
+         }
++        fn stage_from(&self, release: Release, _: &Path) -> Result<StagedRelease> {
++            self.staged.borrow_mut().push(release);
++            Ok(StagedRelease {
++                release,
++                dir: "/tmp/staging".into(),
++                archive: format!("/tmp/staging/{}", release.archive()).into(),
++            })
++        }
+         fn sha256(&self, _: &Path) -> Result<Sha256> {
+             Ok(self.digest.clone())
+         }
+@@ -519,7 +553,28 @@ mod tests {
+             let mut events = Vec::new();
+             let release = release.map(|number| release_of(&number.to_string()));
+             let sha256 = sha256.map(|text| Sha256::parse(text).unwrap());
+-            let result = installer.install(release, sha256, &mut |event| events.push(event));
++            let result = installer.install(release, sha256, None, &mut |event| events.push(event));
++            (result, events)
++        }
++
++        /// Installs `release` from an archive on disk.
++        fn install_from(
++            &self,
++            release: Option<u32>,
++            sha256: Option<&str>,
++        ) -> (Result<Installation>, Vec<Event>) {
++            let installer = Installer {
++                downloads: &self.downloads,
++                store: &self.store,
++                programs: &self.programs,
++            };
++            let mut events = Vec::new();
++            let release = release.map(|number| release_of(&number.to_string()));
++            let sha256 = sha256.map(|text| Sha256::parse(text).unwrap());
++            let archive = Path::new("/home/me/Downloads/llama-swap.tar.gz");
++            let result = installer.install(release, sha256, Some(archive), &mut |event| {
++                events.push(event)
++            });
+             (result, events)
+         }
+     }
+@@ -806,6 +861,33 @@ mod tests {
+         assert!(world.store.staged.borrow().is_empty());
+     }
+ 
++    #[test]
++    fn an_archive_on_disk_is_installed_without_a_download() {
++        let world = World::new();
++        let (installation, events) = world.install_from(None, None);
++        assert_eq!(installation.unwrap().outcome, Outcome::Downloaded);
++        assert!(world.downloads.downloads.borrow().is_empty());
++        assert!(world.downloads.texts.borrow().is_empty());
++        assert_eq!(
++            events[0],
++            Event::Verified {
++                sha256: Sha256::parse(PINNED.sha256).unwrap(),
++                source: DigestSource::Pinned
++            }
++        );
++    }
++
++    #[test]
++    fn an_archive_of_another_release_needs_its_digest() {
++        let world = World::new();
++        let message = message(world.install_from(Some(264), None).0);
++        assert_eq!(
++            message,
++            "an archive needs --sha256: llama-swap v264 is not the release ai-ctl pins"
++        );
++        assert!(world.store.staged.borrow().is_empty());
++    }
++
+     #[test]
+     fn the_current_release_is_not_linked_again() {
+         let mut world = World::new();
+diff --git a/src/application/ports.rs b/src/application/ports.rs
+index b76994d..02107db 100644
+--- a/src/application/ports.rs
++++ b/src/application/ports.rs
+@@ -291,6 +291,9 @@ pub trait GatewayStore {
+     fn binary(&self, release: Release) -> PathBuf;
+     /// An empty directory for the release, out of sight.
+     fn stage(&self, release: Release) -> Result<StagedRelease>;
++    /// A directory for the release holding a copy of `archive`, out of the
++    /// releases' directory.
++    fn stage_from(&self, release: Release, archive: &Path) -> Result<StagedRelease>;
+     /// The SHA-256 of a file.
+     fn sha256(&self, file: &Path) -> Result<Sha256>;
+     /// Extracts the binary from the staged archive and removes the archive;
+diff --git a/src/infrastructure/gateway_store.rs b/src/infrastructure/gateway_store.rs
+index e8f73c9..63855a8 100644
+--- a/src/infrastructure/gateway_store.rs
++++ b/src/infrastructure/gateway_store.rs
+@@ -111,6 +111,20 @@ impl GatewayStore for FsGatewayStore {
+         })
+     }
+ 
++    fn stage_from(&self, release: Release, archive: &Path) -> Result<StagedRelease> {
++        // Outside the releases' directory: an archive that fails its checks
++        // leaves nothing there.
++        let dir = std::env::temp_dir().join(format!("ai-ctl-llama-swap-{release}"));
++        fs::create_dir_all(&dir).with_context(|| format!("cannot create {}", dir.display()))?;
++        let copy = dir.join(release.archive());
++        fs::copy(archive, &copy).with_context(|| format!("cannot copy {}", archive.display()))?;
++        Ok(StagedRelease {
++            release,
++            archive: copy,
++            dir,
++        })
++    }
++
+     fn sha256(&self, file: &Path) -> Result<Sha256> {
+         let mut command = Command::new("sha256sum");
+         command.arg("--").arg(file);
+@@ -152,8 +166,20 @@ impl GatewayStore for FsGatewayStore {
+         );
+         // What is left of a release whose binary is gone is no release.
+         remove_dir_if_present(&target)?;
+-        fs::rename(&staged.dir, &target)
+-            .with_context(|| format!("cannot install {}", target.display()))
++        if staged.dir.starts_with(&self.root) {
++            return fs::rename(&staged.dir, &target)
++                .with_context(|| format!("cannot install {}", target.display()));
++        }
++        // Staged from an archive, in the temporary directory, often another
++        // file system: the binary is copied in, then renamed into place.
++        let hidden = self.hidden("staging", staged.release);
++        fs::create_dir_all(&hidden)
++            .with_context(|| format!("cannot create {}", hidden.display()))?;
++        fs::copy(staged.dir.join(BINARY), hidden.join(BINARY))
++            .with_context(|| format!("cannot install {}", target.display()))?;
++        fs::rename(&hidden, &target)
++            .with_context(|| format!("cannot install {}", target.display()))?;
++        remove_dir_if_present(&staged.dir)
+     }
+ 
+     fn discard(&self, staged: &StagedRelease) -> Result<()> {
+@@ -507,6 +533,21 @@ mod tests {
+         );
+     }
+ 
++    #[test]
++    fn a_release_staged_from_an_archive_is_installed_from_its_copy() {
++        let f = fixture();
++        fs::create_dir_all(&f.store.root).unwrap();
++        let archive = f.root.path().join("llama-swap.tar.gz");
++        fs::write(&archive, "archive").unwrap();
++        let staged = f.store.stage_from(release("264"), &archive).unwrap();
++        assert!(!staged.dir.starts_with(&f.store.root));
++        assert_eq!(fs::read_to_string(&staged.archive).unwrap(), "archive");
++        fs::write(staged.dir.join(BINARY), "llama-swap").unwrap();
++        f.store.publish(&staged).unwrap();
++        assert!(f.store.is_installed(release("264")).unwrap());
++        assert!(!staged.dir.exists());
++    }
++
+     #[test]
+     fn a_second_lock_is_refused() {
+         let f = fixture();
+diff --git a/src/presentation/cli.rs b/src/presentation/cli.rs
+index c24aa8e..9b2e9e3 100644
+--- a/src/presentation/cli.rs
++++ b/src/presentation/cli.rs
+@@ -125,6 +125,10 @@ pub enum GatewayAction {
+         /// the checksums published with the release, which detect a corrupt download only]
+         #[arg(long, value_name = "HEX", value_parser = parse_sha256)]
+         sha256: Option<Sha256>,
++        /// A release's archive already on disk, installed instead of a download; it needs
++        /// --sha256 unless it is the pinned release
++        #[arg(long, value_name = "ARCHIVE")]
++        from: Option<PathBuf>,
+     },
+     /// Print the configuration `up` gives llama-swap, generated from the inventory
+     Config,
+diff --git a/src/presentation/gateway.rs b/src/presentation/gateway.rs
+index a5bd79c..d06b32f 100644
+--- a/src/presentation/gateway.rs
++++ b/src/presentation/gateway.rs
+@@ -18,17 +18,22 @@ use super::{Services, current_line};
+ /// Runs `ai-ctl gateway` and its subcommands.
+ pub fn run(action: GatewayAction, services: &Services) -> Result<ExitCode> {
+     let output = match action {
+-        GatewayAction::Install { version, sha256 } => {
++        GatewayAction::Install {
++            version,
++            sha256,
++            from,
++        } => {
+             let installer = Installer {
+                 downloads: services.downloads.as_ref(),
+                 store: services.releases.as_ref(),
+                 programs: services.programs.as_ref(),
+             };
+             let mut stderr = io::stderr();
+-            let installation = installer.install(version, sha256, &mut |event| {
+-                // A write error is ignored: the installation goes on.
+-                let _ = writeln!(stderr, "{}", render_event(&event));
+-            })?;
++            let installation =
++                installer.install(version, sha256, from.as_deref(), &mut |event| {
++                    // A write error is ignored: the installation goes on.
++                    let _ = writeln!(stderr, "{}", render_event(&event));
++                })?;
+             render_installation(&installation)
+         }
+         GatewayAction::Config => services.configurator().generate()?.to_yaml(),
+diff --git a/tests/cli.rs b/tests/cli.rs
+index 2cb8385..077392a 100644
+--- a/tests/cli.rs
++++ b/tests/cli.rs
+@@ -229,6 +229,16 @@ fn gateway_install_takes_an_optional_digest() {
+     assert!(error.contains("is not a SHA-256 digest"), "{error}");
+ }
+ 
++#[test]
++fn gateway_install_takes_an_archive_on_disk() {
++    match gateway_action(&["install", "--from", "llama-swap.tar.gz"]).unwrap() {
++        GatewayAction::Install { from, .. } => {
++            assert_eq!(from, Some("llama-swap.tar.gz".into()));
++        }
++        other => panic!("{other:?}"),
++    }
++}
++
+ #[test]
+ fn gateway_install_takes_an_optional_release() {
+     assert_eq!(install_version(&["install"]), None);

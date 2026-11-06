@@ -1,0 +1,114 @@
+{
+  "entries": [
+    {
+      "fingerprint": "bugs | src/application/lifecycle.rs + src/domain/gateway_config.rs | Inspector::leftovers + Lifecycle::up + sd_server",
+      "axis": "bugs",
+      "effect": "misleading",
+      "title": "a killed gateway's sd-server may be no leftover while its weights sit in RAM",
+      "state": "rejected",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 13,
+      "reason": "refuted by its verifier: a ready sd-server holds its CUDA context on the GPU whether or not its params sit there, 277 MiB measured at ready in docs/image/stable-diffusion-cpp.md:280-288, so Inspector::leftovers takes it by its build-store program; the VRAM 0.00MB the finding leaned on is sd.cpp's count of the params' buffer"
+    },
+    {
+      "fingerprint": "architecture | src/application/build.rs + src/application/doctor.rs + src/application/ports.rs | Builder + Doctor::index_shards + Doctor::model_check + ToolchainProbe + ToolchainProbe::is_dir, ToolchainProbe::read_text",
+      "axis": "architecture",
+      "effect": "maintenance",
+      "title": "the toolchain's port now reads the models' directories and index files",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 23,
+      "reason": "no local fix: a new port touches Doctor, SystemHost and every double, for two reads with one caller"
+    },
+    {
+      "fingerprint": "performance | src/application/build.rs + src/infrastructure/git.rs | Builder::build + GitSources::checkout + update_within",
+      "axis": "performance",
+      "effect": "slow",
+      "title": "A build of the latest release already installed checks out the sources and submodules before refusing",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 27,
+      "reason": "older code: 1.1 to 1.3 s measured beside the fetch the answer needs; the case of a clone at another commit was not measured"
+    },
+    {
+      "fingerprint": "tests | src/application/build.rs + src/application/fakes.rs | Builder::smoke_test + FakePrograms::default + tests::a_build_without_a_cuda_device_is_discarded",
+      "axis": "tests",
+      "effect": "maintenance",
+      "title": "a device listed on stderr has no test",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 32,
+      "reason": "its verifier corrected the effect to maintenance: no server ai-ctl builds lists its devices on stderr, so the change refuses no build today; its test waits in repro/32 for a recipe that does"
+    },
+    {
+      "fingerprint": "dead and legacy code | src/domain/gateway_config.rs | entry + write_model",
+      "axis": "dead and legacy code",
+      "effect": "maintenance",
+      "title": "write_model guards against an env that is never empty",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 44,
+      "reason": "older code, no behaviour changes: goes when write_model next changes"
+    },
+    {
+      "fingerprint": "dead and legacy code | src/application/doctor.rs + src/application/gateway_config.rs + src/domain/gateway_config.rs | ConfigError::Unresolved + Configurator::resolve + Doctor::model_check + entry",
+      "axis": "dead and legacy code",
+      "effect": "none",
+      "title": "The missing-backend and missing-runtime branches run only in tests",
+      "state": "kept",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 47,
+      "reason": "kept: the types give an Option, and removing the branches takes an expect the conventions forbid"
+    },
+    {
+      "fingerprint": "refactoring | src/domain/machine.rs + src/domain/recipe.rs + src/infrastructure/host.rs | is_gxx + is_unversioned_toolkit + number + versioned_toolkit",
+      "axis": "refactoring",
+      "effect": "maintenance",
+      "title": "recipe's new number repeats the digits-only rule of machine.rs and host.rs",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 51,
+      "reason": "no local fix: it reaches older code in machine.rs and host.rs, for a rule that holds at each site"
+    },
+    {
+      "fingerprint": "refactoring | src/application/build.rs + src/application/fakes.rs + src/domain/bench.rs + src/domain/build.rs + src/infrastructure/build_store.rs + src/infrastructure/run_store.rs + src/presentation/build.rs | b11538 + store_tests::build + testing + tests::build + tests::built + tests::installed",
+      "axis": "refactoring",
+      "effect": "maintenance",
+      "title": "Seven test modules each write a whole Build",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 53,
+      "reason": "no local fix: seven test modules, test code alone; worth its cost when Build next gains a field"
+    },
+    {
+      "fingerprint": "refactoring | src/application/doctor.rs + src/application/lifecycle.rs + src/domain/gateway_config.rs + src/domain/inventory.rs | tests::audio_and_image + tests::backend + tests::bare + tests::served + tests::up_writes_the_files_its_models_read + tests::with_an_audiocpp_model + tests::with_fibo",
+      "axis": "refactoring",
+      "effect": "maintenance",
+      "title": "The new kinds' test models and backends are written whole at each site",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 54,
+      "reason": "no local fix: four test modules, test code alone; worth its cost when Model next gains a field"
+    },
+    {
+      "fingerprint": "refactoring | src/application/bench.rs + src/application/build.rs + src/application/doctor.rs + src/application/gateway_config.rs + src/application/lifecycle.rs | tests::GatewaySide::serving + tests::World::config + tests::World::configurator + tests::World::lifecycle + tests::a_preparation_keeps_the_inventory_builds_and_gpu_it_was_made_of + tests::an_inventory_up_would_refuse_fails_a_check_without_a_gateway + tests::gateway_on + tests::on_gpu + tests::the_gpu_is_read_once_the_inventory_and_its_builds_are + tests::the_images_to_pull_are_those_the_models_run",
+      "axis": "refactoring",
+      "effect": "maintenance",
+      "title": "Ten test sites write the same Configurator over the fakes",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 55,
+      "reason": "no local fix: ten test sites in five modules, test code alone; worth its cost when Configurator next gains a field"
+    },
+    {
+      "fingerprint": "conventions | src/application/bench.rs + src/application/doctor.rs + src/application/fakes.rs + src/application/lifecycle.rs | FakeApi + FakeApi::running + tests",
+      "axis": "conventions",
+      "effect": "maintenance",
+      "title": "FakeApi's running fails through models set to None, not through a field named after it",
+      "state": "open",
+      "review": "2026-11-04-audio-image-backends",
+      "finding": 57,
+      "reason": "older code below the floor, seen while fixing finding 24: goes when FakeApi next changes"
+    }
+  ]
+}
