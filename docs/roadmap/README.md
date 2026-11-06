@@ -6,13 +6,15 @@ Written by the roadmap skill's `scripts/roadmaps.py` from each roadmap's README 
 
 ## Order Of Execution
 
-None.
+1. `capabilities-status-and-updates`, Phases 0 to 5: ready
 
 ---
 
 ## Open
 
-None.
+| Roadmap | Description | State | Created |
+|---|---|---|---|
+| [`capabilities-status-and-updates`](pending/capabilities-status-and-updates/README.md) | Writes each model's capabilities into the generated llama-swap configuration, adds `status --json`, and a command that finds the backends' builds behind their newest release and builds them, on llama-swap v270, toward 0.3.0. | Not started | 2026-11-06 |
 
 ---
 

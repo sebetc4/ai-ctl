@@ -8,8 +8,8 @@ failure paths come before anything else. The project was called llm-ctl until 20
 ## Where Things Are
 
 - **Current work**: the roadmaps in `docs/roadmap/` (contract in `.agent-conventions.toml`).
-  Open: none. 0.2.0 is the first release, its tag checked, built and published by the CI
-  (`docs/release.md`).
+  Open: none. Next, `capabilities-status-and-updates`, pending, toward 0.3.0. 0.2.0 is the first
+  release, its tag checked, built and published by the CI (`docs/release.md`).
   Each closed roadmap's `summary.md`, under `completed/`, says what it left open.
   When a roadmap is open, read its open phase file and report before working.
 - **Documentation**: `docs/README.md` indexes it by domain, with its rules. Read a domain's
