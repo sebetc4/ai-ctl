@@ -382,6 +382,9 @@ class AnswerTest(ReviewTest):
              "/tmp/tmp.sT2uV4wX6y/review-tests"),
             ("evidence: read: the tests\n", "evidence: read: /home/u/.claude/projects/-code-x/1.jsonl:4\n",
              "/home/u/.claude/projects/-code-x/1.jsonl:4"),
+            ("in full: src/store.rs\n",
+             "in full: src/store.rs\nin part: notes/image/sdcpp-webui.md (lines 45-65)\n", "notes/image/sdcpp-webui.md"),
+            ("evidence: read: the tests\n", "evidence: read: `docs/notes/vllm.md`, its figures\n", "docs/notes/vllm.md"),
         ]
         before = self.files()
         for old, new, named in cases:
@@ -394,7 +397,8 @@ class AnswerTest(ReviewTest):
 
     def test_a_scratch_file_named_by_its_place_in_scratch_and_a_temporary_path_of_the_code_are_kept(self):
         evidence = ("evidence: reproduced: review-tests/tests.diff, in the session's scratchpad, red on "
-                    "hf download --cache-dir=/tmp/x and ${TMPDIR:-/tmp}/tmp.*\n")
+                    "hf download --cache-dir=/tmp/x and ${TMPDIR:-/tmp}/tmp.*, as the release notes and "
+                    "keynotes/x say\n")
         done = self.add("review-tests", ONE.replace("evidence: read: the tests\n", evidence))
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("--cache-dir=/tmp/x", self.review()["findings"][0]["evidence"])

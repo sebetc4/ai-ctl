@@ -40,8 +40,8 @@ set     sets fields of findings: severity, effect, verdict, action, batch, note,
 report  checks findings.json, after a change made by hand, and writes both files again.
         Each command that reads findings.json refuses a check naming a path another clone lacks,
         one git ignores or one a link leads out of the repository, and any text naming a path
-        into a scratch folder or a session's files, which no other clone opens, such as a
-        reviewer's FILES READ.
+        into a scratch folder, a session's files or the working notes, which no other clone
+        opens, such as a reviewer's FILES READ.
 tasks   prints the findings of each batch, or of one, as a roadmap's tasks with their
         Proof: lines.
 
@@ -108,8 +108,9 @@ COUNT_RE = re.compile(r"FINDINGS:\s*(\d+)")
 SLOT_RE = re.compile(r"\{\{(\w+)\}\}")
 NO_TEST_RE = re.compile(r"none(:\s*)?")
 QUOTES = "`'\"(),;"
-# A session's folder, its transcripts, its scratchpad, and a folder mktemp made, such as the review's scratch.
-SCRATCH_RE = re.compile(r"/tmp/claude-\d+/|\.claude/projects/|scratchpad/|/tmp\.[A-Za-z0-9]{10}")
+# A session's folder, its transcripts, its scratchpad, a folder mktemp made, such as the review's scratch, and the
+# working notes, which git ignores.
+SCRATCH_RE = re.compile(r"/tmp/claude-\d+/|\.claude/projects/|scratchpad/|/tmp\.[A-Za-z0-9]{10}|(?:^|[/`'\"(])notes/")
 
 
 class FindingsError(Exception):
@@ -426,16 +427,18 @@ def text_faults(name, value, empty=False):
 
 
 def scratch_faults(name, value):
-    """Each text of `value` naming a path into a scratch folder or a session's files, which no other clone opens."""
+    """Each text of `value` naming a path into a scratch folder, a session's files or the working notes, which no
+    other clone opens."""
     if isinstance(value, dict):
         return [fault for key, item in value.items() for fault in scratch_faults(f"{name}: `{key}`", item)]
     if isinstance(value, list):
         return [fault for k, item in enumerate(value) for fault in scratch_faults(f"{name}[{k}]", item)]
     if not isinstance(value, str):
         return []
-    return [f"{name} names `{token.strip(QUOTES).rstrip('.')}`, a path into a scratch folder or a session's files, "
-            "which no other clone opens: name the file by its place in the review's scratch folder, such as "
-            "`scope.txt`, or by what it holds" for token in value.split() if SCRATCH_RE.search(token)]
+    return [f"{name} names `{token.strip(QUOTES).rstrip('.')}`, a path into a scratch folder, a session's files or "
+            "the working notes, which no other clone opens: name a scratch file by its place in the review's "
+            "scratch folder, such as `scope.txt`, and anything else by what it holds"
+            for token in value.split() if SCRATCH_RE.search(token)]
 
 
 def number_faults(name, value, least=0):
