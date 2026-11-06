@@ -222,13 +222,13 @@ test: "Claims hold" was likewise changed in the assertion alone; the merge and t
 answer failures in use; `review-tests`' new step is the one instruction aimed at a failed
 assertion, defect 10, whose gap is real and general, its risk being noise.
 
-The user then pointed to the agent setup's note
-`notes/design-feedback/2026-10-14-close-session-validation.md`, which records the same
+The user then pointed to the agent setup's
+design-feedback note on close-session's validation, of 2026-10-14, which records the same
 pattern in the `session-close` roadmap: work bending the skill under evaluation around the
 gaps of authoring-skills' validation. The user proposed to pause this roadmap, fix the
 validation at its source, then resume, with no compromise or workaround. Read the note, then
 checked in skill-tooling 0.1.2's code each point before writing ai-ctl's answer,
-`notes/design-feedback/2026-10-14-reviewing-delivered-code-validation.md` in the agent setup.
+the agent setup's design-feedback note on reviewing-delivered-code's validation, of 2026-10-14.
 What the checks showed:
 
 - `harness.render` (`harness.py:288-308`) keeps only `user` and `assistant` records, so the
@@ -270,14 +270,13 @@ step 4) are committed and unevaluated; the next run with the skill is their proo
 
 ### 2026-10-15
 
-Resumed after skill-tooling 0.1.2's release. The resume followed the agent setup's note
-`notes/design-feedback/2026-10-15-review-skill-resume.md` and its decision
+Resumed after skill-tooling 0.1.2's release. The resume followed the agent setup's
+design-feedback note on resuming the review skill, of 2026-10-15, and its decision
 `docs/decisions/2026-10-15-validation-weight.md`: the proof follows the tool's risk, real use
 is the main loop, and this skill falls under the default regime. Read this phase's file and
 report and phases 4 and 5's files. `audit.py`: 0 errors and the three T1 warnings on
 `legacy`, which here names the axis "dead and legacy code", not wording about earlier
-versions. That is a false positive of the rule. It is reported in the agent setup's
-`notes/design-feedback/2026-10-15-audit-t1-legacy-axis.md`, and the skill is unchanged.
+versions. That is a false positive of the rule. It is reported in the agent setup's design-feedback note on the audit's T1 and the legacy axis, of 2026-10-15, and the skill is unchanged.
 
 Put to the user in one yes:
 - lift the pause;
@@ -381,7 +380,7 @@ passed, `test_scope.py` 15 passed.
   count** (R3 of ai-ctl's note of 2026-10-14). Moved to phase 4, set against the real run's
   per-agent costs.
 - **T1 flags the axis name `legacy` three times.** Left open in the agent setup:
-  `notes/design-feedback/2026-10-15-audit-t1-legacy-axis.md`.
+  the agent setup's design-feedback note on the audit's T1 and the legacy axis, of 2026-10-15.
 - **Phase paused from 2026-10-14 to 2026-10-15** for the update of the validation; lifted by
   the user.
 

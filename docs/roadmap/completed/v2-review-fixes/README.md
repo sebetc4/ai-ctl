@@ -190,7 +190,7 @@ pass's batches. The review's high finding, a backend's port that a local process
 is documented: llama-swap v263 reaches a backend over TCP only. Three missed mutants stay, each
 justified at its batch. The defects the review showed in `reviewing-delivered-code` are in the
 phase's report, and the second assessment of the review workflow, asked by the user at the
-close, is `docs/notes/review-workflow-second-assessment.md`: the loop of reviews and fixes, and
+close, is a working note on the review workflow's second assessment: the loop of reviews and fixes, and
 how this phase broke it.
 
 ### 1.5.0 (2026-10-17)
@@ -258,7 +258,7 @@ Phase 2, Dead Code & Tests, closed with its 17 tasks and every acceptance criter
 
 L1 proved real and is fixed. Found along the way: `down` reported a record it could not remove
 as its only error; fixed with the user's approval, which grew the phase from 16 tasks to 17.
-The session plan's 12-token margin stays open, in `docs/notes/bench-session-margin.md`. Phase
+The session plan's 12-token margin stays open, in a working note on the bench session plan's margin. Phase
 4's batches 42 and 45 now note what this phase changed under them.
 
 ### 1.2.0 (2026-10-16)

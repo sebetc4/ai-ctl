@@ -159,7 +159,7 @@ print mode. It leaves open whether `--disallowed-tools` reaches subagents and ho
 `CLAUDE*` variable but `CLAUDE_CONFIG_DIR`, so `CLAUDE_CODE_EFFORT_LEVEL` cannot override an
 agent's effort in a run.
 
-Wrote the agent setup's `docs/notes/2026-10-13-eval-runs-with-agents.md`: the need, the four
+Wrote the agent setup's note on eval runs with agents, of 2026-10-13: the need, the four
 blocking problems with their lines, why the harness denies Agent, what changed since, who else
 needs it, five probes, and four solutions with S1 recommended (a skill declares its agents,
 snapshotted per arm, run in both arms with Agent allowed and Skill still denied, subagents
@@ -190,7 +190,7 @@ the roadmap from `pending/` to `on-progress/` with `git mv` and repaired the old
 README's Location and in each phase file's Files to Modify. Found while repairing that the
 user had moved the note to the agent setup's root `notes/` folder, which its `.gitignore` now
 ignores; the README, phase 1 and the sections of this report above now cite
-the agent setup's `notes/2026-10-13-eval-runs-with-agents.md`, while the earlier log entry keeps
+the agent setup's note on eval runs with agents, of 2026-10-13, while the earlier log entry keeps
 the path it was written at.
 
 ---
@@ -293,7 +293,7 @@ the path it was written at.
   orchestration cannot be evaluated while `run.py` denies the Agent tool and ignores a skill's
   agents. The user wants feedback on authoring-skills, which is in development, but its
   changes follow that repository's own workflow on solidly argued decisions. The proposal is
-  the agent setup's `notes/2026-10-13-eval-runs-with-agents.md`, recommending that a skill
+  the agent setup's note on eval runs with agents, of 2026-10-13, recommending that a skill
   declare its agents and run them in both arms; phase 1's paid runs wait for the outcome.
 - **Proposals beyond the skill, and the user's answers.**
   - `.gitignore`: accepted, in the user's form rather than the one proposed. `/.claude` is
@@ -372,7 +372,7 @@ the path it was written at.
 
 Outside git, and so outside this list: `CLAUDE.md` (Current work), `.agent-conventions.toml`
 (the `[skills]` table), the report's translation (deleted), and
-the agent setup's `notes/2026-10-13-eval-runs-with-agents.md` (written).
+the agent setup's note on eval runs with agents, of 2026-10-13 (written).
 
 ---
 
@@ -400,8 +400,7 @@ the agent setup's `notes/2026-10-13-eval-runs-with-agents.md` (written).
   and in the note to the agent setup.
 - **The evaluation method is blocked outside this repository.** authoring-skills' runs deny the
   Agent tool and ignore a skill's agents, so phase 1's paid runs cannot measure the skill
-  decided here. Left open: proposed in the agent setup's
-  `notes/2026-10-13-eval-runs-with-agents.md`, phase 1 marked blocked.
+  decided here. Left open: proposed in the agent setup's note on eval runs with agents, of 2026-10-13, phase 1 marked blocked.
 - **`progress.py` draws a 🟡 phase at 10/10 with 20 filled cells**, where the Progress bar
   invariant caps a phase not finished at 19. Seen before closure; the closure draws the phase
   🟢, so the README is not affected.
@@ -411,7 +410,7 @@ the agent setup's `notes/2026-10-13-eval-runs-with-agents.md` (written).
 ## Changes To Later Phases
 
 - `phase-1-evals-and-baselines.md`: `**Blocked By:**` set to the change proposed in
-  the agent setup's `notes/2026-10-13-eval-runs-with-agents.md`, and its Dependencies say
+  the agent setup's note on eval runs with agents, of 2026-10-13, and its Dependencies say
   why: baselines run with the Agent tool denied would differ from the runs with the skill in
   more than the skill. Writing the cases does not wait.
 - `phase-1-evals-and-baselines.md`: the task "Run on the same cases the reference tools chosen
@@ -439,7 +438,7 @@ The phase found one obstacle outside this repository. authoring-skills cannot ev
 that starts agents: its runs deny the Agent tool, its arms swap the skill's folder only, and
 it counts the main transcript only. The user chose to bring the change through
 the agent setup's own workflow; the argued proposal is
-the agent setup's `notes/2026-10-13-eval-runs-with-agents.md`, which also notes that Claude
+the agent setup's note on eval runs with agents, of 2026-10-13, which also notes that Claude
 Code's documentation now answers part of the reasons the Agent tool was denied on 2026-10-06.
 
 What phase 1 needs to know first: its paid runs wait for that change, so that baselines and

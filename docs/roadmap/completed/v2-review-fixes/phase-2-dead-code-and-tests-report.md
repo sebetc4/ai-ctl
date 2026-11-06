@@ -130,7 +130,7 @@ checks are green, with 571 tests. Committed as `test(lifecycle): exercise the ga
 Two questions put to the user: the session plan's 12-token margin, from phase 1, and `down`'s
 failed removal of a record, from batch 18. The user asked for a proposal: leave the first open,
 fix the second now. The user agreed, and asked that the first be recorded where it can be found
-and decided later (see Decisions). Written as `docs/notes/bench-session-margin.md`, in the
+and decided later (see Decisions). Written as a working note on the bench session plan's margin, in the
 format of the other notes:
 - the question;
 - the plan's formula;
@@ -432,7 +432,7 @@ criteria, checked again on the final code:
 - **The session plan's margin stays open, in a note** (the user, 2026-10-16). The plan holds by
   12 tokens on the probe's run, and only a context within some 30 tokens above 22,763 could
   overflow, with a clean, named failure since batch 10. A margin would be a constant of the
-  kind batch 7 refused for `turn_extra`. `docs/notes/bench-session-margin.md` holds the
+  kind batch 7 refused for `turn_extra`. a working note on the bench session plan's margin holds the
   question, the figures and the options, for a later roadmap to decide.
 - **A record that cannot be removed once its gateway is gone is a warning** (the user,
   2026-10-16). The gateway being stopped or gone is what the command is for; a record left
@@ -475,7 +475,7 @@ criteria, checked again on the final code:
 Computed against the start commit `docs(v2-review-fixes): close phase 1, bugs and error handling`, working tree included.
 
 **Added**
-- `docs/notes/bench-session-margin.md`
+- a working note on the bench session plan's margin
 - `docs/roadmap/on-progress/v2-review-fixes/phase-2-dead-code-and-tests-report.md`
 - `tests/fixtures/make-build-excerpt.txt`
 - `tests/fixtures/nvidia-ctk-1.20.1-cdi-spec-excerpt.json`
@@ -564,7 +564,7 @@ the review found every test let pass. Doctor reads the GPU once and says what it
 and L1 proved real: doctor passed an inventory that `up` refused, and now fails a check on
 it. The work found one defect no finding covered, a record `down` could not remove reported as
 its only error, fixed with the user's approval. It left one question open, the bench session
-plan's 12-token margin, in `docs/notes/bench-session-margin.md`.
+plan's 12-token margin, in a working note on the bench session plan's margin.
 
 Most batches were test findings: their tests passed at once, and the mutant was the proof. The
 failure switches on the fakes are what made the degraded paths reachable. Two adapters,

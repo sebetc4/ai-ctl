@@ -126,9 +126,9 @@ names the paths that existed in v1 and were rewritten.
 - `docs/guides/lora-adapters.md`
 - `docs/guides/quantization-formats.md`
 - `docs/guides/sglang-architecture.md`
-- `docs/notes/image-generation.md`
-- `docs/notes/openwebui-podman-network.md`
-- `docs/notes/v0-ui-alternatives.md`
+- a working note on image generation
+- a working note on OpenWebUI's podman network
+- a working note on the UI alternatives
 - `docs/reference/README.md`
 - `docs/reference/sglang-native-install.md`
 - `docs/reference/vllm`

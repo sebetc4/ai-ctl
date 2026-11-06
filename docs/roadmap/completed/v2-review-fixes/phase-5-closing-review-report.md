@@ -177,7 +177,7 @@ one step added before pass 3's wave:
 
 The user then gave a first review of the review workflow's tools, asked for as many points
 and proposals as possible, to be asked again once the roadmap closes. The session's account and
-the user's answer to each point are recorded in `docs/notes/review-workflow-tooling.md`. The
+the user's answer to each point are recorded in a working note on the review's tooling. The
 direction agreed: what the agents produce becomes artifacts used again, not prose the next
 session reads again ("un exemple réel vaut bien mieux que de la prose"). The changes go to
 `reviewing-delivered-code` after this roadmap, per the phase's Out of Scope.
@@ -189,7 +189,7 @@ evidence for the agent setup's note, the session compared `usage.py`'s counts wi
 `cost-state` records of the first review's five sessions. That showed this phase's cost
 figures overstated two to three times; they are corrected under Problems And Deviations, and in
 the review's Tier section. The note is
-the agent setup's `notes/design-feedback/2026-10-17-cost-method-written-and-reproducible.md`,
+the agent setup's design-feedback note on a cost method written and reproducible, of 2026-10-17,
 with the data of the 21 runs of review agents. The calibrated recount was run in the session's
 scratchpad, `usage.py` with `usage.toml`'s default set to 635, 845 and 872 tokens. The session
 had given the user "two to three times" and "five times" in its first answer; it gave the
@@ -217,7 +217,7 @@ the agent setup to process it. Nothing of the review moved: its `Status` is pass
 - Before pass 3's wave: the user's yes, the wave's estimate given in one line, without the
   method or a running total.
 - Nothing uncommitted in ai-ctl. The agent setup's note
-  `notes/design-feedback/2026-10-17-cost-method-written-and-reproducible.md` waits there.
+  the agent setup's design-feedback note on a cost method written and reproducible, of 2026-10-17 waits there.
 
 ### 2026-10-18
 
@@ -600,7 +600,7 @@ and bugs by severity (1 high; 4 and 2 medium; 3, 5, 7, 8, 9, 11 and 22 low), the
 handling, interruption and concurrency, performance, the CLI's contract, conventions, dead and
 legacy code, refactoring and tests, each keeping its number. Coverage has its twelve rows, and
 names the files no agent opened: nine captures and two snapshots of `tests/`, the `Makefile`,
-and `docs/notes/review-workflow-tooling.md`. The Fix Plan puts every finding in one of 59
+and a working note on the review's tooling. The Fix Plan puts every finding in one of 59
 batches, in the first review's order, three of them placed early because a later batch needs
 them (15 for 46, 28 for 43, 39 for 40), and six holding a choice for the user (1, 2, 22, 24,
 26, 48); a script checked that each finding sits in exactly one batch. `Status` is awaiting the
@@ -627,7 +627,7 @@ batch's smaller diff would have shown at the commit, and a few that only a new r
 83); and a full review that reports everything with no floor makes each fix roadmap call for a
 review that calls for a roadmap. The user agreed with the proposals, kept a security pass as
 essential, and chose to fix everything now (under Decisions). The proposals went to
-`docs/notes/review-workflow-tooling.md`, for the skill's change after this roadmap.
+a working note on the review's tooling, for the skill's change after this roadmap.
 
 The review's report records each finding's verdict, the settled choices in its batches and the
 approval; its `Status` is complete. This phase's second task is ticked; the generic fixing task
@@ -652,7 +652,7 @@ The user chose the documents alone. Batch 1, finding 1: `docs/security.md` §2 d
 backend's port taken first, the measured times, the key and prompts handed over and why ai-ctl
 cannot close it, §1's table names the exception, and its Sources the closing review;
 `docs/stack.md` §6.4 records that llama-swap takes any 200 on `/health` and reaches a backend
-over TCP only, with the probe; `docs/notes/backends-on-unix-sockets.md` keeps the switch for the
+over TCP only, with the probe; a working note on backends on unix sockets keeps the switch for the
 day llama-swap allows it, with what a roadmap must settle. `common/arg.cpp:3335` at `b11700`,
 `--host` taking a `.sock` path, was checked in the sources clone. No code, so no test and no
 mutant; the five checks green, `up_a_proxied_request_and_down ... ok`.
@@ -1512,7 +1512,7 @@ it offers, a gate on each candidate that names the attacker's starting capabilit
 anchors, a `needs_validation` verdict with an exact blocker, hardening apart from findings,
 rejected findings kept under a stable fingerprint, a structured answer checked by a schema, a
 budget counted in agents, went to a note on that skill's lessons in `docs/notes/`, which
-`docs/notes/review-workflow-tooling.md` now names. The user chose to run the pass with the skill
+a working note on the review's tooling now names. The user chose to run the pass with the skill
 as it stands (under Decisions). `scope.py range` from `docs(v2-review-fixes): record the closing review's verdicts and the fix scope` of 2026-10-18 to `HEAD`: 54 files, 36 of them production,
 +5,385 and -1,005 lines; 14,261 production lines for the reviewer to read.
 
@@ -1576,7 +1576,7 @@ removes the old build while hidden, a kill leaves it half deleted, and `put_back
 brings it back after `prune --keep 0` or a manual removal of the rebuilt one; the fix puts back
 only beside its staging directory. Two leads remain, findings 4 and 5 under To Verify: `up`'s
 message at the start wait's deadline drops "another program answers", and `docs/security.md`
-§4 does not say that `0.0.0.0` also serves IPv6. The verifier saw `docs/notes/review-costs-through-usage-py.md`
+§4 does not say that `0.0.0.0` also serves IPv6. The verifier saw a working note on the review's costs through `usage.py`
 appear untracked during its run, written by the agent setup's roadmap `cost-method`; committed
 apart at the user's word. Its captures, probes and the diff of its copy were copied to
 `~/.local/share/ai-ctl/review-scratch/2026-10-19-v2-review-fixes-security-pass/verifier/`, as
@@ -1685,7 +1685,7 @@ a reboot clears; the closures need neither.
    `roadmap-auditor`, then one commit.
 2. No phase follows, so close the roadmap with `close-roadmap.md`: `summary.md` from the six
    phase reports read in full, with what is left open (the review skill's defects under phase
-   5's Problems And Deviations, `docs/notes/review-workflow-tooling.md`,
+   5's Problems And Deviations, a working note on the review's tooling,
    the security skill's lessons and `review-costs-through-usage-py.md`, and the missed
    mutant `in_container` as `Ok(false)` that batch 49 justified); the README; the folder moved
    to `completed/` with `git mv`; every reference to `on-progress/v2-review-fixes` repaired, the
@@ -1704,7 +1704,7 @@ Beside the closures, the user asked for a full report on the review workflow, it
 its skills, as the first one of 2026-10-17 was: what works and is efficient, what can be
 improved or removed, what is missing or handled badly, and the loop already seen, "review de
 code -> correction -> review de code après correction -> nouvelle correction -> ...". It is
-`docs/notes/review-workflow-second-assessment.md`, which `review-workflow-tooling.md` now
+a working note on the review workflow's second assessment, which `review-workflow-tooling.md` now
 names. For it, the origin of each of the closing review's 84 findings was measured by
 `git blame` at `docs(v2-review-fixes): record the closing review's scope and tier` of 2026-10-17, on the lines its Where field cites, against phase 0's start commit
 `docs(v2-review-fixes): create the roadmap` of 2026-10-16, by a script in the session's scratchpad: 32 cite mostly lines the roadmap wrote, 52
@@ -1782,7 +1782,7 @@ apart as `fix(test): the dual-stack port test holds the spawn guard`.
   the phase's Out of Scope says and changing `review-security` first, outside the roadmap:
   "A". The study is in `docs/notes/`, its note on the security skill's lessons.
 - **The security pass prices its waves at the skill's rates; skill-tooling 0.2.0 waits for the
-  phase's release.** The user, on 2026-10-19, on `docs/notes/review-costs-through-usage-py.md`:
+  phase's release.** The user, on 2026-10-19, on a working note on the review's costs through `usage.py`:
   its method needs `usage.py estimate` from skill-tooling 0.2.0, not yet published, and a wave
   of about $1 stays under its threshold anyway; the note is taken up with the skill's change
   after this roadmap.
@@ -1796,10 +1796,10 @@ apart as `fix(test): the dual-stack port test holds the spawn guard`.
 ## Files Changed
 
 **Added**
-- `docs/notes/backends-on-unix-sockets.md`
-- `docs/notes/review-costs-through-usage-py.md`, written by the agent setup's roadmap `cost-method` during the phase and committed apart at the user's word
-- `docs/notes/review-workflow-second-assessment.md`
-- `docs/notes/review-workflow-tooling.md`
+- a working note on backends on unix sockets
+- a working note on the review's costs through `usage.py`, written by the agent setup's roadmap `cost-method` during the phase and committed apart at the user's word
+- a working note on the review workflow's second assessment
+- a working note on the review's tooling
 - `docs/notes/`, the note on the security skill's lessons
 - `docs/reviews/delivered-code/2026-10-17-v2-review-fixes.md`
 - `docs/reviews/delivered-code/2026-10-19-v2-review-fixes-security-pass.md`
@@ -1885,7 +1885,7 @@ are recorded here for a change to the skill outside this roadmap:
 
   The split into five passes rested partly on the overstated figure (under Decisions). The
   cost method goes to the agent setup:
-  its `notes/design-feedback/2026-10-17-cost-method-written-and-reproducible.md`.
+  its design-feedback note on a cost method written and reproducible, of 2026-10-17.
 - **The list of commands a reviewer may run leaves out `bench list`.** The skill allows
   `doctor`, `status` and `build list`, yet `bench list` only reads as well. `review-correctness`
   ran it once, on a scratch XDG directory, to reproduce finding 10, and reported the breach
@@ -1910,7 +1910,7 @@ are recorded here for a change to the skill outside this roadmap:
   keeps nothing of scratch, and the report holds only their description. The session copied
   them, at the user's word, outside the repository. The skill names no place for an agent's
   output that a later step uses again, which the direction of
-  `docs/notes/review-workflow-tooling.md` asks for.
+  a working note on the review's tooling asks for.
 - **`review-cleanup`'s search for dead code misses an unreachable branch.** It builds the crate
   as a binary with private modules, where rustc reports unused items; a call that can never
   act, such as finding 69's `warn_unread` after a `target` that already failed on the same
@@ -1925,14 +1925,14 @@ are recorded here for a change to the skill outside this roadmap:
   sessions. The phase's design, a full closing review, came from the skill's practice and from
   the skill's need of a second real use. The user's direction: per-batch mutants, a review of
   each phase's diff at its close, a floor, and a security pass only at the end
-  (`docs/notes/review-workflow-tooling.md`).
+  (a working note on the review's tooling).
 - **The session's edit tool decodes `\u2028` and `\u2029` into the characters themselves.**
   Found in batch 5: text given to the Edit tool with that escape reached the file as the raw
   U+2028, in a test and in this report; a phase 0 line of `docs/security.md` had the same
   defect. In this repository, whose rules are about those characters, such text is written
   through Python, and `grep -rnP '[\x{2028}\x{2029}]'` checks that none is left. The
   closure's session found the Write tool doing the same, in
-  `docs/notes/review-workflow-second-assessment.md`, and rewrote the line through Python.
+  a working note on the review workflow's second assessment, and rewrote the line through Python.
 - **`cargo mutants` ran on no diff of this roadmap.** The closing review's 551 mutants passed
   the limit of 300, so 28 test gaps were found by mutants written by hand; a batch's diff holds
   a fraction of the roadmap's mutants, though no batch's count was measured.
@@ -2011,7 +2011,7 @@ holds; the five checks are green, with 722 tests in the library.
 What the code gained, among the 63 batches:
 - the most serious finding of the three reviews, a backend's predictable loopback port that a
   local process can take first to receive the key and the prompts, is documented, since
-  llama-swap v263 reaches a backend over TCP only (`docs/notes/backends-on-unix-sockets.md`);
+  llama-swap v263 reaches a backend over TCP only (a working note on backends on unix sockets);
 - `up` counts an answer on `listen` only from the llama-swap it started, for IPv4, IPv6 and the
   dual-stack socket of `0.0.0.0`;
 - the inventory refuses underscored flags, option values and non-finite floats;
@@ -2030,7 +2030,7 @@ sessions where its fixes took three and a half. Mutants on each batch's diff, a 
 alone at the end, verdicts given by the session and no pass after the security pass's fixes
 broke the loop in practice; the skill holds none of them yet. The defects the phase showed in
 `reviewing-delivered-code` are under Problems And Deviations, and
-`docs/notes/review-workflow-second-assessment.md` sets out what to keep, change, remove and add.
+a working note on the review workflow's second assessment sets out what to keep, change, remove and add.
 
 What the roadmap's closure needs first: no phase follows. Its summary leaves open the skill's
 defects recorded here, the four notes on the review workflow

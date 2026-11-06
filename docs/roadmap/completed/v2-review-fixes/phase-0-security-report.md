@@ -209,8 +209,7 @@ now.
 
 Session closed at `docs(v2-review-fixes): record phase 0's acceptance checks made without a gateway`, with the tree clean. Two points of the session are not recorded
 above:
-- at the user's request, the session wrote the agent setup's
-  `notes/design-feedback/2026-10-16-first-opening-leaves-roadmap-pending.md`. It says that a
+- at the user's request, the session wrote the agent setup's design-feedback note on a first opening that leaves the roadmap pending, of 2026-10-16. It says that a
   first opening should move the folder to `on-progress/`, set `**Roadmap Status:**`, and
   update the instruction file, which the skill's opening does not do today. The roadmap
   therefore stays in `pending/` until this phase's closure moves it;
@@ -412,8 +411,7 @@ Every acceptance criterion holds. Closing the phase: the five checks are green.
 - **The README shows phase 0 at 20 cells while it is still open.** The skill's Progress bar
   invariant caps an unfinished phase at 19, but `progress.py` prints 20 for 6/6, and
   `progress.py --check` refuses the capped line. The README keeps the script's output, so the
-  check stays green. This is the defect ai-ctl reported in the agent setup's
-  `notes/design-feedback/2026-10-16-progress-bar-full-while-in-progress.md`, whose fix
+  check stays green. This is the defect ai-ctl reported in the agent setup's design-feedback note on a progress bar full while in progress, of 2026-10-16, whose fix
   lean-workflow's Phase 2 plans.
 - **OpenWebUI's container was published on every interface**, outside ai-ctl. It was created with
   `-p 18000:8080`, where `docs/stack.md` §7.3 gives `-p 127.0.0.1:18000:8080`. The firewall kept

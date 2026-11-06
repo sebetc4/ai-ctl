@@ -160,7 +160,7 @@ the GPU. Found along the way: a gateway killed with SIGKILL leaves its models on
 refuses while such processes remain and `status` names them; and the test suite was flaky, child
 processes forked by parallel tests holding other tests' files. The models live under
 `/ai/models/llm/`, pinned and verified by hand (`docs/stack.md` §5); a model library managed by
-ai-ctl is recorded as a direction in `docs/notes/model-library.md`. The fifth acceptance
+ai-ctl is recorded as a direction in a working note on a model library. The fifth acceptance
 criterion, OpenCode and OpenWebUI themselves, moved to phase 4 as a task: phase 4 has 13 tasks.
 
 ### 1.4.0 (2026-10-09)

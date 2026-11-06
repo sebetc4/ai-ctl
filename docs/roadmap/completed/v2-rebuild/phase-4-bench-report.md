@@ -56,7 +56,7 @@ The user settled them, and raised four questions, answered the same way:
   without moving layers to the CPU, or a lighter KV type.
 - **vLLM.** The user proposed to keep this roadmap on llama.cpp, and to follow if now were the time
   to test vLLM. It is not: the criterion of `docs/stack.md` §4.2 is the prefill and cache figures
-  this phase produces, and Qwen3.8-27B does not fit in NVFP4. Recorded in `docs/notes/vllm.md`.
+  this phase produces, and Qwen3.8-27B does not fit in NVFP4. Recorded in a working note on vLLM.
 - **llama-server's APIs and the gateway's cost.** Chat completions, completions, Responses and
   Anthropic Messages share one engine and one slot: a speed bench across them would measure
   JSON. What may differ is whether they work through llama-swap, so the client check gains
@@ -71,7 +71,7 @@ The user settled them, and raised four questions, answered the same way:
   generated token; the gateway-overhead scenario gives the figure.
 
 And one direction for later: a second bench of models larger than the VRAM (70B, 120B), for
-quality tasks run in the background. Recorded in `docs/notes/large-models.md`, with the estimate
+quality tasks run in the background. Recorded in a working note on models larger than the VRAM, with the estimate
 that sets its first choice: in RAM, a dense 70B generates a few tokens per second, a ~120B MoE
 with ~5B active parameters an order of magnitude more.
 
@@ -643,7 +643,7 @@ storage; the baseline's two runs and four trials in `~/.local/share/ai-ctl/bench
 - **The gateway's overhead is measured** against llama-server's own address from `/running`; the
   bench reads that address and starts nothing, so decision 0001 holds. Proposed by the user.
 - **This roadmap stays on llama.cpp.** vLLM and models larger than the VRAM are directions for
-  later roadmaps, in `docs/notes/vllm.md` and `docs/notes/large-models.md`. Taken with the user.
+  later roadmaps, in a working note on vLLM and a working note on models larger than the VRAM. Taken with the user.
 - **Aggregates differ from v1's in three ways**: an empty series has no summary rather than zeros,
   which read as a speed of 0; the standard deviation is a sample's (divided by n − 1), five
   repetitions being a sample of a setting; and the p99 needs 100 values, below which it is the
@@ -760,8 +760,8 @@ files (none). The phase's thirteen commits, `docs: open phase 4` of 2026-10-11 t
 
 **Added**
 - `assets/bench/corpus.txt`
-- `docs/notes/large-models.md`
-- `docs/notes/vllm.md`
+- a working note on models larger than the VRAM
+- a working note on vLLM
 - `docs/roadmap/on-progress/v2-rebuild/phase-4-bench-report.md`
 - `src/application/bench.rs`
 - `src/domain/bench.rs`

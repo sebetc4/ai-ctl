@@ -241,7 +241,7 @@ the skill and its agents in ai-ctl's `.claude/`, now versioned; reports in
 `docs/reviews/delivered-code/`; effort tiers with a cost estimate before each review;
 `cargo-audit` and `cargo-mutants` to install in phase 2. The `[skills]` table is set. Found:
 authoring-skills cannot evaluate a skill that starts agents; the change is proposed in
-the agent setup's `notes/2026-10-13-eval-runs-with-agents.md`, and phase 1's paid runs are
+the agent setup's note on eval runs with agents, of 2026-10-13, and phase 1's paid runs are
 blocked until it lands. Phases 1, 3 and 4 were adjusted to the decisions taken.
 
 ### 1.0.0 (2026-10-12)

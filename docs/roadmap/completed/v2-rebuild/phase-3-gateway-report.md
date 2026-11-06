@@ -446,7 +446,7 @@ model's revision and hashes and check them.
 After the commit (`feat(gateway): stop the gateway with down, once its GPU memory is released`), the user settled that question: not now. A model library managed
 by ai-ctl may be worth a roadmap of its own later, not planned yet; the user asked to record it in
 the documentation and in a note, so it is not lost among this report's decisions. Wrote
-`docs/notes/model-library.md`, a new kind of document (a direction considered, not a decision):
+a working note on a model library, a new kind of document (a direction considered, not a decision):
 where it comes from, what a library could cover (pins, downloads, checks, template review,
 updates, archiving), and what a roadmap must settle first — v1's dropped model registry and the
 roadmap's exclusion of Hugging Face downloads, llama-server's own `-hf`, where the pins live,
@@ -754,7 +754,7 @@ real clients to phase 4 as a task.
   process ai-ctl did not start, which `down` needs too.
 - **ai-ctl holds no revision or hash of the models, and checks none, for now**: the check of
   `docs/stack.md` §5 stays manual. A model library managed by ai-ctl is a direction for a later
-  roadmap, recorded in `docs/notes/model-library.md`; nothing in this roadmap prepares it (user's
+  roadmap, recorded in a working note on a model library; nothing in this roadmap prepares it (user's
   decision, 2026-10-10).
 - **`down` waits for the gateway's own GPU processes, not for an idle GPU**: llama-swap's
   descendants and the `ai-ctl-*` containers' processes, noted before the stop, until NVML lists
@@ -809,7 +809,7 @@ Computed against the start commit `docs: close phase 2` of 2026-10-09 with `git 
 files (none). The phase's thirteen commits, `chore: open phase 3 and group the models by use` of 2026-10-09 to `feat(doctor): report the gateway, and document its commands`, and this closure are counted.
 
 **Added**
-- `docs/notes/model-library.md`
+- a working note on a model library
 - `docs/roadmap/on-progress/v2-rebuild/phase-3-gateway-report.md`
 - `src/application/gateway.rs`
 - `src/application/gateway_config.rs`

@@ -415,7 +415,7 @@
     },
     {
       "failure": "The estimate shown after the agents had started, on a request taken as accepting the cost: the reviewers started at 10:42, then «Les deux relecteurs tournent en arrière-plan, à l'effort `high` […] Estimation : environ 11 $»; then a wave started without the user's yes reached 95% of the usage window.",
-      "source": "the v2 review's pass 5, session 2cd24729, 2026-10-16"
+      "source": "the v2 review's pass 5, 2026-10-16"
     },
     {
       "failure": "The estimate overrated on one commit: «En une seule passe, cela fait **21,31 $**. Ça dépasse 15 $, donc je propose deux passes», six verifiers at the flat $2 a verifier, where five had measured $0.49 each on this scope.",

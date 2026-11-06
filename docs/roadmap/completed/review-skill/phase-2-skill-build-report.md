@@ -21,8 +21,7 @@ records give the real cost that phase 1's report left open: $2.82 for the run on
 600 to 700 these calls made. The cost figures of phase 1's Assessment, "$4.51 to about $7" for
 a whole-repository review in one session, read $3.13 to $4.51.
 
-At the user's invitation, added these measures to the agent setup's
-`notes/2026-10-13-run-estimate-per-case.md`, in a section "Measured Later The Same Day": the
+At the user's invitation, added these measures to the agent setup's note on a run's estimate per case, of 2026-10-13, in a section "Measured Later The Same Day": the
 input side and the prices exact, the whole gap in the output estimate, and two observations,
 `usage.py`'s command line counting only the transcripts it is given (a session whose work a
 slash command forked reads $0) and the `cost-state` record landing only when a session ends.

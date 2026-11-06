@@ -12,7 +12,7 @@
 Phase opened at the end of phase 0's closure, after reading phase 0's file and report, in
 the session that closed it. No restructuring was pending. The phase opens blocked: its paid
 runs wait for authoring-skills to evaluate a skill that starts agents, proposed in
-the agent setup's `notes/2026-10-13-eval-runs-with-agents.md`. The user ended the session
+the agent setup's note on eval runs with agents, of 2026-10-13. The user ended the session
 here, to resume in a new session once authoring-skills is changed; no work on the phase's
 tasks was done.
 
@@ -44,7 +44,7 @@ the lines it cites again (`workspace.py:191-192`, `:344`, `:396-397`, `:433`, `:
 `--baseline-only`, the only one possible before `SKILL.md` exists, the `agents` key lifts
 the denial of Agent, enters each case's digest and leaves its paths out of `base.tar`,
 while the arm without the skill never receives the agents. Wrote
-the agent setup's `notes/2026-10-13-agent-tool-before-agents.md`: the gap, why it matters,
+the agent setup's note on the Agent tool before agents, of 2026-10-13: the gap, why it matters,
 four solutions with T1 recommended (a skill-level key saying that the skill starts agents,
 independent of their files), and two questions. Nothing was committed there. Updated this
 phase's `**Blocked By:**` and Dependencies, and the README's `**Blocked By:**`, to the new
@@ -113,7 +113,7 @@ note in the agent setup as a separate point.
 The user asked to record the progress and commit, and to resume in a fresh session. Two
 points put to them stay unanswered: the session case as a commit rather than uncommitted
 changes, and the wording of the two prompts. Where the next session starts: check whether
-the agent setup decided `notes/2026-10-13-agent-tool-before-agents.md`; once authoring-skills
+the agent setup decided its note on the Agent tool before agents, of 2026-10-13; once authoring-skills
 gives the Agent tool to a skill whose agents are not written yet, add its key to
 `evals.json`, prepare the first iteration with `--baseline-only --model claude-opus-5-5`
 and a ceiling per run chosen with the user (the default $5 is below a review of the whole v2
@@ -401,7 +401,7 @@ code, paid, in its own usage window; the phase closes after it.
 The user had the assertions committed (`test(review-skill): write the assertions from the baselines' failures`), and asked for a note to the agent setup on
 `run.py`'s estimate, as a first feedback from real use for its roadmap `token-usage`, in
 progress. Read `run.py`'s `estimate()` and the roadmap's Phase 2 before writing
-the agent setup's `notes/2026-10-13-run-estimate-per-case.md`: every complete run of the skill at
+the agent setup's note on a run's estimate per case, of 2026-10-13: every complete run of the skill at
 the model and effort is pooled, whatever its case or configuration (`run.py:134-159`), so
 phase 3's arm with the skill would be announced at the baselines' mean, $2.90, against an
 $18 ceiling. It recommends an estimate per case and configuration, with the ceiling printed
@@ -427,7 +427,7 @@ read it in full, record what `/code-review` found and missed against the two bas
 case's expected output, tick task 6, and close the phase.
 
 Resumed in a new session, the user reporting the `/code-review` run done in `/tmp/v2-code-review`.
-Read this phase's file and report, then the run: session `58a1ca7e`, its own transcript holding
+Read this phase's file and report, then the run: its session, its own transcript holding
 the command and its output alone, the review done by one `general-purpose` subagent
 (`agent-a7ace141a8bc087c7`), read in full from its rendering, thinking redacted. The command
 was typed bare, `/code-review`, not `/code-review high src/`. It therefore took the level typed
@@ -444,14 +444,14 @@ What it did: read the diff, the roadmap skill's closing reference and summary te
 v2 README and the top-level README, ran `cargo test` in the background into its own scratch
 target folder (517 tests, 492, 23 and 2), `cargo fmt --check` and clippy (clean), the roadmap's
 `progress.py --check` and `check_links.py` (no problem), then checked each claim of the new
-`summary.md` against the phase reports, `docs/toolchain.md`, `docs/stack.md`, `docs/notes/vllm.md`
+`summary.md` against the phase reports, `docs/toolchain.md`, `docs/stack.md`, a working note on vLLM
 and the code it names (`lifecycle.rs`, `podman.rs`, `gateway_config.rs`, `bench.rs`,
 `chat_api.rs`, `doctor.rs`, `tests/gateway_lifecycle.rs`). It also listed
 `~/.local/share/ai-ctl/llama-swap/`, outside the fixture, to see whether the integration test
 had run. Its answer gives nine findings on `summary.md`, ranked, each with a failure scenario:
 the "never run for real" list missing `up`'s image pull (`summary.md:127`); the open item on
 runs before `fix(bench): set the slot's context aside before each fresh request` of 2026-10-12 not naming the baseline's two runs (`:130`); "the prefill criterion now
-has its figures (`docs/notes/vllm.md`)", where the note holds none (`:134`); "closed phase 3's
+has its figures (a working note on vLLM)", where the note holds none (`:134`); "closed phase 3's
 last criterion", where `phase-3-gateway.md:121` keeps it unticked (`:75`); a driver change
 claimed where `docs/toolchain.md` says "The driver was not touched" (`:89`); OpenCode said to
 point at v1's gateway when it was not installed (`:18`); "three `doctor` checks" against the
@@ -481,7 +481,7 @@ the roadmap: read both runs' transcripts, the new one in full, record what `/cod
 and missed on the code against the v2 baseline and the case's expected output, tick task 6 and
 close the phase.
 
-The user reported the second run done. Session `8efc056b`, its first message
+The user reported the second run done. Its session's first message
 `/code-review high src/`, the review again done by one `general-purpose` subagent
 (`agent-afb49ffcd6e7a410d`), read in full from its rendering, thinking redacted. Neither
 session was closed, so neither has its `cost-state` record yet. Its recipe at `high`: "8 inline
@@ -566,7 +566,7 @@ are done; the phase closes.
   skill's design rests on, and its failures would lead phase 2 to answer what real use never
   shows. Set aside: baselines run now with Agent denied and recorded as a deviation (the
   failures that matter most seen only after the skill is built). Proposed to the agent setup
-  in `notes/2026-10-13-agent-tool-before-agents.md`; the cases are written meanwhile.
+  in the agent setup's note on the Agent tool before agents, of 2026-10-13; the cases are written meanwhile.
 - **The cases run in a fixture: ai-ctl at `docs: close the v2 rebuild roadmap` of 2026-10-12, its history kept, with a `CLAUDE.md`.**
   `evals/fixtures.py` fetches that commit alone into a new repository, so no later commit
   and no document of this roadmap reaches a run, and adds a pinned copy of `CLAUDE.md` whose
@@ -659,7 +659,7 @@ are done; the phase closes.
   the Agent tool to runs whose evals list existing agent files, and the skill's agents are
   written in phase 2. Phase 0's proposal described the arms of a comparison and missed the
   first observation of a new skill. Fixed by a second proposal,
-  the agent setup's `notes/2026-10-13-agent-tool-before-agents.md`, decided the same day
+  the agent setup's note on the Agent tool before agents, of 2026-10-13, decided the same day
   (commit `fe4f87e`): `starts_agents: true` in `evals.json`.
 - **The fixtures' task cites a decision phase 0 did not take** ("as decided in phase 0"):
   no decision of phase 0 names a fixture. Taken in this phase with the user, above.
@@ -683,7 +683,7 @@ are done; the phase closes.
 - **`run.py` estimates a case from another case's runs.** It announced the v2 run at $1.29,
   the mean of the post-session run, for a review estimated at $10 to $30. The ceiling kept the
   commitment; the figure was corrected by hand to the user. Proposed to the agent setup in
-  `notes/2026-10-13-run-estimate-per-case.md`; until it is decided, phase 3's announcements
+  the agent setup's note on a run's estimate per case, of 2026-10-13; until it is decided, phase 3's announcements
   need the same correction while a case or an arm has no run of its own.
 - **The first `/code-review` run reviewed the wrong scope.** Typed bare, the command took the
   level typed last, `xhigh`, and the last commit, the docs-only `docs: close the v2 rebuild roadmap` of 2026-10-12: nine findings on the
@@ -699,7 +699,7 @@ are done; the phase closes.
   the records land when the sessions end.
 - **`scripts/audit.py` fails on a skill holding its evals alone**, with a traceback where
   rule 3 of authoring-skills asks for its run after every write. Not fixable here; reported
-  in the agent setup's `notes/2026-10-13-agent-tool-before-agents.md`.
+  in the agent setup's note on the Agent tool before agents, of 2026-10-13.
 
 ---
 

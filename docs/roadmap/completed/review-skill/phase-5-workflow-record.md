@@ -82,7 +82,7 @@ docs/roadmap/completed/review-skill/phase-5-workflow-record-report.md
 
 ### Dependencies
 The reports of phases 0 to 4. The review's pass 5, in its session's transcript
-(`2cd24729`) and in the resume note `notes/sessions/2026-10-16-v2-review-pass-5-done.md`.
+and in the resume note that closed it.
 
 ### Constraints
 - The record states facts from the reports; it does not design the skill that builds review

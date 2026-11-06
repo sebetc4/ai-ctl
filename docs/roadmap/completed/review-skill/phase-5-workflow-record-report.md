@@ -12,8 +12,7 @@
 Phase opened in a new session, in a fresh usage window (the user's word: the session
 started at 11:31 UTC, four minutes after pass 5's session ended at 95 % of the window
 before). Read before working: phase 4's file and report in full, the two resume notes of
-2026-10-16 (`notes/sessions/2026-10-16-v2-review-gpu-pass.md`, then
-`2026-10-16-v2-review-pass-5-done.md`, whose step 2 this session takes up; its step 1,
+2026-10-16 (the GPU pass's, then pass 5's, whose step 2 this session takes up; its step 1,
 the fix roadmap, waits). Phase 4's Changes To Later Phases hold nothing pending; no other
 phase is in progress.
 
@@ -26,12 +25,12 @@ The user, on the proof of the skill's changes: the fixes from use for the misfit
 4's were, and one eval case for the cost gates, with the skill, on a small fixture.
 
 The exact costs of the first review, from the `cost-state` records Claude Code wrote at
-22:39 on 2026-10-15, after the next sessions had looked for them: pass 1 `35772463`
-$11.89, pass 2 `aa04b93a` $14.41, pass 3 `47847ee1` $9.62, pass 4 `d6f39755` $15.69,
+22:39 on 2026-10-15, after the next sessions had looked for them: pass 1
+$11.89, pass 2 $14.41, pass 3 $9.62, pass 4 $15.69,
 the verdicts `d93c8ff9` $7.17. Passes 1 to 4 come to $51.61, against the $50.90 phase 4's
 report gives from `usage.py` at 845 output tokens a call. Phase 4's report calls the exact
-costs of passes 2 to 4 lost; they were only late. Sessions `10bbfffc` (phase 4's closure)
-and `2cd24729` (pass 5) had no record yet at 11:35 UTC.
+costs of passes 2 to 4 lost; they were only late. The sessions of phase 4's closure
+and of pass 5 had no record yet at 11:35 UTC.
 
 The skill's changes, made as fixes from use. Quotes from pass 5's transcript:
 
@@ -62,7 +61,7 @@ and `.agent-conventions.toml`.
 - **Found: a run takes one turn, so a run with the skill now ends at step 2.** Cases 1 and
   2 can no longer reach a report, and no run reaches a second wave. Not bent around:
   both cases' `pending` say so, and the design feedback
-  the agent setup's `notes/design-feedback/2026-10-16-runs-that-wait-for-the-user.md`
+  the agent setup's design-feedback note on runs that wait for the user, of 2026-10-16
   proposes scripted replies.
 
 `iteration-3` prepared: `cost-gate`, the skill's arm only, 3 runs at Opus 5.5 `xhigh`,
@@ -94,8 +93,8 @@ actions, outputs and decisions, with a link to its report. It marks the parts sp
 ai-ctl and splits the user's own conventions from what holds anywhere. It gives the cost
 of each phase, as the reports give it, and eleven changes for the next repository, each
 from a problem a report recorded. Two figures it cites came from the resume notes, which
-git ignores, and are recorded here: phase 4's closing session, `10bbfffc`, $8.80 by
-`usage.py` beside its $3.27 trigger eval; pass 5, `2cd24729`, about $10.50 by `usage.py`
+git ignores, and are recorded here: phase 4's closing session, $8.80 by
+`usage.py` beside its $3.27 trigger eval; pass 5, about $10.50 by `usage.py`
 with 776 output tokens for each call without its final usage. Neither session had its
 `cost-state` record at 12:05 UTC.
 
@@ -160,7 +159,7 @@ spent $8.82 by `usage.py`, and the eval iterations $4.94.
    the roadmap with `close-roadmap`: it is the last phase. All ten tasks are ticked.
 - Questions put to the user: none open.
 - Pending: nothing uncommitted after this session's commit; no run going. The `cost-state`
-  records of sessions `10bbfffc` and `2cd24729` had not landed. When they do, they give
+  records of the sessions of phase 4's closure and of pass 5 had not landed. When they do, they give
   pass 5's exact cost and phase 4's closing session's.
 
 - **Found while reading phase 1: its decision to write the user's yes into each prompt**
@@ -194,11 +193,11 @@ the eval iterations $4.94.
    the last phase.
 - Questions put to the user: none open.
 - Pending: nothing uncommitted after this record's commit; no run going. The `cost-state`
-  records of sessions `10bbfffc`, `2cd24729` and this one, `5546bb5d`, had not landed;
+  records of the sessions of phase 4's closure, of pass 5 and of this one had not landed;
   when they do, the closure takes their exact costs.
 
-New session, `4826f1c5`, from 12:27 UTC, two minutes after `5546bb5d` ended. The user
-called the window fresh. The `cost-state` records of `10bbfffc`, `2cd24729` and `5546bb5d`
+New session, from 12:27 UTC, two minutes after the previous one ended. The user
+called the window fresh. The `cost-state` records of phase 4's closure, pass 5 and the session before
 had still not landed at 12:28 UTC.
 
 `iteration-6` prepared with the resume point's command. `run.py` estimated $5.07, $1.69 a
@@ -229,12 +228,11 @@ The grading was proposed: 3 `skill-grader` sessions at Sonnet `xhigh`, $0.58 by
    whose cost no report has measured.
 - Questions put to the user: the yes on the grading of `iteration-6`.
 - Pending: `iteration-6`'s three runs, complete and ungraded, under `.eval-runs/`, which
-  git ignores. The `cost-state` records of `10bbfffc`, `2cd24729`, `5546bb5d` and
-  `4826f1c5` for the closure's exact costs.
+  git ignores. The `cost-state` records of the four sessions before for the closure's exact costs.
 
-New session, `7e24eb23`, from about 13:55 UTC. The `cost-state` records had landed:
-`10bbfffc` (phase 4's closure) $10.30, `2cd24729` (pass 5) $12.11, `5546bb5d` $11.21 and
-`4826f1c5` $1.64. `usage.py` run on each whole transcript gives $10.12, $4.67, $11.09 and
+New session, from about 13:55 UTC. The `cost-state` records had landed:
+phase 4's closure $10.30, pass 5 $12.11, the next session $11.21 and the one after
+$1.64. `usage.py` run on each whole transcript gives $10.12, $4.67, $11.09 and
 $1.64: on a session's own calls it matches the record within the Sonnet part, and pass
 5's $4.67 leaves out its agents. The lower figures written before ($8.80, $9.77) were read
 before those sessions ended; `usage.py` does not count too low.

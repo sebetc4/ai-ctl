@@ -389,7 +389,7 @@
           "docs/security.md (lines 1-80)",
           "src/domain/gateway.rs (lines 1-40)",
           "src/domain/recipe.rs (lines 58-110, 215-260, the rest by search)",
-          "notes/image/sdcpp-webui.md (lines 45-65)",
+          "a working note on sd.cpp's web UI (lines 45-65)",
           ".claude/skills/reviewing-delivered-code/scripts/findings.py (lines 284-312, 404-410, the rest by search)",
           "scope.txt (lines 1-12, 668-669)"
         ]

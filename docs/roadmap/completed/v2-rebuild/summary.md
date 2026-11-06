@@ -131,6 +131,6 @@ GitHub's: the vendors' one-line installers verify none of it.
 - In a Messages stream, llama-server's order of blocks is not Anthropic's; a strict orchestrator
   client may refuse it.
 - Directions recorded, not decided: a model library managed by ai-ctl
-  (`docs/notes/model-library.md`), vLLM, whose prefill criterion now has its figures
-  (`docs/notes/vllm.md`), and models larger than the VRAM (`docs/notes/large-models.md`). The
+  (a working note on a model library), vLLM, whose prefill criterion now has its figures
+  (a working note on vLLM), and models larger than the VRAM (a working note on models larger than the VRAM). The
   audio and image backends that decision 0001 prepares, and the orchestrator, a separate project.

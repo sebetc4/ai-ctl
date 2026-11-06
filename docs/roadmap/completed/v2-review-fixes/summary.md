@@ -84,7 +84,7 @@ cases. Its 58 batches were fixed in three and a half sessions, each diff through
 `cargo mutants --in-diff`. A security pass alone closed the roadmap: its 5 findings, two of them
 fixes that did not fully hold, became batches S1 to S5, with no pass after them. The closure
 found and fixed one flaky test of S1. At the user's request, the review workflow was assessed a
-second time, in `docs/notes/review-workflow-second-assessment.md`.
+second time, in a working note on the review workflow's second assessment.
 
 ---
 
@@ -128,10 +128,10 @@ second time, in `docs/notes/review-workflow-second-assessment.md`.
   steps yet.
 - **The backends on TCP loopback.** The closing review's finding 1 stays documented in
   `docs/security.md` §2 until llama-swap reaches a backend over a unix socket;
-  `docs/notes/backends-on-unix-sockets.md` holds the switch.
+  a working note on backends on unix sockets holds the switch.
 - **Three missed mutants**, each justified at its batch: `doctor.rs:428`'s `>` for `>=`,
   `in_container` as `Ok(false)`, `read_gpu` as `Ok(None)`.
-- **The bench session plan's 12-token margin**, in `docs/notes/bench-session-margin.md`, and batch
+- **The bench session plan's 12-token margin**, in a working note on the bench session plan's margin, and batch
   35 of phase 3, counted on the fake server and never benchmarked live.
 - **The review's kept work** in `~/.local/share/ai-ctl/review-scratch/`, 3 MB outside the
   repository, which the fixes no longer need: to remove, or to seed a `repro/` folder.
