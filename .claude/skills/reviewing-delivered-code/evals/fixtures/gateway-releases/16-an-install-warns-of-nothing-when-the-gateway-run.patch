@@ -1,0 +1,25 @@
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index c3543be..4ae83cf 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -901,6 +901,20 @@ mod tests {
+         );
+     }
+ 
++    #[test]
++    fn an_install_warns_of_nothing_when_the_gateway_runs_the_new_release() {
++        let mut world = World::new();
++        world.gateway = running(&world.store, "263");
++        let (installation, events) = world.install(None);
++        assert_eq!(installation.unwrap().release, PINNED.release);
++        assert!(
++            !events
++                .iter()
++                .any(|event| matches!(event, Event::Warning(_))),
++            "{events:?}"
++        );
++    }
++
+     #[test]
+     fn an_archive_of_another_release_needs_its_digest() {
+         let world = World::new();

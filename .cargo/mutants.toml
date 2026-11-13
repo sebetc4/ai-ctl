@@ -1,0 +1,5 @@
+# cargo-mutants builds each mutant in a copy of the tree that holds no `.git`, as a copy made by
+# `git archive` does not either. `no_tracked_text_file_holds_a_raw_separator` lists the tracked
+# files through git and reads their text, which no mutant changes: `cargo test` runs it, the
+# mutants' runs skip it.
+additional_cargo_test_args = ["--", "--skip", "no_tracked_text_file_holds_a_raw_separator"]

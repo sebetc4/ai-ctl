@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Content-Type: application/json
+Date: Sat, 07 Nov 2026 19:20:34 GMT
+Content-Length: 171
+
+{"running":[{"model":"fake","state":"ready","cmd":"python3\n-I\nfake_upstream.py\nfake\n18600\n","proxy":"http://127.0.0.1:18600","ttl":1800,"name":"","description":""}]}

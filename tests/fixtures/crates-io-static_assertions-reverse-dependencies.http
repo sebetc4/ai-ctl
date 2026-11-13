@@ -1,0 +1,21 @@
+HTTP/2 200 
+access-control-allow-origin: *
+content-type: application/json
+nel: {"report_to":"heroku-nel","response_headers":["Via"],"max_age":3600,"success_fraction":0.01,"failure_fraction":0.1}
+report-to: {"group":"heroku-nel","endpoints":[{"url":"https://nel.heroku.com/reports?s=g9fN33t1%2Bx10k5iiLmKdjQNcfQ4EGf9jXE4RkygY9vk%3D\u0026sid=af571f24-03ee-46d1-9f90-ab9030c2c74c\u0026ts=1793633613"}],"max_age":3600}
+reporting-endpoints: heroku-nel="https://nel.heroku.com/reports?s=g9fN33t1%2Bx10k5iiLmKdjQNcfQ4EGf9jXE4RkygY9vk%3D&sid=af571f24-03ee-46d1-9f90-ab9030c2c74c&ts=1793633613"
+server: Heroku
+via: 1.1 heroku-router, 1.1 varnish
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+accept-ranges: bytes
+date: Mon, 02 Nov 2026 15:33:33 GMT
+x-served-by: cache-par-lfpb1150055-PAR
+x-cache: MISS
+x-cache-hits: 0
+vary: accept-encoding
+strict-transport-security: max-age=31536000; includeSubDomains
+content-length: 2824
+
+{"dependencies":[{"id":41235515,"version_id":3619107,"crate_id":"static_assertions","req":"^1.1.0","optional":false,"default_features":true,"features":[],"target":null,"kind":"dev","downloads":1338181504}],"versions":[{"id":3619107,"crate":"rustix","num":"1.1.6","dl_path":"/api/v1/crates/rustix/1.1.6/download","readme_path":"/api/v1/crates/rustix/1.1.6/readme","updated_at":"2026-10-27T00:49:03.146056Z","created_at":"2026-10-27T00:49:03.146056Z","downloads":3732027,"features":{"all-apis":["event","fs","io_uring","mm","mount","net","param","pipe","process","pty","rand","runtime","shm","stdio","system","termios","thread","time"],"alloc":[],"default":["std"],"event":[],"fs":[],"io_uring":["event","fs","net","thread","linux-raw-sys/io_uring"],"linux_4_11":[],"linux_5_1":["linux_4_11"],"linux_5_11":["linux_5_1"],"linux_latest":["linux_5_11"],"mm":[],"mount":[],"net":["linux-raw-sys/net","linux-raw-sys/netlink","linux-raw-sys/if_ether","linux-raw-sys/xdp"],"param":[],"pipe":[],"process":["linux-raw-sys/prctl"],"pty":["fs"],"rand":[],"runtime":["linux-raw-sys/prctl"],"rustc-dep-of-std":["core","rustc-std-workspace-alloc","linux-raw-sys/rustc-dep-of-std"],"shm":["fs"],"std":["bitflags/std","alloc","libc?/std","libc_errno?/std"],"stdio":[],"system":["linux-raw-sys/system"],"termios":[],"thread":["linux-raw-sys/prctl"],"time":[],"try_close":[],"use-explicitly-provided-auxv":[],"use-libc":["libc_errno","libc"],"use-libc-auxv":[]},"yanked":false,"yank_message":null,"lib_links":null,"license":"Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT","links":{"dependencies":"/api/v1/crates/rustix/1.1.6/dependencies","version_downloads":"/api/v1/crates/rustix/1.1.6/downloads","authors":"/api/v1/crates/rustix/1.1.6/authors"},"crate_size":426484,"published_by":{"id":6825,"login":"sunfishcode","name":"Dan Gohman","avatar":"https://avatars.githubusercontent.com/u/4503403?v=4","url":"https://github.com/sunfishcode","github_username_matches":true,"created_at":"2013-05-22T21:05:44Z"},"audit_actions":[{"action":"publish","user":{"id":6825,"login":"sunfishcode","name":"Dan Gohman","avatar":"https://avatars.githubusercontent.com/u/4503403?v=4","url":"https://github.com/sunfishcode","github_username_matches":true,"created_at":"2013-05-22T21:05:44Z"},"time":"2026-10-27T00:49:03.146056Z"}],"checksum":"e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa","rust_version":"1.65","has_lib":true,"bin_names":[],"edition":"2021","description":"Safe Rust bindings to POSIX/Unix/Linux/Winsock-like syscalls","homepage":null,"documentation":"https://docs.rs/rustix","repository":"https://github.com/bytecodealliance/rustix","trustpub_data":null,"linecounts":{"languages":{"Rust":{"code_lines":49629,"comment_lines":2328,"files":317}},"total_code_lines":49629,"total_comment_lines":2328}}],"meta":{"total":1705}}

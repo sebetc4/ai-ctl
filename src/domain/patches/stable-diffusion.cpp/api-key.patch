@@ -1,0 +1,53 @@
+diff --git a/examples/server/main.cpp b/examples/server/main.cpp
+index a10cb66..7efbb8c 100644
+--- a/examples/server/main.cpp
++++ b/examples/server/main.cpp
+@@ -87,6 +87,14 @@ int main(int argc, const char** argv) {
+     sd_set_log_callback(sd_log_cb, (void*)&svr_params);
+     parse_args(argc, argv, svr_params, ctx_params, default_gen_params);
+ 
++    // ai-ctl: every route but /health requires the key in LLAMA_API_KEY.
++    const char* api_key_env = std::getenv("LLAMA_API_KEY");
++    const std::string api_key = api_key_env != nullptr ? api_key_env : "";
++    if (api_key.empty()) {
++        LOG_ERROR("LLAMA_API_KEY is not set");
++        return 1;
++    }
++
+     LOG_VERBOSE("version: %s", version_string().c_str());
+     LOG_VERBOSE("%s", sd_get_system_info());
+     LOG_DEBUG("%s", svr_params.to_string().c_str());
+@@ -138,21 +146,19 @@ int main(int argc, const char** argv) {
+ 
+     httplib::Server svr;
+ 
+-    svr.set_pre_routing_handler([](const httplib::Request& req, httplib::Response& res) {
+-        std::string origin = req.get_header_value("Origin");
+-        if (origin.empty()) {
+-            origin = "*";
++    svr.set_pre_routing_handler([api_key](const httplib::Request& req, httplib::Response& res) {
++        if (req.path == "/health"
++            || req.get_header_value("Authorization") == "Bearer " + api_key
++            || req.get_header_value("X-Api-Key") == api_key) {
++            return httplib::Server::HandlerResponse::Unhandled;
+         }
+-        res.set_header("Access-Control-Allow-Origin", origin);
+-        res.set_header("Access-Control-Allow-Credentials", "true");
+-        res.set_header("Access-Control-Allow-Methods", "*");
+-        res.set_header("Access-Control-Allow-Headers", "*");
+-
+-        if (req.method == "OPTIONS") {
+-            res.status = 204;
+-            return httplib::Server::HandlerResponse::Handled;
+-        }
+-        return httplib::Server::HandlerResponse::Unhandled;
++        res.status = 401;
++        res.set_content(R"({"error":{"code":401,"message":"Invalid API Key","type":"authentication_error"}})",
++                        "application/json");
++        return httplib::Server::HandlerResponse::Handled;
++    });
++    svr.Get("/health", [](const httplib::Request&, httplib::Response& res) {
++        res.set_content(R"({"status":"ok"})", "application/json");
+     });
+ 
+     std::string index_html;

@@ -1,0 +1,374 @@
+{
+  "review": "2026-11-12-review-skill-v2-5-closing-pass",
+  "scope": {
+    "kind": "roadmap",
+    "roadmap": "review-skill-v2-5",
+    "base": "`docs: close the capabilities roadmap, 0.3.0's entry by phase` of 2026-11-09",
+    "end": "`docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12",
+    "hunks": 168,
+    "lines": {
+      "added": 568,
+      "removed": 257
+    }
+  },
+  "go_ahead": {
+    "by": "the user",
+    "text": "tu peux lancer",
+    "tier": "high"
+  },
+  "agents": [
+    {
+      "type": "review-security",
+      "effort": "high",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "scope.txt"
+        ],
+        "in part": [
+          "src/infrastructure/gateway_store.rs (lines 1-215)",
+          "src/application/gateway.rs (lines 50-185)",
+          "src/domain/gateway.rs (lines 1-140)",
+          "src/application/lifecycle.rs (lines 225-300, 700-830, 1180-1222)",
+          "src/application/doctor.rs (lines 159-224, 680-700)",
+          "src/application/build.rs (lines 255-320, 535-575, 770-840)",
+          "src/application/fakes.rs (lines 515-600)",
+          "src/application/gateway_config.rs (lines 114-141)",
+          "src/domain/inventory.rs (lines 150-163)",
+          "src/domain/build.rs (lines 41-67)",
+          "src/infrastructure/gateway_process.rs (lines 102-210, 503-523)",
+          "src/infrastructure/files.rs (lines 24-90)",
+          "src/presentation/gateway.rs (lines 1-66)",
+          "docs/security.md (lines 1-60, 270-335)",
+          "docs/commands.md (lines 236-246, 366-382, 440-452)",
+          "docs/reviews/delivered-code/2026-11-12-review-skill-v2-5-phase-2/findings.json (findings 8, 9, 15)",
+          "llama-swap/internal/server/server.go (lines 395-560)",
+          "llama-swap/internal/server/cors.go (lines 179-205)",
+          "llama-swap/internal/config/config.go (lines 287-294)",
+          "the diff `docs: close the capabilities roadmap, 0.3.0's entry by phase` of 2026-11-09..`docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12 of src/ and docs/security.md",
+          "docs/gpu/llama-swap.md"
+        ]
+      },
+      "left_out": [
+        "llama-swap's open routes: checked, no finding: v271's routes registered without authMW are GET /health, GET /wol-health, GET /{$}, /ui (any method, a relative 308), GET /ui/site.webmanifest and its two icons, GET /favicon.ico and GET /upstream, and CreateCORSMiddleware answers every OPTIONS 204 before the mux; docs/security.md §2 lists each; the Tailcat listener's handler is reached only when TailcatEnabled, which ai-ctl's configuration never sets",
+        "src/presentation/bench.rs, src/presentation/compare.rs, src/presentation/mod.rs, src/presentation/build.rs, src/presentation/cli.rs: rendering and help text only, no sink on this axis; rebuild_remedy's text, copied into a shell by the user, holds only a recipe's project and a BuildId, whose parse admits [A-Za-z0-9._-] alone",
+        "tests/gateway_lifecycle.rs: not run, it starts llama-swap; read only in the diff",
+        "release.archive() and the download, sha256sum and tar steps: older than the base and unchanged, read only where Installer::install calls them"
+      ]
+    },
+    {
+      "type": "review-verifier",
+      "effort": "high",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "findings.md",
+          "scope.txt"
+        ],
+        "in part": [
+          "src/application/lifecycle.rs (lines 215-300, 720-830, 880-915, 985-1030, 1180-1260, 1689-1701, 2290-2330, 2470-2485)",
+          "src/application/doctor.rs (lines 160-230, 676-727, 2700-2795)",
+          "src/application/gateway.rs (lines 1-190)",
+          "src/application/fakes.rs (lines 515-621, 700-760, 845-860)",
+          "src/application/ports.rs (lines 327-430)",
+          "src/infrastructure/gateway_store.rs (lines 1-40, 80-200)",
+          "src/infrastructure/gateway_process.rs (lines 60-140, 300-322)",
+          "src/domain/gateway.rs (lines 20-55)",
+          "docs/security.md (lines 270-300)",
+          "docs/commands.md (lines 234-246, 430-455)",
+          "docs/reviews/delivered-code/2026-11-12-review-skill-v2-5-closing-pass/repro/review-security/probes.patch",
+          "src/application/gateway.rs at `chore(release): release 0.2.0` of 2026-11-06 (DigestSource, lines 20-190)",
+          "src/infrastructure/gateway_store.rs at `chore(release): release 0.2.0` of 2026-11-06 (lines 1-40, grep for a record)",
+          "src/domain/gateway.rs at `chore(release): release 0.2.0` of 2026-11-06 (PINNED)"
+        ]
+      },
+      "left_out": [
+        "src/presentation/build.rs: `build list`'s llama-swap line reads only the standing, never the record; it gates nothing, so the fixes leave it as it is",
+        "llama-swap: neither finding drives llama-swap past its binary's path; its source was not needed"
+      ]
+    },
+    {
+      "type": "review-dependencies",
+      "effort": "high",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "cargo-deny.log",
+          "dependencies-run.log",
+          "docs/reviews/delivered-code/2026-11-12-review-skill-v2-5-closing-pass/dependencies.json (through python, every crate and project record, every release note and commit message)",
+          "review-dependencies/llamacpp-notes.txt (the 58 llama.cpp notes extracted from it)",
+          "deny.toml"
+        ],
+        "in part": [
+          "Cargo.toml (the dependency tables)",
+          "src/domain/recipe.rs (lines 155-300)",
+          "src/domain/gateway_config.rs (lines 55-100, grep for metadata and capabilities)",
+          "src/domain/inventory.rs (lines 55-90, grep for cache types)",
+          "src/infrastructure/http.rs (grep for the request line, line 107)",
+          "src/infrastructure/server_api.rs (grep for props)",
+          "deploy/inventory.toml (grep for cache types, gemma, split GGUFs)",
+          "README.md (lines 248-262)",
+          "docs/image/stable-diffusion-cpp.md (lines 470-512)",
+          "docs/ and src/ (grep for each term the notes name: cache-type, FP8, VMM, --ple/--shard, --fit, response_format/json_schema, tools, gemma, jinja/chat-template, /v1/audio/speech, realtime, rpc, queue, Expect/100-continue, /props, autoload, decision)",
+          "docs/reviews/delivered-code/2026-11-12-review-skill-v2-5-phase-2/report.md (Facts, lines 392-405)",
+          "llama-swap/internal/server/log.go (lines 125-150)",
+          "llama-swap/internal/server/inflight.go (lines 320-345)",
+          "llama-swap/internal/server/metrics.go (lines 530-550)",
+          "curl 8.18.0 man page (--expect100-timeout)"
+        ]
+      },
+      "left_out": [
+        "dependencies.json: its left_out is empty; no project's left_out names anything, and no project's github field is set",
+        "backends' sources under ~/.local/share/ai-ctl/sources: not opened; every lag was judged from the notes and commit messages against ai-ctl's code, and none named anything ai-ctl patches, bounds or works around",
+        "llama.cpp b12227..b12328: all 58 notes read, the three new since the phase-2 review (b12323, b12327, b12328) included"
+      ],
+      "facts": [
+        "cargo deny check: advisories ok, bans ok, licenses ok, sources ok; exit 0; no advisory, unsound or yanked version in the lock, so no reach to search in src/",
+        "updates within Cargo.toml's requirements: none (errno is at 0.3.15, its newest); every direct crate (anyhow, clap, clap_complete, nvml-wrapper, serde, serde_json, tempfile, thiserror 2, toml) is at its newest",
+        "duplicates: syn 2.0.119 and 3.0.10, thiserror 1.0.69 and 2.0.21, thiserror-impl 1.0.69 and 2.0.21 (Cargo.lock:42-48 in cargo deny's report); each older copy comes through nvml-wrapper 0.13.0 (darling 0.20.11, wrapcenum-derive 0.4.1, thiserror 1), the newest nvml-wrapper, so ai-ctl cannot remove them",
+        "behind beyond the requirements, no advisory, nothing yanked: darling, darling_core, darling_macro 0.20.11 (0.24.1), libloading 0.8.9 (0.9.0), r-efi 6.0.0 (7.1.0), syn 2.0.119 (3.0.10), thiserror and thiserror-impl 1.0.69 (2.0.21), windows-link 0.2.1 (0.100.0); all transitive, held by their parents",
+        "last released over a year ago, none archived, none with a RustSec warning: fnv 1.0.7 (2020), ident_case 1.0.1 (2019), static_assertions 1.1.0 (2019), heck 0.5.0, strsim 0.11.1, utf8parse 0.2.2, wrapcenum-derive 0.4.1 (2024), is_terminal_polyfill and once_cell_polyfill 1.70.2, windows-sys 0.61.2 (2025)",
+        "moved repositories, none archived: nvml-wrapper and wrapcenum-derive to rust-nvml/, static_assertions to nvzqz/static-assertions",
+        "unsafe counts that stand out: windows-sys 12530 and r-efi 332 (not built for x86_64 Linux), linux-raw-sys 6930 and rustix 1610 (syscall layer under tempfile), libc 800, nvml-wrapper-sys 794 and nvml-wrapper 317 (FFI to NVML); wrapcenum-derive has 1 dependent and nvml-wrapper 149, the narrowest base in the lock, both under the rust-nvml organisation",
+        "llama-swap: pinned v271, newest v272 (2026-11-10), one release; none of its changes reaches ai-ctl: ai-ctl writes no user metadata beside capabilities (#1326), reads /upstream/<model>/props, never the top-level /props (#1327), declares no decision capability (#1318); #1319 (a relayed 100 Continue latching the recorders, read in v271 internal/server/log.go:134-146) needs a client sending Expect: 100-continue, which ai-ctl's HTTP/1.0 client never does (src/infrastructure/http.rs:107), and the curl uploads of README.md:253 and docs/image/stable-diffusion-cpp.md:507 read the body with -s and never the status, so they show the same answer either way",
+        "llama.cpp: built b12227, newest b12328, 58 releases read; none names #29680 or keep-alive, which the setting of src/domain/gateway_config.rs:68-77 waits for; b12238 adds /v1/audio/speech to llama-server, a route ai-ctl serves through audio.cpp and neither works around nor bounds; b12274 and b12284 add an FP8 KV cache and CUDA FP8, a new value for cache-type-k/-v that the inventory does not restrict (q8_0 shipped); b12233 makes --ple an alias of --shard, a flag the reserved list does not touch; nothing reaches the recipe's CMake flags",
+        "stable-diffusion.cpp: built master-1071-cfdf3cf, newest master-1091-b9d7176, 12 releases with empty notes, 20 commits read; none touches the API key, the failed listen or the address reuse its three patches carry; #2316 makes the async job queue limits configurable, which ai-ctl neither sets nor bounds; the MiniMax-H3 and Sol-H3-VAE work concerns models the inventory does not ship",
+        "audio.cpp: built v0.9.4, at its newest",
+        "whisper.cpp: built v1.9.5, at its newest"
+      ]
+    },
+    {
+      "type": "session",
+      "effort": "high",
+      "state": "answered",
+      "read": {
+        "in full": [],
+        "in part": [
+          "the checks' logs",
+          "cargo-deny.log",
+          "mutants.out/outcomes.json",
+          "regression.log"
+        ]
+      },
+      "left_out": [
+        "the missed mutants: none; cargo mutants caught 58 of 75, 17 unviable",
+        "the recorded mutants: 82 caught at `docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12, none missed or gone",
+        "up_a_proxied_request_and_down: skipped itself, llama-swap v271 recording no checked digest; its coverage did not run on this machine"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo fmt --check",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo test",
+      "result": "exit 0: 937 passed, 0 failed, 0 ignored; up_a_proxied_request_and_down skipped itself, llama-swap v271 recording no checked digest until a gateway install by this ai-ctl"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py",
+      "result": "exit 0: 34 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py",
+      "result": "exit 0: 14 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py",
+      "result": "exit 0: 34 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py",
+      "result": "exit 0: 53 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py",
+      "result": "exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding"
+    },
+    {
+      "command": "python3 .github/scripts/test_check_release.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "sid.py check .",
+      "result": "exit 0: cites 0, names 0, other 0"
+    },
+    {
+      "command": "cargo deny check",
+      "result": "exit 0: advisories, bans, licenses and sources ok; three duplicate warnings, syn, thiserror and thiserror-impl, the session's finding"
+    },
+    {
+      "command": "scripts/dependencies.py",
+      "result": "exit 0: 65 crates, 9 direct, none to update within the requirements; llama-swap v271 to v272, llama.cpp b12227 to b12328, 58 releases"
+    },
+    {
+      "command": "scripts/regression.py",
+      "result": "exit 0: 82 recorded mutants at `docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12, all caught"
+    }
+  ],
+  "mutants": {
+    "diff": "the scope's diff",
+    "tested": 75,
+    "missed": 0,
+    "caught": 58,
+    "unviable": 17,
+    "seconds": 322,
+    "given_to": null
+  },
+  "status": {
+    "stage": "complete",
+    "note": "findings 1 and 2 fixed in `fix(gateway): refuse a llama-swap off the pin that no ai-ctl checked` of 2026-11-13 and `fix(gateway): count a gateway whose binary was replaced as outdated` of 2026-11-13, 3 and 4 known; the regression run at each fix's commit: 88 recorded mutants caught at `fix(gateway): refuse a llama-swap off the pin that no ai-ctl checked` of 2026-11-13, 90 at `fix(gateway): count a gateway whose binary was replaced as outdated` of 2026-11-13, none missed or gone"
+  },
+  "findings": [
+    {
+      "number": 1,
+      "axes": [
+        "security",
+        "bugs"
+      ],
+      "reviewers": [
+        "review-security"
+      ],
+      "where": [
+        "src/application/lifecycle.rs:777-785 (Inspector::target)",
+        "src/application/doctor.rs:206-215 (Doctor::llama_swap_check)",
+        "src/application/lifecycle.rs:1196-1203 (tests::up_needs_a_llama_swap_that_reads_the_capacity_router)",
+        "docs/security.md:285-296 (top level)",
+        "docs/commands.md:446-449 (top level)"
+      ],
+      "title": "up still runs a llama-swap behind or ahead of the pin that no pinned digest ever checked, the v270 the phase-2 finding named among them",
+      "cause": "the fix of the phase-2 review's finding 8 checks the `archive.sha256` record only when the current release is PINNED.release (`release != PINNED.release || digest == pinned`); any other release from v267 on passes target with no look at its record, and doctor's Behind and Ahead arms only warn. A v267 to v270, or a v272 and later, that ai-ctl 0.2.0's `gateway install --version <N>` installed against the checksums file published on the same release page (0.2.0's DigestSource::Published, \"detects a corrupt download, not a replaced one\"), or with a digest the user typed, has no record, and once `current` names it `up` starts it as the gateway, with the key and every prompt",
+      "effect": "wrong action",
+      "severity": "low",
+      "consequence": "attacker: whoever writes a llama-swap release's archive and its checksums file (§1, last row), before the user ran 0.2.0's `--version` on it. The control docs/security.md states, the pinned SHA-256 as \"the only source of trust\" and llama-swap \"updated only through ai-ctl's pin\", is applied after the upgrade to v271 alone: a v270 carried over from 0.2.0 as `current` runs under `up` with no record, where an unrecorded v271 is refused, the exact case the finding this fixes named (\"a v270 or v271\"). The binary already ran once at its install (`-version`), as the user, so a refusal now takes back no code already run: the control is weakened, no damage shown. On this machine `current` names v271, and v270 sits beside it unrecorded",
+      "fix": "have target, and doctor's Behind and Ahead arms, accept a release other than the pin only when its directory holds a record (only an ai-ctl from 0.3.0 on writes one, and only after checking the archive against its own pin); without one, up refuses it with `ai-ctl gateway install` and doctor fails, as for the pinned release; say so in docs/security.md §7 and in `up`'s refusals in docs/commands.md",
+      "test": "up refuses a current v270 whose directory records no digest (FakeReleases::current(\"v270\") with record None), where today it starts the gateway; doctor fails on the same",
+      "evidence": "reproduced: in a copy of `docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12, a test beside up_refuses_the_pinned_release_never_checked_against_its_pin with `FakeReleases::current(release)` and `record = None` for \"v270\" and \"v272\": `world.up()` returns Ok and `gateway.started` is 1 for each (cargo test --lib review_probe: ok); read: src/application/lifecycle.rs:781-785, the `release != PINNED.release ||` short-circuit; base src/application/gateway.rs at `chore(release): release 0.2.0` of 2026-11-06, DigestSource::Published and Given for any release but the pinned v263; `ls -la ~/.local/share/ai-ctl/llama-swap/v270/` holds `llama-swap` and no `archive.sha256`",
+      "origin": "new",
+      "floor": "above",
+      "fingerprint": "security | docs/commands.md + docs/security.md + src/application/doctor.rs + src/application/lifecycle.rs | Doctor::llama_swap_check + Inspector::target + tests::up_needs_a_llama_swap_that_reads_the_capacity_router + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 1,
+      "note": "the verifier's fix, the user's word on 2026-11-13; sibling paths: status reads the same target, so a gateway on an unrecorded release shows its configuration unknown with the refusal; down never reads the record; build outdated's llama-swap line compares releases, never their check, which doctor and up judge, and docs/commands.md now says so; a record that cannot be read refuses up and fails doctor on every standing, the fake's digest_fails added for it",
+      "fixed_in": "fix(gateway): refuse a llama-swap off the pin that no ai-ctl checked"
+    },
+    {
+      "number": 2,
+      "axes": [
+        "security",
+        "bugs"
+      ],
+      "reviewers": [
+        "review-security"
+      ],
+      "where": [
+        "src/infrastructure/gateway_store.rs:155-172 (FsGatewayStore::publish)",
+        "src/application/gateway.rs:77-97 (Installer::install)",
+        "src/infrastructure/gateway_process.rs:102-120 (liveness_of)",
+        "src/application/lifecycle.rs:795-799 (Inspector::is_current)",
+        "docs/security.md:291-296 (top level)"
+      ],
+      "title": "gateway install re-checks the pinned release under a running gateway, which then keeps the never-checked binary while status, up and doctor take it for the checked one",
+      "cause": "since this scope, publish removes an installed release's directory when it records no digest or another one and renames the re-checked one into the same path; a gateway started from the old `v271/llama-swap` keeps running its unlinked inode. liveness_of takes `<path> (deleted)` for the recorded binary, and is_current compares only the recorded path with target's, the same path, so the running gateway reads as Running on the current configuration; install neither takes the gateway's lock nor says a gateway runs the binary it replaced",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "attacker: as in the finding above, whoever wrote a release archive an older ai-ctl installed without the pinned digest. The documented control, \"`up` refuses to run it until then\", holds for a new start only: after the remedy doctor gives, `ai-ctl gateway install`, the gateway that runs the never-checked binary keeps the key and the prompts until the user happens to run `down`, while `up` answers that the gateway runs, `status` shows the configuration current and doctor's llama-swap check passes. The binary had already run as the user, so no damage is shown beyond what the install allowed; the user is told the control is in force when the process it guards is not covered",
+      "fix": "Inspector::is_current counts a gateway whose /proc/<pid>/exe ends in ` (deleted)` as Outdated (the binary was replaced since it started), so status, doctor and up name `ai-ctl down && ai-ctl up`; and `gateway install`, when a recorded gateway runs from the release it replaces, warns that it runs the old binary until restarted",
+      "test": "with a gateway record whose process runs a binary since replaced (the probe below as a fixture), status reports the configuration Outdated and up refuses with `ai-ctl down`, then `ai-ctl up`, where today they report it current",
+      "evidence": "reproduced: in a copy of `docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12, a test that starts a copy of /usr/bin/sleep as `<root>/llama-swap/v271/llama-swap` with no record, then FsGatewayStore::stage, copies a binary in, and publish(&staged, &pinned): digest(v271) becomes the pinned one, /proc/<pid>/exe reads `<root>/llama-swap/v271/llama-swap (deleted)`, liveness_of(pid, store.binary(v271)) returns Liveness::Running, and store.binary(v271) equals the path the process started from (cargo test --lib review_probe: ok; child killed and reaped); read: src/application/lifecycle.rs:250-263, up returning Up::Running when is_current holds and the gateway answers",
+      "origin": "mixed",
+      "floor": "above",
+      "fingerprint": "security | docs/security.md + src/application/gateway.rs + src/application/lifecycle.rs + src/infrastructure/gateway_process.rs + src/infrastructure/gateway_store.rs | FsGatewayStore::publish + Inspector::is_current + Installer::install + liveness_of + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 2,
+      "note": "the verifier's fix, the user's word on 2026-11-13: is_current alone reads (deleted), so up refuses, status shows it outdated and doctor's gateway check, which reads status, warns with ai-ctl down && ai-ctl up; liveness_of unchanged so that down still stops the replaced gateway, as a_gateway_run_through_a_linked_directory_runs_until_it_exits holds; a program that cannot be read leaves the configuration unknown; the warning in gateway install review-security proposed dropped, which would hand the installer the gateway's record and the process table",
+      "fixed_in": "fix(gateway): count a gateway whose binary was replaced as outdated"
+    },
+    {
+      "number": 3,
+      "axes": [
+        "tests"
+      ],
+      "reviewers": [
+        "session"
+      ],
+      "where": [
+        ".claude/skills/reviewing-delivered-code/evals/test_guard.py:335-342 (Sandbox::child)"
+      ],
+      "title": "test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run",
+      "cause": "child() opens the listener with `stdout=subprocess.PIPE` and registers its kill and wait as cleanups, never the pipe's close, so unittest's cleanup prints `ResourceWarning: unclosed file <_io.TextIOWrapper name=3>`",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "no effect on the guard; the check's output carries a warning every run, beside which a new one passes unread",
+      "fix": "`self.addCleanup(process.stdout.close)` after the kill and wait cleanups, as orphan() closes its shell's stdout",
+      "test": "none: the check's own output, the warning gone",
+      "evidence": "reproduced: `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py` at `docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12, 37 tests OK with `ResourceWarning: unclosed file <_io.TextIOWrapper name=3 encoding='UTF-8'>`",
+      "origin": "older",
+      "floor": "below",
+      "fingerprint": "tests | .claude/skills/reviewing-delivered-code/evals/test_guard.py | Sandbox::child",
+      "matches": [
+        {
+          "review": "2026-11-12-review-skill-v2-5-phase-2",
+          "finding": 16,
+          "state": "open",
+          "title": "test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run"
+        }
+      ],
+      "verdict": null,
+      "action": "known",
+      "batch": null,
+      "note": "2026-11-12-review-skill-v2-5-phase-2 finding 16",
+      "fixed_in": null
+    },
+    {
+      "number": 4,
+      "axes": [
+        "dependencies"
+      ],
+      "reviewers": [
+        "session"
+      ],
+      "where": [
+        "deny.toml:17-18 (top level)",
+        "Cargo.lock:286 (top level)"
+      ],
+      "title": "cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds",
+      "cause": "nvml-wrapper 0.13.0, its newest release, depends on thiserror 1 and, through wrapcenum-derive and darling 0.20, on syn 2, where ai-ctl's other crates take thiserror 2 and syn 3; deny.toml warns on multiple versions and names no exception",
+      "effect": "none",
+      "severity": null,
+      "consequence": "none today: advisories, bans, licenses and sources ok, exit 0; the check prints three warnings each run, beside which a fourth would pass unread",
+      "fix": "deny.toml's [bans] skips syn 2.0.119, thiserror 1.0.69 and thiserror-impl 1.0.69 by their exact versions, nvml-wrapper 0.13.0 as the reason",
+      "test": "none: cargo deny check's output, the three warnings gone",
+      "evidence": "reproduced: cargo deny check at `docs(review): complete the review of review-skill-v2-5 phase 2` of 2026-11-12, exit 0, `warning[duplicate]` for syn, thiserror and thiserror-impl, each older copy's tree ending in nvml-wrapper v0.13.0",
+      "origin": "older",
+      "floor": "below",
+      "fingerprint": "dependencies | Cargo.lock + deny.toml | top level",
+      "matches": [
+        {
+          "review": "2026-11-12-review-skill-v2-5-phase-2",
+          "finding": 17,
+          "state": "open",
+          "title": "cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds"
+        }
+      ],
+      "verdict": null,
+      "action": "known",
+      "batch": null,
+      "note": "2026-11-12-review-skill-v2-5-phase-2 finding 17",
+      "fixed_in": null
+    }
+  ]
+}

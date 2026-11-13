@@ -1,0 +1,154 @@
+{
+  "review": "2026-11-06-fresh-history-and-ci-phase-2",
+  "scope": {
+    "kind": "phase",
+    "roadmap": "fresh-history-and-ci",
+    "phase": 2,
+    "base": "`docs(fresh-history-and-ci): close phase 1` of 2026-11-06",
+    "end": "`docs: describe what the CI runs and what production installs` of 2026-11-06",
+    "hunks": 1,
+    "lines": {
+      "added": 4,
+      "removed": 8
+    }
+  },
+  "go_ahead": {
+    "by": "the user",
+    "text": "Oui, low puis high",
+    "tier": "low"
+  },
+  "agents": [
+    {
+      "type": "review-verifier",
+      "effort": "low",
+      "state": "answered",
+      "read": {
+        "in full": [],
+        "in part": [
+          "docs/security.md (lines 370-410)",
+          "scope.txt (lines 1-5)",
+          "findings.md"
+        ]
+      },
+      "left_out": []
+    },
+    {
+      "type": "session",
+      "effort": "low",
+      "state": "answered",
+      "read": {
+        "in full": [
+          ".github/workflows/release.yml",
+          ".github/scripts/check_release.py",
+          "rust-toolchain.toml",
+          "docs/release.md"
+        ],
+        "in part": [
+          "src/infrastructure/gateway_process.rs (lines 400-470)",
+          ".github/scripts/test_check_release.py (its test names and imports)",
+          "docs/security.md (§1's table, §7 from line 242 to 395)"
+        ]
+      },
+      "left_out": [
+        "docs/toolchain.md: its new record entry lists the commands run on 2026-11-06, checked when written",
+        "the roadmap's folder: the roadmap's own files, records outside the code's reading"
+      ],
+      "facts": [
+        "the one code hunk, src/infrastructure/gateway_process.rs:450-453 (kernel_address), keeps the behaviour: as_chunks::<4> on 4 or 16 octets leaves no remainder, as chunks_exact did, and both of cargo mutants --in-diff's mutants are caught",
+        "the workflow passes the tag to the guard through the environment, not into the script's text; its top-level permissions are none, the build job reads, the release job alone writes and runs only gh; each action is pinned by its commit, the image by its digest, rustup-init and cargo-deny by their SHA-256",
+        "the guard refuses a tag not of the form vX.Y.Z, another version than Cargo.toml's [package], and a version whose entry is missing, given twice or not a real YYYY-MM-DD date; committing-changes makes annotated tags, which --notes-from-tag needs",
+        "the workflow's run by hand on GitHub on 2026-11-06, at `test(ci): leave no bytecode cache from the release guard's tests`, whose code is the scope's end, the later commits changing documents alone, was green from end to end, and no test skipped itself there or here"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo fmt --check",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo test",
+      "result": "exit 0: 867 passed, 0 failed, 0 ignored; no test skipped itself, the gateway's test end to end run with llama-swap v263"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py",
+      "result": "exit 0: 30 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py",
+      "result": "exit 0: 14 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py",
+      "result": "exit 0: 32 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py",
+      "result": "exit 0: 25 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py",
+      "result": "exit 0: 37 tests"
+    },
+    {
+      "command": "python3 .github/scripts/test_check_release.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "sid.py check .",
+      "result": "exit 0: cites 0, names 0"
+    }
+  ],
+  "mutants": {
+    "diff": "the scope's diff",
+    "tested": 2,
+    "missed": 0,
+    "caught": 2,
+    "unviable": 0,
+    "seconds": 20,
+    "given_to": null
+  },
+  "status": {
+    "stage": "complete",
+    "note": "one finding, the session's, confirmed and fixed: security.md named one of the four scopes of gh's token; the recorded mutants, run again at the fix, 58 caught"
+  },
+  "findings": [
+    {
+      "number": 1,
+      "axes": [
+        "security"
+      ],
+      "reviewers": [
+        "session"
+      ],
+      "where": [
+        "docs/security.md:390 (top level)"
+      ],
+      "title": "security.md understates the reach of gh's token",
+      "cause": "the subsection \"ai-ctl Itself\" gives gh's token the scope `repo` alone, where `gh auth login` with SSH as git protocol granted `repo`, `read:org`, `gist` and `admin:public_key`",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "a reader weighing what code run as the user gains from the keyring misses that the token can add an SSH key to the account, a way back in that outlives the key in the agent",
+      "fix": "name the four scopes, `admin:public_key` coming from the login's offer to upload an SSH key and removable with `gh auth refresh --remove-scopes admin:public_key`, the three others gh's minimum",
+      "test": "none: a document; its proof is `gh auth status`'s scopes line against the text",
+      "evidence": "reproduced: `gh auth status` on 2026-11-06 prints \"Token scopes: 'admin:public_key', 'gist', 'read:org', 'repo'\"; `gh auth refresh --help` of gh 2.97.0 says the minimum set, `repo`, `read:org` and `gist`, cannot be removed",
+      "origin": "new",
+      "floor": "above",
+      "fingerprint": "security | docs/security.md | top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 1,
+      "note": null,
+      "fixed_in": "docs(security): name every scope of gh's token"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+Available devices:
+  CUDA0: NVIDIA GeForce RTX 5090 Laptop GPU (24075 MiB, 23798 MiB free)

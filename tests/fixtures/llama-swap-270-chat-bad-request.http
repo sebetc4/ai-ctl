@@ -1,0 +1,7 @@
+HTTP/1.0 400 Bad Request
+Content-Length: 100
+Content-Type: application/json; charset=utf-8
+Server: llama.cpp
+Date: Sun, 08 Nov 2026 07:20:01 GMT
+
+{"error":{"code":400,"message":"Expected 'messages' to be an array","type":"invalid_request_error"}}

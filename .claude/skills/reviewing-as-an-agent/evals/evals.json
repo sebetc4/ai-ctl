@@ -1,0 +1,95 @@
+{
+  "skill_name": "reviewing-as-an-agent",
+  "triggers": [
+    {
+      "query": "la roadmap v2 est fermée : avant d'ouvrir la suivante, fais une review complète du code qu'elle a livré, sécurité d'abord, avec un plan de corrections par lots. Effort high, je valide le coût.",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "review post-session : on a livré `ai-ctl bench --compare` sur les quatre derniers commits, de 3f1c2aa à HEAD. Effort medium.",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "vérifie la dette technique dans ce qu'on a livré depuis début octobre : code mort, code écrit pour plus tard, legacy sans obligation, duplications",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "grosse session ce matin sur le gateway (install, status, prune) : passe le code livré en revue sur tous les axes avant que je continue",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "on reprend la review commencée hier, docs/reviews/delivered-code/2026-10-13-gateway-prune.md : il reste la passe 2",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "Review the code the build-pipeline roadmap delivered now that it is closed: bugs, error handling, security, tests, performance. Write the report with a fix plan, high effort.",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "la phase 5 vient de clore la roadmap bench-v3, je veux une revue du code de toute la roadmap, mais en effort low, juste les problèmes sérieux",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "est-ce que le code livré par la session d'hier sur doctor tient la route ? fais une vraie revue, chaque finding vérifié par un autre agent",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "audit de la dette technique laissée par les trois dernières sessions dans src/infrastructure/, avec le rapport dans docs/reviews comme d'habitude",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "fais la review du code de la roadmap v2",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "après cette longue session de refacto des ports, je veux une review post-session : architecture, conventions et tests surtout, effort high",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "avant de pousser la v0.2.0, fais le point sur nos crates : advisories RustSec, versions yankées, crates plus maintenues, et les mises à jour dans et au-delà des contraintes de Cargo.toml",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "Audit our dependencies: which crates in Cargo.lock are unmaintained, rest on a single maintainer or lag behind their newest release, and which we should update or replace.",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "revue des dépendances : les crates directes et transitives, plus le retard de llama-swap et des sources de llama.cpp et whisper.cpp sur leur dernière release",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "la phase 2 de bench-v3 est finie : fais la review de ses hunks et de leurs appelants avant que je la ferme, et corrige dans la phase ce qui doit l'être",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "review de fin de phase : la phase 3 de models-sync a changé src/application/models.rs et ses tests, je la ferme après",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "dernière phase de bench-v3 terminée : lance la passe de sécurité de clôture sur le diff de la roadmap et rejoue les mutants enregistrés pendant les correctifs",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    },
+    {
+      "query": "Security pass only, no full review, on the code the audio-image-backends roadmap delivered: who can reach each command, path and port it added.",
+      "should_trigger": false,
+      "near": "a review request, which reviewing-delivered-code takes; this skill's rules are preloaded into that skill's agents, never chosen for a request"
+    }
+  ]
+}

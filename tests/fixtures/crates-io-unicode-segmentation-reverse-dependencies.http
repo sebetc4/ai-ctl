@@ -1,0 +1,21 @@
+HTTP/2 200 
+access-control-allow-origin: *
+content-type: application/json
+nel: {"report_to":"heroku-nel","response_headers":["Via"],"max_age":3600,"success_fraction":0.01,"failure_fraction":0.1}
+report-to: {"group":"heroku-nel","endpoints":[{"url":"https://nel.heroku.com/reports?s=UO2fP7wKRfk8c9UDrS8jKDkjiQzOJspcmHZzIFzf5Qw%3D\u0026sid=af571f24-03ee-46d1-9f90-ab9030c2c74c\u0026ts=1793633617"}],"max_age":3600}
+reporting-endpoints: heroku-nel="https://nel.heroku.com/reports?s=UO2fP7wKRfk8c9UDrS8jKDkjiQzOJspcmHZzIFzf5Qw%3D&sid=af571f24-03ee-46d1-9f90-ab9030c2c74c&ts=1793633617"
+server: Heroku
+via: 1.1 heroku-router, 1.1 varnish
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+accept-ranges: bytes
+date: Mon, 02 Nov 2026 15:33:37 GMT
+x-served-by: cache-par-lfpb1150098-PAR
+x-cache: MISS
+x-cache-hits: 0
+vary: accept-encoding
+strict-transport-security: max-age=31536000; includeSubDomains
+content-length: 1774
+
+{"dependencies":[{"id":34647748,"version_id":3091030,"crate_id":"unicode-segmentation","req":"^1.9.0","optional":false,"default_features":true,"features":[],"target":null,"kind":"normal","downloads":618142181}],"versions":[{"id":3091030,"crate":"convert_case","num":"0.12.0","dl_path":"/api/v1/crates/convert_case/0.12.0/download","readme_path":"/api/v1/crates/convert_case/0.12.0/readme","updated_at":"2026-08-27T10:11:15.495987Z","created_at":"2026-08-27T10:11:15.495987Z","downloads":4480690,"features":{},"yanked":false,"yank_message":null,"lib_links":null,"license":"MIT","links":{"dependencies":"/api/v1/crates/convert_case/0.12.0/dependencies","version_downloads":"/api/v1/crates/convert_case/0.12.0/downloads","authors":"/api/v1/crates/convert_case/0.12.0/authors"},"crate_size":35772,"published_by":{"id":85906,"login":"rutrum","name":"rutrum","avatar":"https://avatars.githubusercontent.com/u/23003873?v=4","url":"https://github.com/rutrum","github_username_matches":true,"created_at":"2016-10-22T20:12:04Z"},"audit_actions":[{"action":"publish","user":{"id":85906,"login":"rutrum","name":"rutrum","avatar":"https://avatars.githubusercontent.com/u/23003873?v=4","url":"https://github.com/rutrum","github_username_matches":true,"created_at":"2016-10-22T20:12:04Z"},"time":"2026-08-27T10:11:15.495987Z"}],"checksum":"1af709f1f33454bf52eadfc8c78b3b9ef9cb26fb54d16dc9cd9a7299f899fd1b","rust_version":null,"has_lib":true,"bin_names":[],"edition":"2021","description":"Convert strings into any case","homepage":null,"documentation":null,"repository":"https://github.com/rutrum/convert-case","trustpub_data":null,"linecounts":{"languages":{"Rust":{"code_lines":1151,"comment_lines":37,"files":5}},"total_code_lines":1151,"total_comment_lines":37}}],"meta":{"total":2090}}

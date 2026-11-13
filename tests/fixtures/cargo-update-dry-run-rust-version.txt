@@ -1,0 +1,24 @@
+    Updating crates.io index
+     Locking 12 packages to latest Rust 1.70 compatible versions
+      Adding anstream v0.6.21
+      Adding anstyle v1.0.14
+      Adding anstyle-parse v0.2.7
+      Adding anstyle-query v1.1.5
+      Adding anstyle-wincon v3.0.11
+    Removing bitflags v1.3.2
+    Updating clap v4.0.32 -> v4.4.18 (available: v4.6.7, requires Rust 1.85)
+      Adding clap_builder v4.4.18 (available: v4.6.7, requires Rust 1.85)
+    Updating clap_lex v0.3.3 -> v0.6.0
+      Adding colorchoice v1.0.5
+    Removing hermit-abi v0.5.3
+    Removing is-terminal v0.4.17
+      Adding is_terminal_polyfill v1.70.2
+    Removing libc v0.2.191
+      Adding once_cell_polyfill v1.70.2
+    Removing os_str_bytes v6.6.1
+    Removing termcolor v1.4.1
+      Adding utf8parse v0.2.2
+    Removing winapi-util v0.1.11
+   Unchanged windows-link v0.2.1 (requires Rust 1.71)
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run

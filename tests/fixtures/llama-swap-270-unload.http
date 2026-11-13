@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Content-Type: application/json
+Date: Sat, 07 Nov 2026 19:20:36 GMT
+Content-Length: 13
+
+{"msg":"ok"}

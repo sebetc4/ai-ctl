@@ -1,0 +1,28 @@
+HTTP/2 200 
+date: Tue, 10 Nov 2026 06:44:58 GMT
+content-type: application/json; charset=utf-8
+cache-control: public, max-age=60, s-maxage=60
+vary: Accept,Accept-Encoding, Accept, X-Requested-With
+etag: W/"4e291e14928f83d73a420cae106d4f2414ece4140b05ba4cb7522532ddc1a3a1"
+last-modified: Mon, 09 Nov 2026 17:58:04 GMT
+x-github-media-type: github.v3; format=json
+x-github-api-version-selected: 2022-11-28
+access-control-expose-headers: ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset, Warning
+access-control-allow-origin: *
+strict-transport-security: max-age=31536000; includeSubdomains; preload
+x-frame-options: deny
+x-content-type-options: nosniff
+x-xss-protection: 0
+referrer-policy: origin-when-cross-origin, strict-origin-when-cross-origin
+content-security-policy: default-src 'none'
+server: github.com
+accept-ranges: bytes
+x-ratelimit-limit: 60
+x-ratelimit-remaining: 52
+x-ratelimit-used: 8
+x-ratelimit-resource: core
+x-ratelimit-reset: 1794296571
+x-github-request-id: FEB0:11A474:942621A:DC7FB3E:6AF2BD6A
+x-github-edge-region: fra
+
+[{"sha":"a3c49b13be5a64a0b4da2b576af3a17e8ae1ccbf","commit":{"committer":{"date":"2026-11-09T17:58:04Z"},"message":"refactor: unify ggml operation helpers around runner context (#2314)"}},{"sha":"73fef08224c50a49961004dc8c6fee2c0f640bcb","commit":{"committer":{"date":"2026-11-09T15:41:50Z"},"message":"feat: update server web UI with streaming prompt enhancement (#2312)"}},{"sha":"d36f72bbe5ec5675da3846e3db966ceb0791d565","commit":{"committer":{"date":"2026-11-09T15:41:14Z"},"message":"docs: add NodeTool link to README (#2277)"}},{"sha":"46da352af0f16a86a1993e1cc938acb4d1e43a34","commit":{"committer":{"date":"2026-11-09T15:40:26Z"},"message":"fix: size layer-split ranges in proportion to device capacity (#2309)"}},{"sha":"c44cbec722347adb351a81068f23cfff676d46ce","commit":{"committer":{"date":"2026-11-09T15:39:31Z"},"message":"docs: add Quo to UIs (#2279)"}},{"sha":"fbb381da250d47fabb56c3ab5adfc0c2f76ef7e0","commit":{"committer":{"date":"2026-11-09T15:34:21Z"},"message":"docs: add Prisme to the UIs list (#2274)"}},{"sha":"991f82558366b35e16ffabf376fa2cba298c12d3","commit":{"committer":{"date":"2026-11-09T14:33:43Z"},"message":"fix: limit default MSVC compilation parallelism"}},{"sha":"008b9a20ca9a3ab1c5d51e8a3456fc0f34435566","commit":{"committer":{"date":"2026-11-09T14:21:46Z"},"message":"fix: apply MiniMax-H3 Diffusers LoRA token_refiner weights (#2306)"}},{"sha":"cfdf3cf037a9e9ea74f1ce1793e9daf25670baca","commit":{"committer":{"date":"2026-11-09T14:16:04Z"},"message":"fix: merge LoRAs in F32 when convert changes the tensor type (#2302)"}}]

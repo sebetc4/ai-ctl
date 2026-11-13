@@ -1,0 +1,415 @@
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/findings.json b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/findings.json
+index e44d2f1..e169e40 100644
+--- a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/findings.json
++++ b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/findings.json
+@@ -78,8 +78,8 @@
+     "given_to": "review-tests"
+   },
+   "status": {
+-    "stage": "fixing",
+-    "note": "verified and triaged; the user answered the one hard case, finding 8; batches 1 to 5 next"
++    "stage": "complete",
++    "note": "every finding fixed, registered or rejected"
+   },
+   "findings": [
+     {
+@@ -111,7 +111,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 2,
+@@ -141,7 +141,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 3,
+@@ -170,7 +170,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 4,
+@@ -201,7 +201,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 5,
+@@ -231,7 +231,7 @@
+       "action": "fix at once",
+       "batch": 3,
+       "note": "below the floor, new code, a local fix",
+-      "fixed_in": null
++      "fixed_in": "refactor(gateway): tidy gateway prune"
+     },
+     {
+       "number": 6,
+@@ -290,7 +290,7 @@
+       "action": "fix at once",
+       "batch": 3,
+       "note": "below the floor, new code, a local fix",
+-      "fixed_in": null
++      "fixed_in": "refactor(gateway): tidy gateway prune"
+     },
+     {
+       "number": 8,
+@@ -319,7 +319,7 @@
+       "action": "fix",
+       "batch": 5,
+       "note": "a hard case: the fix removes a name the user can type; the user, 2026-10-31: \"oui, on retire l'alias\"",
+-      "fixed_in": null
++      "fixed_in": "refactor(cli): remove the clean alias of gateway prune"
+     },
+     {
+       "number": 9,
+@@ -348,7 +348,7 @@
+       "action": "fix at once",
+       "batch": 3,
+       "note": "below the floor, new code, a local fix",
+-      "fixed_in": null
++      "fixed_in": "refactor(gateway): tidy gateway prune"
+     },
+     {
+       "number": 10,
+@@ -379,7 +379,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 11,
+@@ -410,7 +410,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 12,
+@@ -439,7 +439,7 @@
+       "action": "fix at once",
+       "batch": 1,
+       "note": "below the floor; the lines batch 1 rewrites for finding 10",
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 13,
+@@ -471,7 +471,7 @@
+       "action": "fix",
+       "batch": 4,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "docs(commands): document gateway prune"
+     },
+     {
+       "number": 14,
+@@ -502,7 +502,7 @@
+       "action": "fix",
+       "batch": 2,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune spares the release the running gateway runs"
+     },
+     {
+       "number": 15,
+@@ -532,7 +532,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "fix(gateway): prune releases by number, and report a failed removal"
+     },
+     {
+       "number": 16,
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/report.md b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/report.md
+index 9c0818d..47056de 100644
+--- a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/report.md
++++ b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/report.md
+@@ -1,6 +1,6 @@
+ # Review: 2026-10-31-gateway-releases-phase-1
+ 
+-**Status:** fixing — verified and triaged; the user answered the one hard case, finding 8; batches 1 to 5 next
++**Status:** complete — every finding fixed, registered or rejected
+ **Scope:** roadmap `gateway-releases`, phase 1, {{commit:0}}..{{commit:4}}: 18 hunks, +210 −6 lines of code
+ **Go-ahead:** the request, tier `medium`
+ 
+@@ -63,6 +63,7 @@ evidence: reproduced: repro/1/test.patch, releases_come_by_number and prune_goes
+ 
+ Reviewers: review-correctness, review-tests. Origin: new. Floor: above. Fingerprint: `bugs | src/domain/gateway.rs + src/infrastructure/gateway_store.rs | FsGatewayStore::releases + releases_to_prune`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 2. a data directory whose path holds a space makes prune remove other directories
+ 
+@@ -82,6 +83,7 @@ evidence: reproduced: repro/1/test.patch, a_removal_under_a_path_with_a_space_re
+ 
+ Reviewers: review-correctness, review-security. Origin: new. Floor: above. Fingerprint: `bugs | src/infrastructure/gateway_store.rs | FsGatewayStore::remove`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 3. a failed removal is reported as done
+ 
+@@ -101,6 +103,7 @@ evidence: read: remove's body; reproduced: rm on a read-only parent, Ok returned
+ 
+ Reviewers: review-correctness. Origin: new. Floor: above. Fingerprint: `error handling | src/infrastructure/gateway_store.rs | FsGatewayStore::remove`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 4. a name that is not UTF-8 makes releases panic
+ 
+@@ -120,6 +123,7 @@ evidence: read: the line; CLAUDE.md, Errors
+ 
+ Reviewers: review-correctness, review-structure. Origin: new. Floor: above. Fingerprint: `error handling | src/infrastructure/gateway_store.rs | FsGatewayStore::releases`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 5. presentation imports infrastructure::paths
+ 
+@@ -138,6 +142,7 @@ evidence: read: the import; CLAUDE.md, Layers
+ 
+ Reviewers: review-structure. Origin: new. Floor: below. Fingerprint: `architecture | src/presentation/gateway.rs | imports + run`.
+ Verdict: none, below the floor. Action: fix at once, batch 3. below the floor, new code, a local fix.
++Fixed in `refactor(gateway): tidy gateway prune`.
+ 
+ ### 6. releases_to_prune copies to_prune's selection
+ 
+@@ -174,6 +179,7 @@ evidence: read: a search for `newest(` finds its definition alone
+ 
+ Reviewers: review-cleanup. Origin: new. Floor: below. Fingerprint: `dead and legacy code | src/domain/gateway.rs | newest`.
+ Verdict: none, below the floor. Action: fix at once, batch 3. below the floor, new code, a local fix.
++Fixed in `refactor(gateway): tidy gateway prune`.
+ 
+ ### 8. the `clean` alias is kept for llm-ctl's habit, with no obligation
+ 
+@@ -192,6 +198,7 @@ evidence: read: the attribute and its comment
+ 
+ Reviewers: review-cleanup. Origin: new. Floor: below. Fingerprint: `dead and legacy code | src/presentation/cli.rs | GatewayAction::Prune`.
+ Verdict: none, below the floor. Action: fix, batch 5. a hard case: the fix removes a name the user can type; the user, 2026-10-31: "oui, on retire l'alias".
++Fixed in `refactor(cli): remove the clean alias of gateway prune`.
+ 
+ ### 9. a comment in French
+ 
+@@ -210,6 +217,7 @@ evidence: read: the line
+ 
+ Reviewers: review-structure. Origin: new. Floor: below. Fingerprint: `conventions | src/application/gateway.rs | prune`.
+ Verdict: none, below the floor. Action: fix at once, batch 3. below the floor, new code, a local fix.
++Fixed in `refactor(gateway): tidy gateway prune`.
+ 
+ ### 10. the reads of releases and size fail without their path
+ 
+@@ -229,6 +237,7 @@ evidence: read: the three lines; CLAUDE.md, Errors
+ 
+ Reviewers: review-correctness. Origin: new. Floor: above. Fingerprint: `error handling | src/infrastructure/gateway_store.rs | FsGatewayStore::releases + FsGatewayStore::size`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 11. the tests let the ordering bug through
+ 
+@@ -248,6 +257,7 @@ evidence: cargo mutants --in-diff: 15 missed, 6 caught, 4 unviable
+ 
+ Reviewers: review-tests. Origin: new. Floor: above. Fingerprint: `tests | src/application/gateway.rs + src/domain/gateway.rs + src/infrastructure/gateway_store.rs | FsGatewayStore::releases + tests::prune_keeps_the_newest_releases_and_the_current_one + tests::prune_removes_old_releases`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 12. size reads each file whole to count its bytes
+ 
+@@ -266,6 +276,7 @@ evidence: read: the loop
+ 
+ Reviewers: review-performance. Origin: new. Floor: below. Fingerprint: `performance | src/infrastructure/gateway_store.rs | FsGatewayStore::size`.
+ Verdict: none, below the floor. Action: fix at once, batch 1. below the floor; the lines batch 1 rewrites for finding 10.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 13. gateway prune is missing from docs/commands.md
+ 
+@@ -285,6 +296,7 @@ evidence: read: docs/commands.md and the phase file's task
+ 
+ Reviewers: review-structure. Origin: new. Floor: above. Fingerprint: `the CLI's contract | docs/commands.md + src/presentation/cli.rs | Concurrency + GatewayAction::Prune + command table + gateway`.
+ Verdict: CONFIRMED. Action: fix, batch 4.
++Fixed in `docs(commands): document gateway prune`.
+ 
+ ### 14. prune neither holds the gateway's lock nor spares the release the running gateway runs
+ 
+@@ -304,6 +316,7 @@ evidence: reproduced: in the verifier's copy, prune removes v262 under a FakeGat
+ 
+ Reviewers: review-correctness. Origin: new. Floor: above. Fingerprint: `bugs | src/application/build.rs + src/application/gateway.rs | prune`.
+ Verdict: CONFIRMED. Action: fix, batch 2.
++Fixed in `fix(gateway): prune spares the release the running gateway runs`.
+ 
+ ### 15. a failed removal does not name the releases removed before it
+ 
+@@ -323,6 +336,7 @@ evidence: read: both loops
+ 
+ Reviewers: review-correctness. Origin: new. Floor: above. Fingerprint: `error handling | src/application/build.rs + src/application/gateway.rs | prune`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `fix(gateway): prune releases by number, and report a failed removal`.
+ 
+ ### 16. the releases' lock says `installing` while prune holds it
+ 
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/repro/1/test.patch b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/repro/1/test.patch
+deleted file mode 100644
+index d33d905..0000000
+--- a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/repro/1/test.patch
++++ /dev/null
+@@ -1,100 +0,0 @@
+-diff --git a/src/domain/gateway.rs b/src/domain/gateway.rs
+-index ed7b438..0a134a7 100644
+---- a/src/domain/gateway.rs
+-+++ b/src/domain/gateway.rs
+-@@ -169,6 +169,15 @@ mod tests {
+-         assert!(releases_to_prune(&releases, None, 3).is_empty());
+-     }
+- 
+-+    #[test]
+-+    fn prune_goes_by_release_number() {
+-+        let releases = [Release(99), Release(100), Release(263)];
+-+        assert_eq!(
+-+            releases_to_prune(&releases, Some(Release(263)), 1),
+-+            [Release(100), Release(99)]
+-+        );
+-+    }
+-+
+-     /// The checksums file of v263.
+-     const CHECKSUMS: &str = include_str!("../../tests/fixtures/llama-swap-263-checksums.txt");
+- 
+-diff --git a/src/infrastructure/gateway_store.rs b/src/infrastructure/gateway_store.rs
+-index 4714d8a..490eb07 100644
+---- a/src/infrastructure/gateway_store.rs
+-+++ b/src/infrastructure/gateway_store.rs
+-@@ -220,6 +220,7 @@ impl GatewayStore for FsGatewayStore {
+- 
+- #[cfg(test)]
+- mod tests {
+-+    use std::os::unix::ffi::OsStrExt;
+-     use std::os::unix::fs::PermissionsExt;
+- 
+-     use super::*;
+-@@ -437,6 +438,67 @@ mod tests {
+-         assert!(f.store.set_current(release("263")).is_err());
+-     }
+- 
+-+    #[test]
+-+    fn releases_come_by_number() {
+-+        let f = fixture();
+-+        for name in ["v100", "v263", "v99", "v0264", ".staging-v264-42", "notes"] {
+-+            fs::create_dir_all(f.store.root.join(name)).unwrap();
+-+        }
+-+        let not_utf8 = std::ffi::OsStr::from_bytes(b"v26\xff");
+-+        fs::create_dir_all(f.store.root.join(not_utf8)).unwrap();
+-+        std::os::unix::fs::symlink("v263", f.store.root.join(CURRENT)).unwrap();
+-+        assert_eq!(
+-+            f.store.releases().unwrap(),
+-+            [release("99"), release("100"), release("263")]
+-+        );
+-+    }
+-+
+-+    #[test]
+-+    fn no_directory_holds_no_release() {
+-+        assert!(fixture().store.releases().unwrap().is_empty());
+-+    }
+-+
+-+    #[test]
+-+    fn a_release_measures_its_files() {
+-+        let f = fixture();
+-+        let dir = f.store.root.join("v263");
+-+        fs::create_dir_all(&dir).unwrap();
+-+        fs::write(dir.join(BINARY), [0; 1000]).unwrap();
+-+        fs::write(dir.join("LICENSE"), [0; 24]).unwrap();
+-+        assert_eq!(f.store.size(release("263")).unwrap(), 1024);
+-+    }
+-+
+-+    #[test]
+-+    fn a_removed_release_leaves_nothing() {
+-+        let f = fixture();
+-+        let dir = f.store.root.join("v262");
+-+        fs::create_dir_all(&dir).unwrap();
+-+        fs::write(dir.join(BINARY), "llama-swap").unwrap();
+-+        f.store.remove(release("262")).unwrap();
+-+        assert_eq!(fs::read_dir(&f.store.root).unwrap().count(), 0);
+-+    }
+-+
+-+    #[test]
+-+    fn a_removal_under_a_path_with_a_space_removes_the_release_alone() {
+-+        let root = tempfile::tempdir().unwrap();
+-+        let store = FsGatewayStore::new(root.path().join("My Data/llama-swap"));
+-+        let beside = root.path().join("My");
+-+        fs::create_dir_all(&beside).unwrap();
+-+        fs::create_dir_all(store.root.join("v262")).unwrap();
+-+        store.remove(release("262")).unwrap();
+-+        assert!(beside.is_dir());
+-+        assert!(!store.root.join("v262").exists());
+-+    }
+-+
+-+    #[test]
+-+    fn a_release_that_is_not_there_is_not_removed() {
+-+        let f = fixture();
+-+        fs::create_dir_all(&f.store.root).unwrap();
+-+        let message = format!("{:#}", f.store.remove(release("262")).unwrap_err());
+-+        assert!(message.starts_with("cannot remove "), "{message}");
+-+        assert!(message.ends_with("No such file or directory (os error 2)"), "{message}");
+-+    }
+-+
+-     #[test]
+-     fn a_second_lock_is_refused() {
+-         let f = fixture();
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+index 16b598d..856d9ec 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-1-prune-report.md
+@@ -17,6 +17,14 @@ leaves. The use case keeps the current release whatever `--keep` says; the comma
+ removed and the megabytes freed. Every task done, the checks green; the phase waits for its
+ review before its closure.
+ 
++The phase's review, `docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/`, the cost
++accepted in the request, tier `medium`: 18 hunks, 17 findings, 25 mutants of which 15 missed.
++Twelve findings confirmed, one refuted, a symbolic link that `rm -rf` does not follow; the user
++answered the one hard case, the `clean` alias, "oui, on retire l'alias". Five commits fix them,
++test-first, each diff through `cargo mutants --in-diff`, three mutants of kinds the tool does not
++write recorded in `mutants.json`. Findings 6 and 16 went to the register; `repro/` removed with
++the last fix.
++
+ ---
+ 
+ ## Decisions
+diff --git a/src/presentation/cli.rs b/src/presentation/cli.rs
+index 557ba21..c24aa8e 100644
+--- a/src/presentation/cli.rs
++++ b/src/presentation/cli.rs
+@@ -129,8 +129,6 @@ pub enum GatewayAction {
+     /// Print the configuration `up` gives llama-swap, generated from the inventory
+     Config,
+     /// Remove all but the newest releases; the current one is always kept
+-    // `clean` is the name llm-ctl gave it; kept so the old habit still works.
+-    #[command(alias = "clean")]
+     Prune {
+         /// How many of the newest releases to keep, besides the current one
+         #[arg(long, value_name = "N")]
+diff --git a/tests/cli.rs b/tests/cli.rs
+index 86d47ca..2cb8385 100644
+--- a/tests/cli.rs
++++ b/tests/cli.rs
+@@ -252,6 +252,7 @@ fn gateway_prune_needs_a_count() {
+         GatewayAction::Prune { keep: 1 }
+     ));
+     assert!(gateway_action(&["prune"]).is_err());
++    assert!(gateway_action(&["clean", "--keep", "1"]).is_err());
+ }
+ 
+ #[test]

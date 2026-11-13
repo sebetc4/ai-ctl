@@ -1,0 +1,8 @@
+    Updating crates.io index
+    Updating git repository `https://github.com/dtolnay/itoa`
+     Locking 2 packages to latest Rust 1.89 compatible versions
+    Updating equivalent v1.0.1 -> v1.0.3
+   Unchanged heck v0.4.1 (available: v0.5.0)
+    Updating unicode-segmentation v1.13.1 -> v1.13.3
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run

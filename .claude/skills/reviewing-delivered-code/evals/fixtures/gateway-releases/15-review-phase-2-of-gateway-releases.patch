@@ -1,0 +1,301 @@
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json
+new file mode 100644
+index 0000000..f56cf6b
+--- /dev/null
++++ b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json
+@@ -0,0 +1,174 @@
++{
++  "review": "2026-10-31-gateway-releases-phase-2",
++  "scope": {
++    "kind": "phase",
++    "roadmap": "gateway-releases",
++    "phase": 2,
++    "base": "{{commit:10}}",
++    "end": "{{commit:14}}",
++    "hunks": 29,
++    "lines": {
++      "added": 213,
++      "removed": 36
++    }
++  },
++  "go_ahead": {
++    "by": "the request",
++    "text": "phase 2 finie : review de clôture, je valide le coût.",
++    "tier": "medium"
++  },
++  "agents": [
++    {
++      "type": "review-security",
++      "effort": "medium",
++      "state": "answered"
++    },
++    {
++      "type": "review-correctness",
++      "effort": "medium",
++      "state": "answered"
++    },
++    {
++      "type": "review-tests",
++      "effort": "medium",
++      "state": "answered"
++    },
++    {
++      "type": "review-cleanup",
++      "effort": "medium",
++      "state": "answered"
++    },
++    {
++      "type": "review-structure",
++      "effort": "medium",
++      "state": "answered"
++    },
++    {
++      "type": "review-performance",
++      "effort": "medium",
++      "state": "answered"
++    },
++    {
++      "type": "review-verifier",
++      "effort": "medium",
++      "state": "answered"
++    }
++  ],
++  "checks": [
++    {
++      "command": "cargo fmt --check",
++      "result": "green"
++    },
++    {
++      "command": "cargo clippy --all-targets -- -D warnings",
++      "result": "green"
++    },
++    {
++      "command": "cargo test",
++      "result": "green: 811, 29 and 3 tests; gateway_lifecycle ran"
++    }
++  ],
++  "mutants": {
++    "diff": "{{commit:10}}..{{commit:14}}",
++    "tested": 14,
++    "missed": 1,
++    "caught": 9,
++    "unviable": 4,
++    "seconds": 38,
++    "given_to": "review-tests"
++  },
++  "status": {
++    "stage": "fixing",
++    "note": "verified and triaged; batches 1 and 2 next"
++  },
++  "findings": [
++    {
++      "number": 1,
++      "axes": [
++        "the CLI's contract"
++      ],
++      "reviewers": [
++        "review-structure"
++      ],
++      "where": [
++        "src/presentation/cli.rs:128 (GatewayAction::Install)",
++        "README.md:147 (gateway)"
++      ],
++      "title": "the README does not show `--from`",
++      "cause": "docs/commands.md alone was changed, though the phase's last task says both",
++      "effect": "misleading",
++      "severity": "low",
++      "consequence": "the walk-through gives no way to install without the network",
++      "fix": "the option in the README's gateway section",
++      "test": "none: a document",
++      "evidence": "read: the README and the phase file's task",
++      "origin": "new",
++      "floor": "above",
++      "fingerprint": "the CLI's contract | README.md + src/presentation/cli.rs | GatewayAction::Install + gateway",
++      "matches": [],
++      "verdict": "CONFIRMED",
++      "action": "fix",
++      "batch": 2,
++      "note": null,
++      "fixed_in": null
++    },
++    {
++      "number": 2,
++      "axes": [
++        "tests"
++      ],
++      "reviewers": [
++        "review-tests"
++      ],
++      "where": [
++        "src/application/gateway.rs:143 (Installer::install)"
++      ],
++      "title": "no test installs the release the gateway already runs",
++      "cause": "the warning's test has the gateway run the previous release only",
++      "effect": "misleading",
++      "severity": "low",
++      "consequence": "a warning given when the gateway runs the new release would pass every test",
++      "fix": "a test where the gateway runs the release installed, with no warning",
++      "test": "an_install_warns_of_nothing_when_the_gateway_runs_the_new_release",
++      "evidence": "cargo mutants --in-diff: `replace match guard running != release with true in Installer<'_>::install` missed",
++      "origin": "new",
++      "floor": "above",
++      "fingerprint": "tests | src/application/gateway.rs | Installer::install",
++      "matches": [],
++      "verdict": "CONFIRMED",
++      "action": "fix",
++      "batch": 1,
++      "note": null,
++      "fixed_in": null
++    },
++    {
++      "number": 3,
++      "axes": [
++        "security"
++      ],
++      "reviewers": [
++        "review-security"
++      ],
++      "where": [
++        "src/infrastructure/gateway_store.rs:114 (FsGatewayStore::stage_from)"
++      ],
++      "title": "an archive given as a symbolic link is copied from its target",
++      "cause": "stage_from copies `--from`'s path with fs::copy, which follows a link",
++      "effect": "wrong action",
++      "severity": "low",
++      "consequence": "`--from` naming a link installs the file it points at",
++      "fix": "the link refused",
++      "test": "none: settled by the verification",
++      "evidence": "read: stage_from",
++      "origin": "new",
++      "floor": "above",
++      "fingerprint": "security | src/infrastructure/gateway_store.rs | FsGatewayStore::stage_from",
++      "matches": [],
++      "verdict": "REFUTED",
++      "action": "rejected",
++      "batch": null,
++      "note": "the path is the user's own argument, and the archive is checked against its digest after the copy: no boundary is crossed",
++      "fixed_in": null
++    }
++  ]
++}
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md
+new file mode 100644
+index 0000000..2eddaa2
+--- /dev/null
++++ b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md
+@@ -0,0 +1,94 @@
++# Review: 2026-10-31-gateway-releases-phase-2
++
++**Status:** fixing — verified and triaged; batches 1 and 2 next
++**Scope:** roadmap `gateway-releases`, phase 2, {{commit:10}}..{{commit:14}}: 29 hunks, +213 −36 lines of code
++**Go-ahead:** the request, tier `medium`
++
++## Summary
++
++| # | Title | Axis | Effect | Severity | Origin | Verdict | Action | Batch |
++|---|---|---|---|---|---|---|---|---|
++| 1 | the README does not show `--from` | the CLI's contract | misleading | low | new | CONFIRMED | fix | 2 |
++| 2 | no test installs the release the gateway already runs | tests | misleading | low | new | CONFIRMED | fix | 1 |
++| 3 | an archive given as a symbolic link is copied from its target | security | wrong action | low | new | REFUTED | rejected | — |
++
++## Checks
++
++- `cargo fmt --check`: green
++- `cargo clippy --all-targets -- -D warnings`: green
++- `cargo test`: green: 811, 29 and 3 tests; gateway_lifecycle ran
++- `cargo mutants --in-diff` on {{commit:10}}..{{commit:14}}: 14 mutants in 38 s, 1 missed, 9 caught, 4 unviable; the missed to review-tests
++
++## Agents
++
++- `review-security`, effort `medium`: answered
++- `review-correctness`, effort `medium`: answered
++- `review-tests`, effort `medium`: answered
++- `review-cleanup`, effort `medium`: answered
++- `review-structure`, effort `medium`: answered
++- `review-performance`, effort `medium`: answered
++- `review-verifier`, effort `medium`: answered
++
++## Findings
++
++### 1. the README does not show `--from`
++
++```
++FINDING
++axis: the CLI's contract
++severity: low
++where: src/presentation/cli.rs:128 (GatewayAction::Install), README.md:147 (gateway)
++title: the README does not show `--from`
++cause: docs/commands.md alone was changed, though the phase's last task says both
++effect: misleading
++consequence: the walk-through gives no way to install without the network
++fix: the option in the README's gateway section
++test: none: a document
++evidence: read: the README and the phase file's task
++```
++
++Reviewers: review-structure. Origin: new. Floor: above. Fingerprint: `the CLI's contract | README.md + src/presentation/cli.rs | GatewayAction::Install + gateway`.
++Verdict: CONFIRMED. Action: fix, batch 2.
++
++### 2. no test installs the release the gateway already runs
++
++```
++FINDING
++axis: tests
++severity: low
++where: src/application/gateway.rs:143 (Installer::install)
++title: no test installs the release the gateway already runs
++cause: the warning's test has the gateway run the previous release only
++effect: misleading
++consequence: a warning given when the gateway runs the new release would pass every test
++fix: a test where the gateway runs the release installed, with no warning
++test: an_install_warns_of_nothing_when_the_gateway_runs_the_new_release
++evidence: cargo mutants --in-diff: `replace match guard running != release with true in Installer<'_>::install` missed
++```
++
++Reviewers: review-tests. Origin: new. Floor: above. Fingerprint: `tests | src/application/gateway.rs | Installer::install`.
++Verdict: CONFIRMED. Action: fix, batch 1.
++
++### 3. an archive given as a symbolic link is copied from its target
++
++```
++FINDING
++axis: security
++severity: low
++where: src/infrastructure/gateway_store.rs:114 (FsGatewayStore::stage_from)
++title: an archive given as a symbolic link is copied from its target
++cause: stage_from copies `--from`'s path with fs::copy, which follows a link
++effect: wrong action
++consequence: `--from` naming a link installs the file it points at
++fix: the link refused
++test: none: settled by the verification
++evidence: read: stage_from
++```
++
++Reviewers: review-security. Origin: new. Floor: above. Fingerprint: `security | src/infrastructure/gateway_store.rs | FsGatewayStore::stage_from`.
++Verdict: REFUTED. Action: rejected. the path is the user's own argument, and the archive is checked against its digest after the copy: no boundary is crossed.
++
++## Fix Plan
++
++- Batch 1: findings 2
++- Batch 2: findings 1
+diff --git a/docs/reviews/delivered-code/register.json b/docs/reviews/delivered-code/register.json
+index 130cdb3..68a129f 100644
+--- a/docs/reviews/delivered-code/register.json
++++ b/docs/reviews/delivered-code/register.json
+@@ -29,6 +29,16 @@
+       "review": "2026-10-31-gateway-releases-phase-1",
+       "finding": 17,
+       "reason": "`rm -rf v100` on a link removes the link, not its target (probe in the verifier's copy); the directory is the user's own, so no boundary is crossed"
++    },
++    {
++      "fingerprint": "security | src/infrastructure/gateway_store.rs | FsGatewayStore::stage_from",
++      "axis": "security",
++      "effect": "wrong action",
++      "title": "an archive given as a symbolic link is copied from its target",
++      "state": "rejected",
++      "review": "2026-10-31-gateway-releases-phase-2",
++      "finding": 3,
++      "reason": "the path is the user's own argument, and the archive is checked against its digest after the copy: no boundary is crossed"
+     }
+   ]
+ }

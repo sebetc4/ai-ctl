@@ -1,0 +1,1 @@
+{"cdiVersion":"0.7.0","kind":"nvidia.com/gpu","devices":[{"name":"all"}],"containerEdits":{"env":["NVIDIA_CTK_LIBCUDA_DIR=/usr/lib64","NVIDIA_VISIBLE_DEVICES=void"],"mounts":[{"hostPath":"/usr/lib64/libcuda.so.615.78.08","containerPath":"/usr/lib64/libcuda.so.615.78.08","options":["ro","nosuid","nodev","rbind","rprivate"]}]}}

@@ -1,0 +1,144 @@
+# Review: 2026-11-08-capabilities-status-and-updates-phase-1-after-review
+
+**Status:** complete — every finding fixed: batch 1 in `fix(doctor): name no newer ai-ctl for a llama-swap ahead of the pin` of 2026-11-08, batch 2 in `refactor(gateway): drop the code the strict pin left unused` of 2026-11-08; the recorded mutants at `refactor(gateway): drop the code the strict pin left unused` of 2026-11-08, 63 caught, none missed or gone
+**Scope:** roadmap `capabilities-status-and-updates`, phase 1, `test(chat): read the gateway's chat captured through llama-swap v270` of 2026-11-08..`feat(gateway): pin llama-swap v271` of 2026-11-08: 102 hunks, +181 −422 lines of code
+**Go-ahead:** the user, tier `low`
+
+## Summary
+
+| # | Title | Axis | Effect | Severity | Origin | Verdict | Action | Batch |
+|---|---|---|---|---|---|---|---|---|
+| 1 | doctor says a newer ai-ctl installed a llama-swap ahead of the pin, which an older ai-ctl's --version installs too | the CLI's contract, error handling | misleading | low | new | CONFIRMED | fix | 1 |
+| 2 | Curl::run returns curl's stdout, which its one caller drops | dead and legacy code, refactoring | maintenance | — | mixed | — | fix at once | 2 |
+| 3 | InvalidRelease's message served the removed --version option, and no caller reads it | dead and legacy code | maintenance | — | older | — | fix at once | 2 |
+| 4 | a checksums parser and its own test kept in the tests for one assertion a line match makes | dead and legacy code, tests | maintenance | — | mixed | — | fix at once | 2 |
+| 5 | the guard of a release behind the pin leaves an equivalent mutant | tests | none | — | new | — | fix at once | 2 |
+
+## Checks
+
+- `cargo fmt --check`: exit 0
+- `cargo clippy --all-targets -- -D warnings`: exit 0, the manifest's warning on toml's requirement gone
+- `cargo test`: exit 0: 857 passed, 0 failed, 0 ignored; no test skipped itself, the gateway's test end to end run with llama-swap v271
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py`: exit 0: 30 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py`: exit 0: 14 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py`: exit 0: 34 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py`: exit 0: 15 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py`: exit 0: 25 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py`: exit 0: 37 tests
+- `python3 .github/scripts/test_check_release.py`: exit 0: 15 tests
+- `sid.py check .`: exit 0: cites 0, names 0
+- `cargo mutants --in-diff on the scope's diff`: exit 2: 17 mutants in 65 s, 1 missed, 14 caught, 2 unviable
+- `cargo mutants --in-diff` on the scope's diff: 17 mutants in 65 s, 1 missed, 14 caught, 2 unviable; the missed to session
+
+## Agents
+
+- `session`, effort `low`: answered
+- `review-verifier`, effort `low`: answered
+
+## Findings
+
+### 1. doctor says a newer ai-ctl installed a llama-swap ahead of the pin, which an older ai-ctl's --version installs too
+
+```
+FINDING
+axis: the CLI's contract, error handling
+severity: low
+where: src/application/doctor.rs:192-202 (Doctor::llama_swap_check), src/application/gateway.rs:58-106 (Installer::install)
+title: doctor says a newer ai-ctl installed a llama-swap ahead of the pin, which an older ai-ctl's --version installs too
+cause: the warning on a release ahead of the pin names one cause, "a newer ai-ctl installed it", and its remedy runs "the newer ai-ctl that installed" it; ai-ctl 0.2.0's `gateway install --version N` installs any release, ahead of 0.3.0's pin included, and a release put in the directory by hand reads the same
+effect: misleading
+consequence: a user of 0.2.0 who ran `ai-ctl gateway install --version 272` once v272 is out, then upgrades to 0.3.0, reads that a newer ai-ctl installed v272 and is told to run it, though none exists
+fix: the warning names no cause: the release is ahead of the pin, which this ai-ctl was not tested with; the remedy goes back to the pin, or runs an ai-ctl that pins that release
+test: doctor on a current v272: its detail names no newer ai-ctl, its remedy names `ai-ctl gateway install` and an ai-ctl that pins v272
+evidence: read: src/application/doctor.rs:192-202 states the cause; 0.2.0's docs/commands.md at `test(chat): read the gateway's chat captured through llama-swap v270` of 2026-11-08, `gateway install --version 264 --sha256 <hex>`, and src/presentation/cli.rs at `test(chat): read the gateway's chat captured through llama-swap v270` of 2026-11-08, `version: Option<Release>` with no bound
+```
+
+Reviewers: session. Origin: new. Floor: above. Fingerprint: `the CLI's contract | src/application/doctor.rs + src/application/gateway.rs | Doctor::llama_swap_check + Installer::install`.
+Verdict: CONFIRMED. Action: fix, batch 1.
+Fixed in `fix(doctor): name no newer ai-ctl for a llama-swap ahead of the pin`.
+
+### 2. Curl::run returns curl's stdout, which its one caller drops
+
+```
+FINDING
+axis: dead and legacy code, refactoring
+where: src/infrastructure/download.rs:37-46 (Curl::run), src/infrastructure/download.rs:56-60 (Curl::download)
+title: Curl::run returns curl's stdout, which its one caller drops
+cause: run served download and text, text returning the stdout; with text removed, download alone calls it and maps its String to ()
+effect: maintenance
+consequence: none at run time; a helper split and a return value kept for a caller that is gone
+fix: run folded into download, returning Result<()>
+test: none: a_missing_file_is_an_error_naming_the_url and a_file_is_downloaded already cover download's two outcomes
+evidence: read: src/infrastructure/download.rs:37-60, run's only call at line 59 ends in `.map(drop)`
+```
+
+Reviewers: session. Origin: mixed. Floor: below. Fingerprint: `dead and legacy code | src/infrastructure/download.rs | Curl::download + Curl::run`.
+Verdict: none, below the floor. Action: fix at once, batch 2. Curl::command, the other helper split for the gone text, folded into download with run.
+Fixed in `refactor(gateway): drop the code the strict pin left unused`.
+
+### 3. InvalidRelease's message served the removed --version option, and no caller reads it
+
+```
+FINDING
+axis: dead and legacy code
+where: src/domain/gateway.rs:41-57 (InvalidRelease, Release::parse), src/infrastructure/gateway_store.rs:87 (GatewayStore::current)
+title: InvalidRelease's message served the removed --version option, and no caller reads it
+cause: Release::parse returns a thiserror type whose message tells the user a release is "a number such as 263, or a tag such as v263", written for clap's value parser of --version; the store's current() discards it with .ok(), the tests unwrap it
+effect: maintenance
+consequence: none at run time; an error type and a user-facing message no path shows, against CLAUDE.md's rule that thiserror serves callers that branch
+fix: Release::parse returns Option<Release>, InvalidRelease removed
+test: none: a_release_is_a_number_with_or_without_its_v covers the parse, its assertions moved from Ok/is_err to Some/is_none
+evidence: read: grep of Release::parse and InvalidRelease in src: gateway_store.rs:87 `.ok()`, every other caller a test's unwrap
+```
+
+Reviewers: session. Origin: older. Floor: below. Fingerprint: `dead and legacy code | src/domain/gateway.rs + src/infrastructure/gateway_store.rs | GatewayStore::current + InvalidRelease, Release::parse`.
+Verdict: none, below the floor. Action: fix at once, batch 2. older lines made dead by the scope's removal of --version, its sibling: fixed with the scope's batch.
+Fixed in `refactor(gateway): drop the code the strict pin left unused`.
+
+### 4. a checksums parser and its own test kept in the tests for one assertion a line match makes
+
+```
+FINDING
+axis: dead and legacy code, tests
+where: src/domain/gateway.rs:118-132 (tests::checksum), src/domain/gateway.rs:165-186 (tests::a_checksums_file_gives_the_digest_of_one_file), src/domain/gateway.rs:159-163 (tests::the_pinned_digest_is_the_one_its_release_publishes)
+title: a checksums parser and its own test kept in the tests for one assertion a line match makes
+cause: the parser, moved into the tests when the checksums file stopped being a source of digest, handles `*` binary mode and malformed digests that no capture holds, and has a test of its own, to let one test find the pinned archive's line in the captured checksums
+effect: maintenance
+consequence: none at run time; 40 lines of tests testing test code, moved at each pin
+fix: the pin's test asserts that the captured checksums hold the line `<PINNED.sha256>  <PINNED.release.archive()>`; the parser and its test removed
+test: the_pinned_digest_is_the_one_its_release_publishes, failing on a digest changed by one digit
+evidence: read: src/domain/gateway.rs:118-186, checksum called by the two tests alone
+```
+
+Reviewers: session. Origin: mixed. Floor: below. Fingerprint: `dead and legacy code | src/domain/gateway.rs | tests::a_checksums_file_gives_the_digest_of_one_file + tests::checksum + tests::the_pinned_digest_is_the_one_its_release_publishes`.
+Verdict: none, below the floor. Action: fix at once, batch 2.
+Fixed in `refactor(gateway): drop the code the strict pin left unused`.
+
+### 5. the guard of a release behind the pin leaves an equivalent mutant
+
+```
+FINDING
+axis: tests
+where: src/application/doctor.rs:187 (Doctor::llama_swap_check)
+title: the guard of a release behind the pin leaves an equivalent mutant
+cause: `release < pinned` follows an arm that takes `release == pinned`, so `<=` behaves the same and no test can tell them apart; cargo mutants reports it missed
+effect: none
+consequence: none at run time; a missed mutant at each run of the diff's mutants, to be justified by hand
+fix: the release compared with the pin once, by `release.cmp(&pinned)`, each of Less, Equal and Greater its own arm, after the arm of a release older than OLDEST
+test: none: llama_swap_missing_fails_and_a_release_behind_or_ahead_of_the_pin_warns and a_stopped_gateway_with_the_pinned_llama_swap_passes cover the three orderings
+evidence: reproduced: cargo mutants --in-diff on `test(chat): read the gateway's chat captured through llama-swap v270` of 2026-11-08..`feat(gateway): pin llama-swap v271` of 2026-11-08: `src/application/doctor.rs:187:33: replace < with <= in Doctor<'_>::llama_swap_check` missed, 14 caught, 2 unviable
+```
+
+Reviewers: session. Origin: new. Floor: below. Fingerprint: `tests | src/application/doctor.rs | Doctor::llama_swap_check`.
+Verdict: none, below the floor. Action: fix at once, batch 2. the equivalent mutant gone: cargo mutants --in-diff on the batch, 17 mutants, 14 caught, 3 unviable, none missed.
+Fixed in `refactor(gateway): drop the code the strict pin left unused`.
+
+## Coverage
+
+- `session`: in full: src/infrastructure/download.rs, src/application/gateway.rs (lines 1-150 and its tests); in part: src/domain/gateway.rs (lines 1-210), src/application/doctor.rs (lines 155-210, 995-1045, 2639-2738, 2956-2989), src/application/lifecycle.rs (lines 765-780, 1009-1021, 1176-1195), src/infrastructure/gateway_store.rs (lines 80-120), src/presentation/gateway.rs, src/presentation/cli.rs (lines 105-125), tests/cli.rs (lines 200-225), README.md, docs/commands.md (lines 260-285), docs/security.md (§2 and §7), docs/release.md (§1 and §3), CHANGELOG.md (0.3.0's entry), tests/fixtures/README.md (lines 84-110); left out: docs/reviews/delivered-code/2026-11-08-capabilities-status-and-updates-phase-1/: the earlier review's own record, not code; the roadmap's folder: the roadmap's records, not code
+- `review-verifier`: in full: none; in part: src/application/doctor.rs (lines 170-215, 2690-2722 at `feat(gateway): pin llama-swap v271` of 2026-11-08), src/presentation/cli.rs (lines 120-128 at `chore(release): release 0.2.0` of 2026-11-06 and `test(chat): read the gateway's chat captured through llama-swap v270` of 2026-11-08), src/domain/gateway.rs (lines 45-80 at `chore(release): release 0.2.0` of 2026-11-06), Cargo.toml (version at `chore(release): release 0.2.0` of 2026-11-06 and `test(chat): read the gateway's chat captured through llama-swap v270` of 2026-11-08); left out: roadmap `capabilities-status-and-updates`, phase 1's report, line 184: a phase report describing the old wording, history, not changed
+
+## Fix Plan
+
+- Batch 1: findings 1
+- Batch 2: findings 2, 3, 4, 5

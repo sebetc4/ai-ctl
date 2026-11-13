@@ -1,0 +1,85 @@
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index 3b8895a..e302e69 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -238,7 +238,7 @@ pub fn prune(
+     // Held so that no gateway starts on a release being removed.
+     let _gateway_lock = gateway.lock("removing llama-swap releases")?;
+     let releases = store.releases()?;
+-    // On garde toujours la release courante, même avec --keep 0 : `up` en a besoin.
++    // The current release is always kept, even with --keep 0: `up` runs it.
+     let current = store.current()?;
+     let doomed = releases_to_prune(&releases, current, keep);
+     refuse_running(store, gateway, &doomed)?;
+diff --git a/src/domain/gateway.rs b/src/domain/gateway.rs
+index 0a134a7..282fe17 100644
+--- a/src/domain/gateway.rs
++++ b/src/domain/gateway.rs
+@@ -145,12 +145,6 @@ pub fn releases_to_prune(
+         .collect()
+ }
+ 
+-/// The newest of the installed releases, oldest first, for a later
+-/// `gateway install --installed`.
+-pub fn newest(releases: &[Release]) -> Option<Release> {
+-    releases.last().copied()
+-}
+-
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/src/main.rs b/src/main.rs
+index bdab070..66f618c 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -56,6 +56,7 @@ fn services() -> Result<Services> {
+         programs: Box::new(SystemPrograms),
+         downloads: Box::new(Curl::new()),
+         releases: Box::new(FsGatewayStore::new(paths.gateway_dir())),
++        releases_dir: paths.gateway_dir(),
+         gateway: Box::new(LocalGateway::new(
+             paths.gateway_state_dir(),
+             paths.logs_dir(),
+diff --git a/src/presentation/gateway.rs b/src/presentation/gateway.rs
+index 27dd90c..a5bd79c 100644
+--- a/src/presentation/gateway.rs
++++ b/src/presentation/gateway.rs
+@@ -11,7 +11,6 @@ use crate::application::gateway::{
+     self, DigestSource, Event, Installation, Installer, Outcome, PrunedReleases,
+ };
+ use crate::domain::gateway::Release;
+-use crate::infrastructure::paths::Paths;
+ 
+ use super::cli::GatewayAction;
+ use super::{Services, current_line};
+@@ -36,7 +35,7 @@ pub fn run(action: GatewayAction, services: &Services) -> Result<ExitCode> {
+         GatewayAction::Prune { keep } => {
+             let pruned =
+                 gateway::prune(services.releases.as_ref(), services.gateway.as_ref(), keep)?;
+-            render_pruned(&pruned, &Paths::from_env()?.gateway_dir())
++            render_pruned(&pruned, &services.releases_dir)
+         }
+     };
+     super::print(&output)?;
+diff --git a/src/presentation/mod.rs b/src/presentation/mod.rs
+index 693f0c1..6dc2efd 100644
+--- a/src/presentation/mod.rs
++++ b/src/presentation/mod.rs
+@@ -14,7 +14,7 @@ pub mod lifecycle;
+ 
+ use std::fmt::{self, Write as _};
+ use std::io::{self, IsTerminal, Write};
+-use std::path::Path;
++use std::path::{Path, PathBuf};
+ use std::process::ExitCode;
+ use std::time::{Duration, Instant};
+ 
+@@ -45,6 +45,8 @@ pub struct Services {
+     pub downloads: Box<dyn Downloads>,
+     /// The installed llama-swap releases.
+     pub releases: Box<dyn GatewayStore>,
++    /// The directory that holds them, for the messages.
++    pub releases_dir: PathBuf,
+     pub gateway: Box<dyn GatewayProcess>,
+     pub processes: Box<dyn ProcessTable>,
+     pub ports: Box<dyn PortCheck>,

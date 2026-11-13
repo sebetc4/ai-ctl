@@ -1,0 +1,13 @@
+language   = "english"
+versioning = "git"
+checks     = ["cargo fmt --check", "cargo clippy --all-targets -- -D warnings", "cargo test"]
+
+[roadmap]
+root = "docs/roadmap"
+
+[git]
+push      = "none"
+branch    = "roadmap"
+changelog = "CHANGELOG.md"
+version   = "Cargo.toml"
+tag       = "v{version}"

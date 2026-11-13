@@ -1,0 +1,62 @@
+diff --git a/docs/roadmap/on-progress/gateway-releases/README.md b/docs/roadmap/on-progress/gateway-releases/README.md
+index 438d000..4b64fce 100644
+--- a/docs/roadmap/on-progress/gateway-releases/README.md
++++ b/docs/roadmap/on-progress/gateway-releases/README.md
+@@ -16,8 +16,8 @@
+ 
+ ```
+ Phase 1  Prune                      🟢 ████████████████████ 100%  (4/4)
+-Phase 2  Install From An Archive    🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/3)
+-TOTAL                                  ███████████░░░░░░░░░  57%  (4/7)
++Phase 2  Install From An Archive    🟡 ███████████████████░ 100%  (3/3)
++TOTAL                                  ███████████████████░ 100%  (7/7)
+ ```
+ 
+ **Current Phase:** Phase 2: Install From An Archive
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
+index 422943b..b2580a4 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
+@@ -11,6 +11,12 @@
+ 
+ Phase opened.
+ 
++`--from` stages the archive's copy outside the releases' directory, so that an archive failing its
++checks leaves nothing there, and `publish` copies the binary in before its rename, the temporary
++directory being another file system on this machine. Its digest is the one given or the pinned
++one. An install then names the release a running gateway still runs, through prune's lookup of
++that release, now shared. Every task done, the checks green; the phase waits for its review.
++
+ ---
+ 
+ ## Decisions
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
+index 91df966..53d25b8 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive.md
+@@ -4,7 +4,7 @@
+ 
+ ## Status
+ 
+-**Current Status:** 🟡 In Progress (0% — 0/3)
++**Current Status:** 🟡 In Progress (100% — 3/3)
+ **Started:** 2026-10-31
+ **Completed:** {{COMPLETION_DATE}}
+ **Blocked By:** —
+@@ -24,13 +24,13 @@ Archives for another platform than Linux x86_64.
+ ## Tasks
+ 
+ ### Install
+-- [ ] `gateway install --from <ARCHIVE>`: the release installed from a local archive, its digest checked against `--sha256` or the pinned one
++- [x] `gateway install --from <ARCHIVE>`: the release installed from a local archive, its digest checked against `--sha256` or the pinned one
+   Proof: tests on the use case and the command line
+-- [ ] `gateway install` names the release the running gateway runs when it is not the new current one, with `ai-ctl down` then `ai-ctl up` to switch
++- [x] `gateway install` names the release the running gateway runs when it is not the new current one, with `ai-ctl down` then `ai-ctl up` to switch
+   Proof: tests on the use case
+ 
+ ### Documentation
+-- [ ] Both in `docs/commands.md` and the README
++- [x] Both in `docs/commands.md` and the README
+   Proof: a reading of both
+ 
+ ---

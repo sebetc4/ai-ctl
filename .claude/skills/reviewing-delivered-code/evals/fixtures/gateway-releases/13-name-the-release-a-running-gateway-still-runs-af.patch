@@ -1,0 +1,153 @@
+diff --git a/docs/commands.md b/docs/commands.md
+index 729c303..aed4d91 100644
+--- a/docs/commands.md
++++ b/docs/commands.md
+@@ -275,7 +275,8 @@ its SHA-256, unpacks the `llama-swap` binary, runs it (`-version` must name the
+ it and makes it current. The steps go to stderr; the release installed to stdout. Nothing is
+ installed when a step fails. A release installed already becomes current again without a
+ download, and its digest is not checked again. The output names the current binary and the
+-release it replaces.
++release it replaces; when a running gateway still runs another release, a warning names it, with
++`ai-ctl down` then `ai-ctl up` to switch.
+ 
+ | Option | Value | Default | Meaning |
+ |---|---|---|---|
+diff --git a/src/application/gateway.rs b/src/application/gateway.rs
+index a426dc3..c3543be 100644
+--- a/src/application/gateway.rs
++++ b/src/application/gateway.rs
+@@ -72,6 +72,8 @@ pub struct Installer<'a> {
+     pub downloads: &'a dyn Downloads,
+     pub store: &'a dyn GatewayStore,
+     pub programs: &'a dyn Programs,
++    /// Read only: which release a running gateway runs.
++    pub gateway: &'a dyn GatewayProcess,
+ }
+ 
+ impl Installer<'_> {
+@@ -137,6 +139,14 @@ impl Installer<'_> {
+                 .set_current(release)
+                 .with_context(|| format!("llama-swap {release} is installed but not current"))?;
+         }
++        match running_release(self.store, self.gateway) {
++            Ok(Some(running)) if running != release => events(Event::Warning(format!(
++                "the running gateway still runs llama-swap {running}; `ai-ctl down` then \
++                 `ai-ctl up` switches it to {release}"
++            ))),
++            Ok(_) => {}
++            Err(err) => events(Event::Warning(format!("{err:#}"))),
++        }
+         Ok(Installation {
+             release,
+             binary: self.store.binary(release),
+@@ -292,18 +302,28 @@ pub fn prune(
+     })
+ }
+ 
++/// The installed release the running gateway runs, if a gateway runs one.
++fn running_release(
++    store: &dyn GatewayStore,
++    gateway: &dyn GatewayProcess,
++) -> Result<Option<Release>> {
++    let Some(record) = live_record(gateway)? else {
++        return Ok(None);
++    };
++    Ok(store
++        .releases()?
++        .into_iter()
++        .find(|release| store.binary(*release) == record.binary))
++}
++
+ /// Fails when the running gateway runs one of `doomed`.
+ fn refuse_running(
+     store: &dyn GatewayStore,
+     gateway: &dyn GatewayProcess,
+     doomed: &[Release],
+ ) -> Result<()> {
+-    let Some(record) = live_record(gateway)? else {
+-        return Ok(());
+-    };
+-    if let Some(release) = doomed
+-        .iter()
+-        .find(|release| store.binary(**release) == record.binary)
++    if let Some(release) =
++        running_release(store, gateway)?.filter(|release| doomed.contains(release))
+     {
+         bail!(
+             "the running gateway runs llama-swap {release}, which prune would remove; nothing is \
+@@ -524,6 +544,7 @@ mod tests {
+         downloads: FakeDownloads,
+         store: FakeStore,
+         programs: FakeLlamaSwap,
++        gateway: FakeGateway,
+     }
+ 
+     impl World {
+@@ -532,6 +553,7 @@ mod tests {
+                 downloads: FakeDownloads::default(),
+                 store: FakeStore::new(),
+                 programs: FakeLlamaSwap::of(PINNED.release),
++                gateway: FakeGateway::default(),
+             }
+         }
+ 
+@@ -549,6 +571,7 @@ mod tests {
+                 downloads: &self.downloads,
+                 store: &self.store,
+                 programs: &self.programs,
++                gateway: &self.gateway,
+             };
+             let mut events = Vec::new();
+             let release = release.map(|number| release_of(&number.to_string()));
+@@ -567,6 +590,7 @@ mod tests {
+                 downloads: &self.downloads,
+                 store: &self.store,
+                 programs: &self.programs,
++                gateway: &self.gateway,
+             };
+             let mut events = Vec::new();
+             let release = release.map(|number| release_of(&number.to_string()));
+@@ -966,16 +990,20 @@ mod tests {
+     }
+ 
+     #[test]
+-    fn prune_waits_for_no_gateway_start() {
+-        let store = four_releases();
+-        let gateway = FakeGateway {
+-            locked: true,
+-            ..FakeGateway::default()
+-        };
+-        assert!(prune(&store, &gateway, 2).is_err());
+-        assert_eq!(store.installed.borrow().len(), 4);
+-        let gateway = FakeGateway::default();
+-        prune(&store, &gateway, 2).unwrap();
+-        assert_eq!(*gateway.locks.borrow(), ["removing llama-swap releases"]);
++    fn an_install_names_the_release_the_gateway_still_runs() {
++        let mut world = World::new();
++        world.store.installed.borrow_mut().push(release_of("262"));
++        *world.store.current.borrow_mut() = Some(release_of("262"));
++        world.gateway = running(&world.store, "262");
++        let (installation, events) = world.install(None);
++        assert_eq!(installation.unwrap().outcome, Outcome::Downloaded);
++        assert_eq!(
++            events.last(),
++            Some(&Event::Warning(
++                "the running gateway still runs llama-swap v262; `ai-ctl down` then `ai-ctl up` \
++                 switches it to v263"
++                    .into()
++            ))
++        );
+     }
+ }
+diff --git a/src/presentation/gateway.rs b/src/presentation/gateway.rs
+index d06b32f..aaf82e0 100644
+--- a/src/presentation/gateway.rs
++++ b/src/presentation/gateway.rs
+@@ -27,6 +27,7 @@ pub fn run(action: GatewayAction, services: &Services) -> Result<ExitCode> {
+                 downloads: services.downloads.as_ref(),
+                 store: services.releases.as_ref(),
+                 programs: services.programs.as_ref(),
++                gateway: services.gateway.as_ref(),
+             };
+             let mut stderr = io::stderr();
+             let installation =

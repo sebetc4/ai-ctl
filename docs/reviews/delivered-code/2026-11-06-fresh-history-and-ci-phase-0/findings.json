@@ -1,0 +1,102 @@
+{
+  "review": "2026-11-06-fresh-history-and-ci-phase-0",
+  "scope": {
+    "kind": "phase",
+    "roadmap": "fresh-history-and-ci",
+    "phase": 0,
+    "base": "`docs(fresh-history-and-ci): add the rule that no session is cited`",
+    "end": "`test(reviewing-delivered-code): say the fixtures need no history`",
+    "hunks": 1,
+    "lines": {
+      "added": 2,
+      "removed": 1
+    }
+  },
+  "go_ahead": {
+    "by": "the user",
+    "text": "oui",
+    "tier": "low"
+  },
+  "agents": [
+    {
+      "type": "review-verifier",
+      "effort": "low",
+      "state": "not started"
+    },
+    {
+      "type": "session",
+      "effort": "low",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "src/domain/prompt.rs"
+        ],
+        "in part": [
+          "roadmap `v2-rebuild`, phase 4's report (the corpus's entries, by grep)"
+        ]
+      },
+      "left_out": [
+        "the scope's other files, the evals' scripts and fixtures and the rewritten records: outside the code's reading by scope.py's routes, the scripts proven by their tests and the fixtures' hashes compared before and after"
+      ],
+      "facts": [
+        "the one hunk, src/domain/prompt.rs:12-13 (CORPUS), is a doc comment: it names the commit the corpus was frozen at by its date and subject, as the v2-rebuild phase 4 report does, in place of its hash; no code changes, and cargo mutants --in-diff finds no mutant on the diff"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo fmt --check",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo test",
+      "result": "exit 0: 866 passed, 0 failed, 0 ignored; no test skipped itself"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py",
+      "result": "exit 0: 30 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py",
+      "result": "exit 0: 14 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py",
+      "result": "exit 0: 32 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py",
+      "result": "exit 0: 25 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py",
+      "result": "exit 0: 37 tests"
+    },
+    {
+      "command": "sid.py check .",
+      "result": "exit 0: cites 0, names 0"
+    }
+  ],
+  "mutants": {
+    "diff": "the scope's diff",
+    "tested": 0,
+    "missed": 0,
+    "caught": 0,
+    "unviable": 0,
+    "seconds": 0,
+    "given_to": null
+  },
+  "status": {
+    "stage": "complete",
+    "note": "no finding: the one code hunk is a doc comment, and the diff has no mutant; the verifier had nothing to verify"
+  },
+  "findings": []
+}

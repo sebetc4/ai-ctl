@@ -1,0 +1,18 @@
+diff --git a/examples/server/server.cpp b/examples/server/server.cpp
+index 653ae803..08df7b7b 100644
+--- a/examples/server/server.cpp
++++ b/examples/server/server.cpp
+@@ -1272,6 +1272,13 @@ int main(int argc, char ** argv) {
+     svr->set_read_timeout(sparams.read_timeout);
+     svr->set_write_timeout(sparams.write_timeout);
+ 
++    // ai-ctl: bind as llama-server does, SO_REUSEADDR alone, so that a port
++    // another server listens on is refused rather than shared.
++    svr->set_socket_options([](socket_t sock) {
++        int yes = 1;
++        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
++    });
++
+     if (!svr->bind_to_port(sparams.hostname, sparams.port))
+     {
+         fprintf(stderr, "\ncouldn't bind to server socket: hostname=%s port=%d\n\n",

@@ -1,0 +1,12 @@
+[submodule "ggml"]
+	path = ggml
+	url = https://github.com/leejet/ggml.git
+[submodule "vendor stuff"]
+	path = vendor stuff
+	url = file:///x
+[submodule "../../outside"]
+	path = ggml
+	url = file:///y
+[submodule "/tmp/x"]
+	path = ggml
+	url = file:///z

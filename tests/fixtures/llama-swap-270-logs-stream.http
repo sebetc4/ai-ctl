@@ -1,0 +1,10 @@
+HTTP/1.0 200 OK
+Content-Type: text/plain
+X-Accel-Buffering: no
+X-Content-Type-Options: nosniff
+Date: Sat, 07 Nov 2026 19:20:34 GMT
+
+fake-upstream fake: listening on 18600
+fake-upstream fake: GET /health
+fake-upstream fake: GET /v1/models
+fake-upstream fake: POST /v1/chat/completions

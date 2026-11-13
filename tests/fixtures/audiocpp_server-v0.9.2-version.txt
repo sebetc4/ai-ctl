@@ -1,0 +1,4 @@
+audio.cpp dev
+git: 0097d36 2026-10-15
+build: Release, gcc 16.2.1, Linux x86_64
+backends: cpu,cuda

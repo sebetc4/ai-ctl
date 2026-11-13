@@ -1,0 +1,18 @@
+diff --git a/examples/server/main.cpp b/examples/server/main.cpp
+index 249b66b..1efb934 100644
+--- a/examples/server/main.cpp
++++ b/examples/server/main.cpp
+@@ -173,6 +173,13 @@ int main(int argc, const char** argv) {
+     register_sdcpp_api_endpoints(svr, runtime);
+     register_model_endpoints(svr, runtime);
+ 
++    // ai-ctl: bind as llama-server does, SO_REUSEADDR alone, so that a port
++    // another server listens on is refused rather than shared.
++    svr.set_socket_options([](socket_t sock) {
++        int yes = 1;
++        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
++    });
++
+     LOG_INFO("listening on: http://%s:%d\n", svr_params.listen_ip.c_str(), svr_params.listen_port);
+     // ai-ctl: a port it cannot bind ends the server with 1, not 0.
+     const bool listened = svr.listen(svr_params.listen_ip, svr_params.listen_port);

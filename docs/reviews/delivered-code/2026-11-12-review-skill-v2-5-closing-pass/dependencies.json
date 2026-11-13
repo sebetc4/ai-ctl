@@ -1,0 +1,2202 @@
+{
+  "commit": "docs(review): complete the review of review-skill-v2-5 phase 2",
+  "gathered": "2026-11-12",
+  "rust_version": "1.99.1",
+  "crates": [
+    {
+      "name": "anstream",
+      "version": "1.0.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.0",
+      "yanked": false,
+      "last_release": "2026-02-11",
+      "releases_past_year": 1,
+      "releases": 32,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 488,
+      "downloads": 837296375,
+      "recent_downloads": 224068767,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 3
+    },
+    {
+      "name": "anstyle",
+      "version": "1.0.14",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.14",
+      "yanked": false,
+      "last_release": "2026-03-13",
+      "releases_past_year": 1,
+      "releases": 31,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 653,
+      "downloads": 908164539,
+      "recent_downloads": 245968210,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 1
+    },
+    {
+      "name": "anstyle-parse",
+      "version": "1.0.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.0",
+      "yanked": false,
+      "last_release": "2026-02-11",
+      "releases_past_year": 1,
+      "releases": 12,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 28,
+      "downloads": 822256135,
+      "recent_downloads": 222450921,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 3
+    },
+    {
+      "name": "anstyle-query",
+      "version": "1.1.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.5",
+      "yanked": false,
+      "last_release": "2025-11-13",
+      "releases_past_year": 1,
+      "releases": 10,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 31,
+      "downloads": 800256119,
+      "recent_downloads": 213568015,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 1
+    },
+    {
+      "name": "anstyle-wincon",
+      "version": "3.0.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.0.11",
+      "yanked": false,
+      "last_release": "2025-11-13",
+      "releases_past_year": 1,
+      "releases": 21,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 3,
+      "downloads": 401676402,
+      "recent_downloads": 107478142,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "anyhow",
+      "version": "1.0.104",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.104",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 4,
+      "releases": 103,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 53668,
+      "downloads": 1162294157,
+      "recent_downloads": 288205855,
+      "repository": "https://github.com/dtolnay/anyhow",
+      "github": {
+        "asked": "dtolnay/anyhow",
+        "repository": "dtolnay/anyhow",
+        "archived": false,
+        "pushed": "2026-11-03"
+      },
+      "unsafe": 108
+    },
+    {
+      "name": "bitflags",
+      "version": "2.13.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.13.2",
+      "yanked": false,
+      "last_release": "2026-09-10",
+      "releases_past_year": 6,
+      "releases": 57,
+      "owners": [
+        "KodrAus",
+        "rust-lang-owner"
+      ],
+      "dependents": 5480,
+      "downloads": 2255174714,
+      "recent_downloads": 585539543,
+      "repository": "https://github.com/bitflags/bitflags",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "cfg-if",
+      "version": "1.0.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.5",
+      "yanked": false,
+      "last_release": "2026-09-16",
+      "releases_past_year": 1,
+      "releases": 16,
+      "owners": [
+        "rust-lang-owner"
+      ],
+      "dependents": 2762,
+      "downloads": 1752141469,
+      "recent_downloads": 444728886,
+      "repository": "https://github.com/rust-lang/cfg-if",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "clap",
+      "version": "4.6.7",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.7",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 18,
+      "releases": 370,
+      "owners": [
+        "kbknapp",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 51100,
+      "downloads": 1331931906,
+      "recent_downloads": 286619957,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": {
+        "asked": "clap-rs/clap",
+        "repository": "clap-rs/clap",
+        "archived": false,
+        "pushed": "2026-11-02"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "clap_builder",
+      "version": "4.6.7",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.7",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 15,
+      "releases": 109,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 27,
+      "downloads": 926020252,
+      "recent_downloads": 252100876,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "clap_complete",
+      "version": "4.6.11",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.11",
+      "yanked": false,
+      "last_release": "2026-09-15",
+      "releases_past_year": 19,
+      "releases": 134,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 4033,
+      "downloads": 139982586,
+      "recent_downloads": 37365331,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": {
+        "asked": "clap-rs/clap",
+        "repository": "clap-rs/clap",
+        "archived": false,
+        "pushed": "2026-11-02"
+      },
+      "unsafe": 1
+    },
+    {
+      "name": "clap_derive",
+      "version": "4.6.7",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.7",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 7,
+      "releases": 92,
+      "owners": [
+        "kbknapp",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 137,
+      "downloads": 916556744,
+      "recent_downloads": 226916080,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "clap_lex",
+      "version": "1.1.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.1",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 5,
+      "releases": 28,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 35,
+      "downloads": 1051035893,
+      "recent_downloads": 253271118,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 6
+    },
+    {
+      "name": "colorchoice",
+      "version": "1.0.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.5",
+      "yanked": false,
+      "last_release": "2026-03-13",
+      "releases_past_year": 1,
+      "releases": 6,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 15,
+      "downloads": 802101690,
+      "recent_downloads": 216653042,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "darling",
+      "version": "0.20.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.24.1",
+      "yanked": false,
+      "last_release": "2026-08-20",
+      "releases_past_year": 3,
+      "releases": 66,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 1163,
+      "downloads": 913234344,
+      "recent_downloads": 263684687,
+      "repository": "https://github.com/TedDriggs/darling",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "darling_core",
+      "version": "0.20.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.24.1",
+      "yanked": false,
+      "last_release": "2026-08-20",
+      "releases_past_year": 3,
+      "releases": 66,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 5,
+      "downloads": 913446617,
+      "recent_downloads": 263779795,
+      "repository": "https://github.com/TedDriggs/darling",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "darling_macro",
+      "version": "0.20.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.24.1",
+      "yanked": false,
+      "last_release": "2026-08-20",
+      "releases_past_year": 3,
+      "releases": 66,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 2,
+      "downloads": 913242482,
+      "recent_downloads": 263506232,
+      "repository": "https://github.com/TedDriggs/darling",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "equivalent",
+      "version": "1.0.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.3",
+      "yanked": false,
+      "last_release": "2026-10-13",
+      "releases_past_year": 1,
+      "releases": 5,
+      "owners": [
+        "cuviper"
+      ],
+      "dependents": 46,
+      "downloads": 1050894596,
+      "recent_downloads": 317019728,
+      "repository": "https://github.com/indexmap-rs/equivalent",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "errno",
+      "version": "0.3.15",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.3.15",
+      "yanked": false,
+      "last_release": "2026-11-12",
+      "releases_past_year": 1,
+      "releases": 34,
+      "owners": [
+        "lambda-fairy",
+        "sunfishcode"
+      ],
+      "dependents": 263,
+      "downloads": 1045836705,
+      "recent_downloads": 291248192,
+      "repository": "https://github.com/lambda-fairy/rust-errno",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 12
+    },
+    {
+      "name": "fastrand",
+      "version": "2.5.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.5.0",
+      "yanked": false,
+      "last_release": "2026-07-19",
+      "releases_past_year": 2,
+      "releases": 29,
+      "owners": [
+        "taiki-e",
+        "github:smol-rs:admins"
+      ],
+      "dependents": 1867,
+      "downloads": 1115667982,
+      "recent_downloads": 293892512,
+      "repository": "https://github.com/smol-rs/fastrand",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "fnv",
+      "version": "1.0.7",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.7",
+      "yanked": false,
+      "last_release": "2020-05-14",
+      "releases_past_year": 0,
+      "releases": 8,
+      "owners": [
+        "SimonSapin",
+        "github:servo:cargo-publish"
+      ],
+      "dependents": 844,
+      "downloads": 957932886,
+      "recent_downloads": 227022638,
+      "repository": "https://github.com/servo/rust-fnv",
+      "github": {
+        "asked": "servo/rust-fnv",
+        "repository": "servo/rust-fnv",
+        "archived": false,
+        "pushed": "2024-03-20"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "getrandom",
+      "version": "0.4.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.4.3",
+      "yanked": false,
+      "last_release": "2026-06-17",
+      "releases_past_year": 7,
+      "releases": 46,
+      "owners": [
+        "dhardy",
+        "github:rust-random:maintainers"
+      ],
+      "dependents": 6262,
+      "downloads": 2583363906,
+      "recent_downloads": 801729268,
+      "repository": "https://github.com/rust-random/getrandom",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 113
+    },
+    {
+      "name": "hashbrown",
+      "version": "0.17.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.17.1",
+      "yanked": false,
+      "last_release": "2026-05-09",
+      "releases_past_year": 3,
+      "releases": 52,
+      "owners": [
+        "rust-lang-owner"
+      ],
+      "dependents": 2574,
+      "downloads": 3071790063,
+      "recent_downloads": 894269117,
+      "repository": "https://github.com/rust-lang/hashbrown",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 455
+    },
+    {
+      "name": "heck",
+      "version": "0.5.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.5.0",
+      "yanked": false,
+      "last_release": "2024-03-12",
+      "releases_past_year": 0,
+      "releases": 11,
+      "owners": [
+        "withoutboats",
+        "jplatte"
+      ],
+      "dependents": 1930,
+      "downloads": 1553569858,
+      "recent_downloads": 376340788,
+      "repository": "https://github.com/withoutboats/heck",
+      "github": {
+        "asked": "withoutboats/heck",
+        "repository": "withoutboats/heck",
+        "archived": false,
+        "pushed": "2025-08-09"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "ident_case",
+      "version": "1.0.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.1",
+      "yanked": false,
+      "last_release": "2019-03-18",
+      "releases_past_year": 0,
+      "releases": 2,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 24,
+      "downloads": 576401969,
+      "recent_downloads": 157327700,
+      "repository": "https://github.com/TedDriggs/ident_case",
+      "github": {
+        "asked": "TedDriggs/ident_case",
+        "repository": "TedDriggs/ident_case",
+        "archived": false,
+        "pushed": "2026-08-18"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "indexmap",
+      "version": "2.14.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.14.2",
+      "yanked": false,
+      "last_release": "2026-09-05",
+      "releases_past_year": 6,
+      "releases": 56,
+      "owners": [
+        "bluss",
+        "cuviper"
+      ],
+      "dependents": 6734,
+      "downloads": 1875894146,
+      "recent_downloads": 479874943,
+      "repository": "https://github.com/indexmap-rs/indexmap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 13
+    },
+    {
+      "name": "is_terminal_polyfill",
+      "version": "1.70.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.70.2",
+      "yanked": false,
+      "last_release": "2025-10-21",
+      "releases_past_year": 0,
+      "releases": 6,
+      "owners": [
+        "epage"
+      ],
+      "dependents": 4,
+      "downloads": 670193982,
+      "recent_downloads": 200991404,
+      "repository": "https://github.com/polyfill-rs/is_terminal_polyfill",
+      "github": {
+        "asked": "polyfill-rs/is_terminal_polyfill",
+        "repository": "polyfill-rs/is_terminal_polyfill",
+        "archived": false,
+        "pushed": "2025-10-21"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.19",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.19",
+      "yanked": false,
+      "last_release": "2026-11-09",
+      "releases_past_year": 4,
+      "releases": 38,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 813,
+      "downloads": 1635045017,
+      "recent_downloads": 422144015,
+      "repository": "https://github.com/dtolnay/itoa",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 16
+    },
+    {
+      "name": "libc",
+      "version": "0.2.191",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.2.191",
+      "yanked": false,
+      "last_release": "2026-10-16",
+      "releases_past_year": 18,
+      "releases": 200,
+      "owners": [
+        "rust-lang-owner"
+      ],
+      "dependents": 18725,
+      "downloads": 1965686727,
+      "recent_downloads": 481826553,
+      "repository": "https://github.com/rust-lang/libc",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 800
+    },
+    {
+      "name": "libloading",
+      "version": "0.8.9",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.9.0",
+      "yanked": false,
+      "last_release": "2025-11-05",
+      "releases_past_year": 0,
+      "releases": 40,
+      "owners": [
+        "nagisa"
+      ],
+      "dependents": 1687,
+      "downloads": 634577596,
+      "recent_downloads": 158279552,
+      "repository": "https://github.com/nagisa/rust_libloading/",
+      "github": {
+        "asked": "nagisa/rust_libloading",
+        "repository": "nagisa/rust_libloading",
+        "archived": false,
+        "pushed": "2026-08-02"
+      },
+      "unsafe": 93
+    },
+    {
+      "name": "linux-raw-sys",
+      "version": "0.12.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.12.1",
+      "yanked": false,
+      "last_release": "2025-12-23",
+      "releases_past_year": 1,
+      "releases": 102,
+      "owners": [
+        "sunfishcode"
+      ],
+      "dependents": 41,
+      "downloads": 1315147280,
+      "recent_downloads": 341744887,
+      "repository": "https://github.com/sunfishcode/linux-raw-sys",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 6930
+    },
+    {
+      "name": "memchr",
+      "version": "2.8.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.8.3",
+      "yanked": false,
+      "last_release": "2026-07-08",
+      "releases_past_year": 4,
+      "releases": 46,
+      "owners": [
+        "BurntSushi"
+      ],
+      "dependents": 2509,
+      "downloads": 1730586125,
+      "recent_downloads": 462453680,
+      "repository": "https://github.com/BurntSushi/memchr",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 333
+    },
+    {
+      "name": "nvml-wrapper",
+      "version": "0.13.0",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.13.0",
+      "yanked": false,
+      "last_release": "2026-08-31",
+      "releases_past_year": 3,
+      "releases": 15,
+      "owners": [
+        "brayniac",
+        "Cldfire",
+        "swlynch99"
+      ],
+      "dependents": 149,
+      "downloads": 7910390,
+      "recent_downloads": 2610109,
+      "repository": "https://github.com/Cldfire/nvml-wrapper",
+      "github": {
+        "asked": "Cldfire/nvml-wrapper",
+        "repository": "rust-nvml/nvml-wrapper",
+        "archived": false,
+        "pushed": "2026-08-31"
+      },
+      "unsafe": 317
+    },
+    {
+      "name": "nvml-wrapper-sys",
+      "version": "0.10.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.10.0",
+      "yanked": false,
+      "last_release": "2026-08-31",
+      "releases_past_year": 2,
+      "releases": 14,
+      "owners": [
+        "brayniac",
+        "Cldfire"
+      ],
+      "dependents": 6,
+      "downloads": 7935835,
+      "recent_downloads": 2615617,
+      "repository": "https://github.com/Cldfire/nvml-wrapper",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 794
+    },
+    {
+      "name": "once_cell",
+      "version": "1.21.4",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.21.4",
+      "yanked": false,
+      "last_release": "2026-03-12",
+      "releases_past_year": 1,
+      "releases": 59,
+      "owners": [
+        "matklad",
+        "vorner"
+      ],
+      "dependents": 8684,
+      "downloads": 1521495072,
+      "recent_downloads": 380109283,
+      "repository": "https://github.com/matklad/once_cell",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 49
+    },
+    {
+      "name": "once_cell_polyfill",
+      "version": "1.70.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.70.2",
+      "yanked": false,
+      "last_release": "2025-10-21",
+      "releases_past_year": 0,
+      "releases": 5,
+      "owners": [
+        "epage"
+      ],
+      "dependents": 3,
+      "downloads": 260160290,
+      "recent_downloads": 94879057,
+      "repository": "https://github.com/polyfill-rs/once_cell_polyfill",
+      "github": {
+        "asked": "polyfill-rs/once_cell_polyfill",
+        "repository": "polyfill-rs/once_cell_polyfill",
+        "archived": false,
+        "pushed": "2025-10-21"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.107",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.107",
+      "yanked": false,
+      "last_release": "2026-07-19",
+      "releases_past_year": 4,
+      "releases": 161,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 16822,
+      "downloads": 1941668520,
+      "recent_downloads": 476291186,
+      "repository": "https://github.com/dtolnay/proc-macro2",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 6
+    },
+    {
+      "name": "quote",
+      "version": "1.0.47",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.47",
+      "yanked": false,
+      "last_release": "2026-07-19",
+      "releases_past_year": 5,
+      "releases": 95,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 18660,
+      "downloads": 1951286567,
+      "recent_downloads": 483776305,
+      "repository": "https://github.com/dtolnay/quote",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "r-efi",
+      "version": "6.0.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "7.1.0",
+      "yanked": false,
+      "last_release": "2026-08-10",
+      "releases_past_year": 3,
+      "releases": 22,
+      "owners": [
+        "dvdhrm"
+      ],
+      "dependents": 19,
+      "downloads": 502342483,
+      "recent_downloads": 221627279,
+      "repository": "https://github.com/r-efi/r-efi",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 332
+    },
+    {
+      "name": "rustix",
+      "version": "1.1.6",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.6",
+      "yanked": false,
+      "last_release": "2026-10-27",
+      "releases_past_year": 4,
+      "releases": 162,
+      "owners": [
+        "sunfishcode"
+      ],
+      "dependents": 2061,
+      "downloads": 1394568156,
+      "recent_downloads": 360956591,
+      "repository": "https://github.com/bytecodealliance/rustix",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 1610
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.229",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 1,
+      "releases": 313,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 140221,
+      "downloads": 1695740324,
+      "recent_downloads": 426218003,
+      "repository": "https://github.com/serde-rs/serde",
+      "github": {
+        "asked": "serde-rs/serde",
+        "repository": "serde-rs/serde",
+        "archived": false,
+        "pushed": "2026-11-11"
+      },
+      "unsafe": 2
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.229",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 1,
+      "releases": 10,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 242,
+      "downloads": 848131424,
+      "recent_downloads": 385144203,
+      "repository": "https://github.com/serde-rs/serde",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.229",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.229",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 1,
+      "releases": 270,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 6494,
+      "downloads": 1610977893,
+      "recent_downloads": 414007044,
+      "repository": "https://github.com/serde-rs/serde",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.154",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.154",
+      "yanked": false,
+      "last_release": "2026-10-11",
+      "releases_past_year": 9,
+      "releases": 184,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 120823,
+      "downloads": 1602177948,
+      "recent_downloads": 428032828,
+      "repository": "https://github.com/serde-rs/json",
+      "github": {
+        "asked": "serde-rs/json",
+        "repository": "serde-rs/json",
+        "archived": false,
+        "pushed": "2026-10-16"
+      },
+      "unsafe": 17
+    },
+    {
+      "name": "serde_spanned",
+      "version": "1.1.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.3",
+      "yanked": false,
+      "last_release": "2026-11-06",
+      "releases_past_year": 5,
+      "releases": 19,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 17,
+      "downloads": 748398214,
+      "recent_downloads": 245219157,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "static_assertions",
+      "version": "1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.0",
+      "yanked": false,
+      "last_release": "2019-11-03",
+      "releases_past_year": 0,
+      "releases": 15,
+      "owners": [
+        "nvzqz"
+      ],
+      "dependents": 1732,
+      "downloads": 603821516,
+      "recent_downloads": 150058513,
+      "repository": "https://github.com/nvzqz/static-assertions-rs",
+      "github": {
+        "asked": "nvzqz/static-assertions-rs",
+        "repository": "nvzqz/static-assertions",
+        "archived": false,
+        "pushed": "2023-11-18"
+      },
+      "unsafe": 1
+    },
+    {
+      "name": "strsim",
+      "version": "0.11.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.11.1",
+      "yanked": false,
+      "last_release": "2024-04-02",
+      "releases_past_year": 0,
+      "releases": 24,
+      "owners": [
+        "dguo",
+        "maxbachmann"
+      ],
+      "dependents": 774,
+      "downloads": 1268893037,
+      "recent_downloads": 280406519,
+      "repository": "https://github.com/rapidfuzz/strsim-rs",
+      "github": {
+        "asked": "rapidfuzz/strsim-rs",
+        "repository": "rapidfuzz/strsim-rs",
+        "archived": false,
+        "pushed": "2025-11-27"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "syn",
+      "version": "2.0.119",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.0.10",
+      "yanked": false,
+      "last_release": "2026-11-09",
+      "releases_past_year": 20,
+      "releases": 346,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 19355,
+      "downloads": 3018497535,
+      "recent_downloads": 879784062,
+      "repository": "https://github.com/dtolnay/syn",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 69
+    },
+    {
+      "name": "syn",
+      "version": "3.0.10",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.0.10",
+      "yanked": false,
+      "last_release": "2026-11-09",
+      "releases_past_year": 20,
+      "releases": 346,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 19355,
+      "downloads": 3018497535,
+      "recent_downloads": 879784062,
+      "repository": "https://github.com/dtolnay/syn",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 78
+    },
+    {
+      "name": "tempfile",
+      "version": "3.27.0",
+      "direct": [
+        "dev"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.27.0",
+      "yanked": false,
+      "last_release": "2026-03-11",
+      "releases_past_year": 4,
+      "releases": 63,
+      "owners": [
+        "Stebalien"
+      ],
+      "dependents": 40902,
+      "downloads": 989456598,
+      "recent_downloads": 251617683,
+      "repository": "https://github.com/Stebalien/tempfile",
+      "github": {
+        "asked": "Stebalien/tempfile",
+        "repository": "Stebalien/tempfile",
+        "archived": false,
+        "pushed": "2026-10-30"
+      },
+      "unsafe": 3
+    },
+    {
+      "name": "thiserror",
+      "version": "1.0.69",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 92,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 79784,
+      "downloads": 1837643795,
+      "recent_downloads": 522330990,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "thiserror",
+      "version": "2.0.21",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 92,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 79784,
+      "downloads": 1837643795,
+      "recent_downloads": 522330990,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": {
+        "asked": "dtolnay/thiserror",
+        "repository": "dtolnay/thiserror",
+        "archived": false,
+        "pushed": "2026-10-16"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "thiserror-impl",
+      "version": "1.0.69",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 91,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 5,
+      "downloads": 1837805457,
+      "recent_downloads": 522260316,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "thiserror-impl",
+      "version": "2.0.21",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 91,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 5,
+      "downloads": 1837805457,
+      "recent_downloads": 522260316,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "toml",
+      "version": "1.2.1+spec-1.1.0",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.2.1+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-11-06",
+      "releases_past_year": 23,
+      "releases": 121,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 22010,
+      "downloads": 1131904409,
+      "recent_downloads": 313545557,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": {
+        "asked": "toml-rs/toml",
+        "repository": "toml-rs/toml",
+        "archived": false,
+        "pushed": "2026-11-06"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "toml_datetime",
+      "version": "1.1.3+spec-1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.3+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-11-06",
+      "releases_past_year": 8,
+      "releases": 26,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 30,
+      "downloads": 1031649283,
+      "recent_downloads": 341160257,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "toml_parser",
+      "version": "1.1.5+spec-1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.5+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-10-09",
+      "releases_past_year": 12,
+      "releases": 17,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 33,
+      "downloads": 426878885,
+      "recent_downloads": 190185065,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 51
+    },
+    {
+      "name": "toml_writer",
+      "version": "1.2.0+spec-1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.2.0+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-11-04",
+      "releases_past_year": 8,
+      "releases": 13,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 16,
+      "downloads": 289402940,
+      "recent_downloads": 134519945,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.27",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.27",
+      "yanked": false,
+      "last_release": "2026-10-12",
+      "releases_past_year": 5,
+      "releases": 27,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 245,
+      "downloads": 1695419667,
+      "recent_downloads": 456509215,
+      "repository": "https://github.com/dtolnay/unicode-ident",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "utf8parse",
+      "version": "0.2.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.2.2",
+      "yanked": false,
+      "last_release": "2024-06-08",
+      "releases_past_year": 0,
+      "releases": 5,
+      "owners": [
+        "jwilm",
+        "chrisduerr",
+        "github:alacritty:publishers"
+      ],
+      "dependents": 13,
+      "downloads": 763339230,
+      "recent_downloads": 204141739,
+      "repository": "https://github.com/alacritty/vte",
+      "github": {
+        "asked": "alacritty/vte",
+        "repository": "alacritty/vte",
+        "archived": false,
+        "pushed": "2026-10-25"
+      },
+      "unsafe": 1
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.100.0",
+      "yanked": false,
+      "last_release": "2026-09-03",
+      "releases_past_year": 1,
+      "releases": 7,
+      "owners": [
+        "kennykerr"
+      ],
+      "dependents": 53,
+      "downloads": 561969800,
+      "recent_downloads": 201467618,
+      "repository": "https://github.com/microsoft/windows-rs",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "windows-sys",
+      "version": "0.61.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.61.2",
+      "yanked": false,
+      "last_release": "2025-10-06",
+      "releases_past_year": 0,
+      "releases": 21,
+      "owners": [
+        "kennykerr"
+      ],
+      "dependents": 3302,
+      "downloads": 1916038589,
+      "recent_downloads": 512953830,
+      "repository": "https://github.com/microsoft/windows-rs",
+      "github": {
+        "asked": "microsoft/windows-rs",
+        "repository": "microsoft/windows-rs",
+        "archived": false,
+        "pushed": "2026-11-12"
+      },
+      "unsafe": 12530
+    },
+    {
+      "name": "winnow",
+      "version": "1.0.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.5",
+      "yanked": false,
+      "last_release": "2026-11-05",
+      "releases_past_year": 8,
+      "releases": 112,
+      "owners": [
+        "epage"
+      ],
+      "dependents": 467,
+      "downloads": 1165206456,
+      "recent_downloads": 372128421,
+      "repository": "https://github.com/winnow-rs/winnow",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 44
+    },
+    {
+      "name": "wrapcenum-derive",
+      "version": "0.4.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.4.1",
+      "yanked": false,
+      "last_release": "2024-02-10",
+      "releases_past_year": 0,
+      "releases": 5,
+      "owners": [
+        "brayniac",
+        "Cldfire"
+      ],
+      "dependents": 1,
+      "downloads": 9322290,
+      "recent_downloads": 2769205,
+      "repository": "https://github.com/Cldfire/wrapcenum-derive",
+      "github": {
+        "asked": "Cldfire/wrapcenum-derive",
+        "repository": "rust-nvml/wrapcenum-derive",
+        "archived": false,
+        "pushed": "2024-02-10"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "zmij",
+      "version": "1.0.23",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.23",
+      "yanked": false,
+      "last_release": "2026-07-13",
+      "releases_past_year": 37,
+      "releases": 37,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 116,
+      "downloads": 678813321,
+      "recent_downloads": 351947691,
+      "repository": "https://github.com/dtolnay/zmij",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 70
+    }
+  ],
+  "left_out": [],
+  "projects": [
+    {
+      "project": "llama-swap",
+      "repository": "mostlygeek/llama-swap",
+      "current": "v271",
+      "anchor": "2026-11-08T05:16:44Z",
+      "newest": "v272",
+      "releases": [
+        {
+          "tag": "v272",
+          "created": "2026-11-10T06:54:08Z",
+          "note": "Three compatibility fixes and a couple of UI improvements.\n\nThis release is a collection of some UI improvements, compatibility\nenhancements and a bit of work to make content in this repo easy to import and\nreuse in the new  https://llama-swap.ai website.\n\nThanks to everyone who filed detailed bugs and contributed changes. The\nquality of this project would not be where it is without the community.\n\n----\n\n- [1249e7c](https://github.com/mostlygeek/llama-swap/commit/1249e7c8b53b56dcb079a117fe1aa8ab5fa414cb) changelog: make into package: makes `changelog/` an importable Go package with `Versions()`, `Latest()` and `Get()` over the embedded per-release markdown so llama-swap.ai can display the release notes by [@mostlygeek](https://github.com/mostlygeek)\n- [PR #1315](https://github.com/mostlygeek/llama-swap/pull/1315) ui: reduce ActivityTable render rate: throttles the Activity table to one render every 125 ms and skips redraws while the inflight panel is hidden, because live token/duration counters repainted on every update and burned CPU whenever several streams were active by [@mostlygeek](https://github.com/mostlygeek)\n- [PR #1318](https://github.com/mostlygeek/llama-swap/pull/1318) UI: category and a capability badge for decision models: gives models declaring the `decision` capability their own sidebar/list category and a matching badge, since categories were derived from capabilities but decision models fell through with neither by [@sousekd](https://github.com/sousekd)\n- [PR #1319](https://github.com/mostlygeek/llama-swap/pull/1319) internal/server: pass through 1xx interim responses in recorders: forwards 1xx statuses without recording them, because `Expect: 100-continue` (sent by curl for bodies over about 1 MiB) made the recorders latch onto the relayed `100 Continue` and discard the real status, so upstream 400/500 errors arrived at the client as 200 by [@mostlygeek](https://github.com/mostlygeek)\n- [PR #1326](https://github.com/mostlygeek/llama-swap/pull/1326) Remove metadata filtering to allow custom fields alongside capabilities: stops dropping `architecture`, `capabilities`, `supported_parameters`, `context_length` and `context_window` from user `metadata` when capabilities are set, since that metadata is nested under `meta.llamaswap` and cannot collide with the generated top-level fields by [@mostlygeek](https://github.com/mostlygeek)\n- [PR #1327](https://github.com/mostlygeek/llama-swap/pull/1327) Add autoload=false support to /props endpoint: answers `GET /props?autoload=false` with 409 instead of loading a model that is not running (as llama-server's router mode does), so clients like llama.vscode that probe every listed model no longer load them one after another and evict the loaded model by [@mostlygeek](https://github.com/mostlygeek)",
+          "cut_from": null
+        }
+      ],
+      "commits": null,
+      "left_out": [],
+      "github": null
+    },
+    {
+      "project": "audio.cpp",
+      "repository": "0xShug0/audio.cpp",
+      "current": "v0.9.4",
+      "anchor": "2026-11-05T03:49:57Z",
+      "newest": "v0.9.4",
+      "releases": [],
+      "commits": null,
+      "left_out": [],
+      "github": null
+    },
+    {
+      "project": "llama.cpp",
+      "repository": "ggml-org/llama.cpp",
+      "current": "b12227",
+      "anchor": "2026-11-09T14:54:27+02:00",
+      "newest": "b12328",
+      "releases": [
+        {
+          "tag": "b12328",
+          "created": "2026-11-12T09:24:40Z",
+          "note": "ggml-backend : prefetch only inputs computed by earlier splits (#32100)\n\n* ggml-backend : prefetch only inputs computed by earlier splits\n\nThe copy callback of a split runs after the prefetch and can write tensors that a later split reads, e.g. the MoE cache uploads missed experts into its bank. A prefetch of such a tensor reads it before the write.\n\n* llama : skip the MoE cache when its device cannot run the cached mul_mat_id\n\nOtherwise the scheduler runs the matmul on another backend and copies the whole bank every ubatch.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66899037>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12327",
+          "created": "2026-11-12T08:59:09Z",
+          "note": "ggml : dispatch SpacemiT Q4_1 32x256 through the HP kernel (#31929)\n\nThe 32x256 pack already keeps a separate uint8 zero point. Complete the M1 path and use the same HP kernel as Q4_0.\n\nAssisted-by: Codex\n\nSigned-off-by: gitGurugu <2049447146@qq.com>\nSigned-off-by: Wang Yang <yangwang@iscas.ac.cn>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66892038>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12323",
+          "created": "2026-11-12T07:44:42Z",
+          "note": "chat : refactor gemma4 to build loose schema rules and clean up (#31915)\n\n* chat : build a schema-shaped PEG parser for Gemma 4 tool arguments\n\n* chat : enforce only the key structure of Gemma 4 tool arguments\n\n* chat : remove old gemma4 workarounds\n\n* cont : add node.as<>() to simplify static casts\n\n* cont : add depth_guard and use numerical rule names\n\n* cont : clean up\n\n* cont : extract gemma 4 parsers\n\n* cont : clean up\n\n* cont : clean up\n\n* cont : remove dynamic cast\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66869431>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12322",
+          "created": "2026-11-12T07:42:45Z",
+          "note": "llama : avoid touching unused graph metadata pages (#32043)\n\nEach graph result reserves metadata for max_nodes, but many graphs use\nonly a fraction of that capacity.  The vector resize initializes the\nwhole reserve and makes otherwise unused pages resident.  Allocate the\nreserve with new uint8_t[] instead.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66845951>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12321",
+          "created": "2026-11-12T06:58:26Z",
+          "note": "sycl: make oneDNN FA cache thread-safe and memoize runtime failures (#31138)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66830789>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12320",
+          "created": "2026-11-12T06:54:58Z",
+          "note": "sycl : fix AOT for more than 4GB (#31873)\n\n* fix aot for >4g garbage output issue; add --aot in build script\n\n* correct the aot flag\n\n* support no-xmx build, update the code for no-xmx building, rename nossl to no-ssl\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66816265>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12319",
+          "created": "2026-11-12T06:50:55Z",
+          "note": "sycl : use cached device-id in set_main_device (#32013)\n\nggml_sycl_set_main_device() runs at the start of every graph compute. Its\nearly-return check called dpct::get_current_device_id(), which locks the\ndevice manager mutex and looks up the thread-to-device map. Use the\nthread-local cached id that the rest of the backend already uses.\n\nAssisted-by: Claude Code\n\nCo-authored-by: zhaoyshine <zhaoyshine@users.noreply.github.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66785369>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12318",
+          "created": "2026-11-12T06:50:32Z",
+          "note": "CUDA: add cuda debug buffer pool (#31919)\n\n* CUDA: add cuda debug buffer pool\n\n* CUDA: add code comment for debug pool with compute-sanitizer\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66668638>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12317",
+          "created": "2026-11-12T05:53:51Z",
+          "note": "opencl: add bin kernel `kernel_gemm_noshuffle_q4_0_f32_32b_trans_ila_a7_bin` (#30947)\n\n* opencl: add A7 Q4_0 non-MoE binary kernel\n\n* opencl: refactor\n\n---------\n\nCo-authored-by: Li He <lih@qti.qualcomm.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66575588>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12316",
+          "created": "2026-11-12T03:45:56Z",
+          "note": "CUDA: skip empty MoE tiles in MMQ stream-k fixup (#32067)\n\n* CUDA: skip empty MoE tiles in MMQ stream-k fixup\n\nmul_mat_q_stream_k_fixup loads ids_dst[col_low + j] for all j < J before\nchecking j_sup. mul_mat_q returns early on col_low == col_high, the fixup\nkernel did not. mm_ids_helper emits one extra tile per expert that may be\nempty; for trailing experts col_low == ncols_dst, so the load reads one\nelement past the J_best-1 padding added in #29953. The kernel returns at\nj >= j_sup before storing anything, so results are unaffected.\n\nReturn early when j_sup <= 0, like the main kernel. The return is\nblock-uniform (tsj is loaded once per block) and precedes __syncthreads().\n\nAdd test_mul_mat_id_unused_tail to test-backend-ops: only the first\nn_mats/2 experts are selected, so the trailing experts have zero rows and\ntheir tiles are empty; m=33, k=512 keeps tile efficiency low enough that\nstream-k splits along K and launches the fixup kernel.\n\n* CUDA: drop the extra MUL_MAT_ID test case and the explanatory comment (review)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66567964>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12314",
+          "created": "2026-11-12T00:18:24Z",
+          "note": "opencl: add decomposed FA for Adreno (#32046)\n\n* opencl: add decomposed FA\n\nAssisted-by: Claude Opus 5.5\nCo-authored-by: Hongqiang Wang <wangh@qti.qualcomm.com>\nCo-authored-by: Shaofei Qi <shaoqi@qti.qualcomm.com>\n\n* opencl: build FA MQ kernel on first FA call\n\n* so allows warmup to early build neccessary kernels\n\nAssisted-by: Claude Opus 5.5\n\n* opencl: handle inf for fully masked row\n\n* opencl: refine condition for using fa decomp\n\n* opencl: support dp4a for PV mm\n\nAssisted-by: Codex\n\n* opencl: add direct PV for FA decomp to avoid V transpose for small batch\n\nAssisted-by: Codex\n\n* opencl: enable direct pv by default\n\n* opencl: expand X2E decomposed FA to smaller heads and batches\n\n- Lower the default head dimension threshold from 256 to 128 on X2E.\n- Allow DK64 with P8, no attention sinks, GQA >= 2 and n_kv >= max(1024, 2*n_q).\n- Allow P8 with V transpose for 2-31 queries when direct PV is unavailable, DK >= 128 and n_kv >= 1024.\n\nAssisted-by: Codex\n\n* opencl: adjust format\n\n---------\n\nCo-authored-by: Li He <lih@qti.qualcomm.com>\nCo-authored-by: Hongqiang Wang <wangh@qti.qualcomm.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66552799>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12311",
+          "created": "2026-11-11T22:26:39Z",
+          "note": "ui: keep downloads in Discover during search and fix their progress with a draft (#31467)\n\n* ui : keep downloads in Discover sidebar during search, sort base-org repos first\n\n- Show the sticky Downloading section regardless of an active search query\n- Order search results so repos published by their base model's org lead\n\nAssisted-by: Claude (Opus 5.5 Medium)\n\n* server : throttle download progress per file\n\nFiles of a download run in parallel threads, but progress updates were\nthrottled with one shared timer. A small draft sidecar reports far more\noften than the main weights, so it took nearly every slot and the main\nfile's updates, including the first one carrying its total size, were\ndropped until the draft finished. The UI then showed the draft's progress\nfirst and restarted from 0% for the model.\n\nThrottle each file on its own and always pass a file's first update.\n\nAssisted-by: Claude (Opus 5.5 Medium)\n\n* ui: list a downloading repo once and match base orgs case-insensitively\n\nA search hit that is downloading already shows under Downloading, so the\nresults leave it out. Base model orgs compare without case, as the hub\ntreats them.\n\nAssisted-by: Claude (Opus 5.5 Medium)\n\n* server : tell clients a download stopped on request\n\nWhen a client paused or cancelled a download, every other client following\n/models/sse got a bare download_failed and could not tell it from an error,\nso the web UI showed \"Download failed\" for a pause made in the Llama app.\nA stop asked for through unload or delete now fails with {\"stopped\": true}.\n\nDeleting a paused download, which has no instance left, now sends\nmodel_remove as deleting a running one does, so other clients drop its row.\n\nAssisted-by: Claude (Opus 5.5 Medium)\n\n* ui : follow downloads other clients start, pause or cancel\n\nA download another client started (e.g. the Llama app) already showed up\nfrom the feed; it now also picks up the sidecars the list reports for it.\nA stop another client asked for reads as a pause instead of a failure, and\na removal clears the download row even when the list does not carry it yet.\n\nAssisted-by: Claude (Opus 5.5 Medium)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66547949>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12308",
+          "created": "2026-11-11T20:17:16Z",
+          "note": "ci: move test models to ggml-org-dev (#32096)\n\n* ci: move test models to ggml-org-dev\n\n* fix test spec\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66540743>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12307",
+          "created": "2026-11-11T20:02:06Z",
+          "note": "metal : prevent out-of-bounds reads in SOLVE_TRI kernel (#32103)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66535500>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12306",
+          "created": "2026-11-11T19:56:39Z",
+          "note": "vulkan: support batched tensor copy API (#31418)\n\n* vulkan: support batched tensor copy API\n\n* allocate staging buffer only for copies that actually need it\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66530328>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12304",
+          "created": "2026-11-11T17:58:39Z",
+          "note": "llama : reuse graph result instances across scheduler reserves (#32089)\n\nAllocate gf_res_reserve and both gf_res_prev entries once in the llama_context constructor. Add llm_graph_result::set_max_nodes() and reset the existing instances in sched_reserve() instead of recreating them. get_gf_res_prev() now only selects the arena for the current batch.\n\nAssisted-by: dsh:llama.cpp/ggml-org/DeepSeek-V4.1-Flash-1017-GGUF (Mac Studio, M5 Ultra, 256GB)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66524023>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12303",
+          "created": "2026-11-11T17:53:04Z",
+          "note": "jinja : support chained comparisons and argument unpacking (#32072)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66518918>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12302",
+          "created": "2026-11-11T16:34:55Z",
+          "note": "chat: allow TTS model to provide custom text normalizer via jinja (#32053)\n\n* chat: allow TTS model to provide custom text normalizer via jinja\n\n* rm tts_norm_is_reserved_name\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66510183>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12292",
+          "created": "2026-11-11T10:11:06Z",
+          "note": "webgpu: add PAD_REFLECT_1D support (#31877)\n\n* webgpu : add PAD_REFLECT_1D support\n\n* webgpu: remove redundant PAD_REFLECT_1D contiguity check\n\n* tests: simplify PAD_REFLECT_1D setup\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66423627>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12291",
+          "created": "2026-11-11T10:08:06Z",
+          "note": "vulkan: allow dequantized KV optimization with CM2 (#31526)\n\n* additional FA test cases\n\nAssisted-by: Codex\n\n* vulkan: allow dequantized KV optimization with CM2\n\nEnable the KV dequantization optimization with coopmat2, guarded by a heuristic\nbased on query tokens*GQA ratio.\n\nWhile doing this we saw very large speedups for certain head sizes, and it was\nbecause those head sizes were incorrectly treated as unaligned. So also fix\nthose to be treated as aligned, which should help for when the dequant\noptimization doesn't apply.\n\n* gqa uses nbq2 for the stride, so we need to check that value for alignment\n\n* tests : use VARS_TO_STR18 for flash attention\n\nAssisted-by: Codex\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66417308>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12290",
+          "created": "2026-11-11T10:02:48Z",
+          "note": "vulkan: allocate the device fault vendor binary buffer (#32008)\n\n* vulkan : allocate the device fault vendor binary buffer\n\n* vulkan : drop the redundant vector include\n\n---------\n\nCo-authored-by: figkcoci-debug <307500910+figkcoci-debug@users.noreply.github.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66411404>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12289",
+          "created": "2026-11-11T10:01:24Z",
+          "note": "tests : use only the public ggml API (#32077)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66402308>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12287",
+          "created": "2026-11-11T08:46:13Z",
+          "note": "cuda : use MMVF for BF16 matrices of few rows at small batch sizes (#31959)\n\nMMF tiles 32 rows per block, so a BF16 matrix with few rows (e.g. the\nqwen4exp hyper-connection projections, 320 rows with K = 10240) runs only\na handful of blocks and leaves most SMs idle at batch sizes 2..8. MMVF\nruns a block per row and wins there when K is long enough.\n\nMMVF's cost grows with rows x batch while MMF's stays roughly flat in that\nrange, so use MMVF only while rows * ne11 * 256 <= nsm * min(K, max_k) and\nK >= 1024. The budget scales with the SM count, which keeps GPUs with few\nSMs (e.g. the A16) on MMF. Blackwell allows up to 8 columns and\nmax_k = 6144; older GPUs stop at 5 columns and max_k = 4096.\n\nAdd eval cases at 128x2560, 512x2560 and 320x10240 for n = 2, 3, 4, 5 and 8.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66387378>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12284",
+          "created": "2026-11-11T08:44:30Z",
+          "note": "CUDA: Add OCP FP8 support (#28413)\n\n* Initial CUDA WIP version\n\n* Use fp8 intrinsics\n\n* Do W8A16 for FP8 in GEMV case\n\n(base) osimons@ub-osimons:~/lcpp_fp8.git$ ./build-x64-linux-gcc-reldbg/bin/llama-bench -m /mnt/share/gguf/nvidia/Qwen3.6-27B-NVFP4/Qwen3.6-27B-NVFP4_fp8.gguf -p 8196 -ub 512,2048 -d 0,32000 -n 256 --load-mode dio\nggml_cuda_init: found 1 CUDA devices (Total VRAM: 32165 MiB):\n  Device 0: NVIDIA RTX PRO 4500 Blackwell, compute capability 12.0, VMM: yes, VRAM: 32165 MiB\n| model                          |       size |     params | backend    | ngl | n_ubatch |         lm |            test |                  t/s |\n| ------------------------------ | ---------: | ---------: | ---------- | --: | -------: | ---------: | --------------: | -------------------: |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |      512 |        dio |          pp8196 |       2781.53 ± 8.48 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |      512 |        dio |           tg256 |         37.56 ± 0.02 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |      512 |        dio | pp8196 @ d32000 |       1616.31 ± 2.61 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |      512 |        dio |  tg256 @ d32000 |         34.11 ± 0.03 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |     2048 |        dio |          pp8196 |       2542.00 ± 0.51 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |     2048 |        dio |           tg256 |         37.36 ± 0.02 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |     2048 |        dio | pp8196 @ d32000 |       1762.86 ± 1.33 |\n| qwen35 27B NVFP4               |  19.56 GiB |    27.32 B | CUDA       |  -1 |     2048 |        dio |  tg256 @ d32000 |         34.09 ± 0.02 |\n\n* Optimize GEMV kernel for FP8\n\n* Guard __nv_cvt_fp8x2_to_bf162raw on CTK 13.2\n\nFixes https://github.com/ggml-org/llama.cpp/pull/28413#discussion_r4044500099\n\n* Remove trailing whitespace\n\n* Add supported for strided copies to/from FP8 in CUDA\n\n* Prepare Q_reg for FP8 FlashAttention in fattn-vec.cuh\n\n* Fix odd-rows for convert/getrows, possible with FP8\n\n* Fix FP8 fallback in cuBlas\n\n* Gate mmvf_f8x2_e4m3_to_bf162 on FP8 availability, i.e. CTK >= 11.8\n\n* Restrict (fused) MMVF to 2*ts alignment, and cublas FP8 fo 16-byte\n\n* Add todo about accumulator/precision honoring\n\nThis is beyond the scope of the stacked PR\n\n* Avoid races in fp8_fallback\n\n* Allow Hopper and other BW SKUs for FP8\n\n* Use intrinsic over explicit manual conversions\n\n* Resolve TODO\n\nAs per spec, we don't have to preserve signs\n\n* Add commend on cublaslt workspaces\n\n* Use convert_unary_cont_cuda over block dequant in convert.cu\n\n* Use get_rows_cuda_float for fp8 kv cache\n\n* Make FP8 copies work on all IHV's\n\n* More cleanup\n\n* Simplify by falling back to shared cuBLAS helper\n\n* Fuse weight_scale multiplication for FP8 also\n\n* More code-cleanup\n\n* Guard __nv_cvt_fp8x2_to_bf162raw on CTK 13.4\n\nOnly cvt.rn.bf16x2.e4m3x2 is exposed from 13.2 onwards, so\n93e98b9203dfacb85f9ac665f5f0482a8c6b4192 was incorrect fix\n\n* Use F32 activations in fallback mmvf path\n\n* Explicitly link against cublaslt\n\n* Move FP8 conversion intrinsics into ggml_cuda_cast\n\nCleaner this way\n\n* WIP src1/prec for fp8 in MMVF\n\n* Remove comment\n\n* Keep only f8 x f8 KV cache for now\n\n* Just do FP8 x FP32 x FP32 in MMVF as its fast enough\n\n* Update ggml/src/ggml-cuda/ggml-cuda.cu\n\nCo-authored-by: Aman Gupta <amangupta052@gmail.com>\n\n* Add batched FP8 GEMMS in cublas as suggested by code review\n\nhttps://github.com/ggml-org/llama.cpp/pull/28413#issuecomment-6676015644\n\n* Extract fp8x2 -> float2 load into helper\n\n* Searapte copy checks to/from fp8\n\n* Compiler massaging to avoid repeated address offsets\n\n---------\n\nCo-authored-by: Aman Gupta <amangupta052@gmail.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66285066>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12283",
+          "created": "2026-11-11T05:48:20Z",
+          "note": "sycl : fixed sycl CLAMP to actually support strided view (#31784)\n\nModify `ggml_sycl_op_clamp` to use the unary helper function\n`ggml_sycl_detail::ggml_sycl_op_unary` to handle non-contigous or\nstrided views. The fix uses a pattern that matches other stride-safe\nunary ops, and is a simpler execution path.\n\nDeleted dead template `unary_op_clamp_kernel`, the flat `clamp` kernel\nlauncher from element_wise.cpp, and deleted (now) unused\n`SYCL_CLAMP_BLOCK_SIZE` from presets.hpp.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66154425>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12282",
+          "created": "2026-11-10T22:30:14Z",
+          "note": "chat : fix Muse Spark ignoring response_format json_schema (#32017)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66115272>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12277",
+          "created": "2026-11-10T19:23:25Z",
+          "note": "mtmd: fix string format, rename to mtmd_format (#32040)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66110290>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12274",
+          "created": "2026-11-10T16:08:32Z",
+          "note": "llama : Add FP8 KV-cache support (#28392)\n\n* Add FP8 KV-cache support\n\n* Add tests for scaled, FP8 KV-cache to test-backend-ops\n\n* Fix get_*_scale mapping and dequnatize FP8 also before rope shift\n\n* Normalizes cache-scale names independently of projection layout.\n\nWhile fused KQV is currently impractival for non-shared scales, this is\nan improvement for future use regardless\n\n* Enable Gemma 4 Assistant with FP8 by storing and fetching scale ptrs\n\n* Update comment wording\n\n* Move E2E FP8 KV cache tests to test-llama-archs\n\nThey belong there as they are not just a test for ggml's backend ops\n\n* Increase support surface, remove seed\n\n* make scaled kv generic\n\n* Fix CI failings for test-kv-cache\n\nhttps://github.com/ggml-org/llama.cpp/actions/runs/38718763447/job/116367842578?pr=28392\n\n* CI: execute kv-cache-scale tests\n\n* exclude fp8-kv tests from OpenVINO\n\n* Fix linting errors of test_kv_cache_scales\n\n* Disable kv-ffload=false + multi-GPU tests for FP8\n\nSee https://github.com/ggml-org/llama.cpp/actions/runs/38952722084/job/117148353699?pr=28413\n\n* Adjust test label for test-kv-cache.cpp\n\n* Fix conflict-resolution mistakes in test-kv-cache.cpp\n\nhttps://github.com/ggml-org/llama.cpp/actions/runs/40554674463/job/122367426461?pr=28392\n\n* Move KV tests to test-fp8.cpp\n\nhttps://github.com/ggml-org/llama.cpp/pull/27512#discussion_r4410518158\n\n* Remove tmp file for test-kv-cache-scales.py on Windows as well\n\n* Fix fp8 kv cache test by population kv_source_impl\n\n* Exclude models that consume KV cache directly\n\n* Remove obsolete comment\n\n* Allow BF16 scales as well for KV cache\n\n* Rename *_cache_scale to *_cache_s\n\nhttps://github.com/ggml-org/llama.cpp/pull/28392#discussion_r4517194999\n\n* Move `is_type_scaled()` to `llama-kv-cache.cpp`\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66105424>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12273",
+          "created": "2026-11-10T15:12:27Z",
+          "note": "Merge pull request #32015 from ggml-org/gg/fix-sampling-output-aliasing\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66100460>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12271",
+          "created": "2026-11-10T15:10:11Z",
+          "note": "llama : reuse backend scheduler when sched_params are compatible (#32009)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66094783>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12270",
+          "created": "2026-11-10T15:03:27Z",
+          "note": "ggml : add MUL_MAT src1 precision tests and gating (#31896)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66090173>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12263",
+          "created": "2026-11-10T11:36:29Z",
+          "note": "cuda : halve VMM pool reservation size and retry on cuMemAddressReserve failure (#30542)\n\n* cuda : Lowering VMM pool reservation size to 8 GB on GPUs with combined memory due to CUDA out of memory errors\n\nAssisted-by: Gemini Argon\n\n* cuda : Halve VMM pool reservation size and retry on failure\n\nAssisted-by: Gemini Argon\n\n* cuda : only shrink VMM pool on CUDA_ERROR_OUT_OF_MEMORY\n\nAssisted-by: Gemini Argon\n\n* cuda : log warning when VMM pool reserves less than max size\n\nAssisted-by: Gemini Argon\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66083092>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12262",
+          "created": "2026-11-10T10:53:47Z",
+          "note": "CUDA: skip graph compat check when graph is being reused (#32004)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66042335>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12261",
+          "created": "2026-11-10T10:45:09Z",
+          "note": "mtmd: share compute buffer among subcontext (#31945)\n\n* shared compute buffer\n\n* add load-time alloc for audio gen\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66037540>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12259",
+          "created": "2026-11-10T10:28:47Z",
+          "note": "mtmd: add kimi K3.1 vision (#31980)\n\n* mtmd: support kimi k3.1 vision\n\n* fix preproc (both k2.5 and k3.1) and projector mlp\n\n* small renaming\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66024758>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12257",
+          "created": "2026-11-10T09:03:49Z",
+          "note": "CUDA: move graph and concurrent stream state out of common.cuh (#32001)\n\nggml_cuda_graph, ggml_cuda_concurrent_event and ggml_cuda_stream_context\nare only used by ggml-cuda.cu, but keeping them in common.cuh meant any\nchange to them rebuilt every CUDA translation unit. Move them to graph.cuh\nand leave forward declarations in common.cuh. The context constructor,\ncuda_graph() and any_cuda_graph_*() are now defined in ggml-cuda.cu, and\nthe stream context is held through a unique_ptr.\n\nAlso define ggml_cuda_kernel_can_use_pdl once in ggml-cuda.cu instead of\nas a static function in the header, so there is one PDL cache instead of\none per translation unit, and fold the GGML_CUDA_PDL env check into it.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/66017795>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12255",
+          "created": "2026-11-10T08:42:30Z",
+          "note": "model : stop renaming the recurrent cache tensors in plamo2 (#31984)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65957268>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12254",
+          "created": "2026-11-10T07:57:35Z",
+          "note": "common/json-schema : fix allOf with plain types (e.g. integer) generating an empty object grammar (#31834)\n\n* common/json-schema : fix allOf with plain types (e.g. integer) generating an empty object grammar\n\n* Fix empty range error and incorporated bot review feedback\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65951567>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12253",
+          "created": "2026-11-10T07:56:53Z",
+          "note": "common : escape control characters in tool argument strings (#31937)\n\nnormalize_quotes_to_json copies raw control characters verbatim while\nconverting pythonic tool arguments to JSON, so calls like\npython(code='a<LF>b') produce invalid JSON in the arguments returned to\nclients; replaying that history then fails hard. Escape C0 control\ncharacters inside quoted strings via escape_json_string_inner.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65944688>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12252",
+          "created": "2026-11-10T07:42:58Z",
+          "note": "cann: fail early when checking if buffer type is supported (#31270)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65935630>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12250",
+          "created": "2026-11-10T07:41:45Z",
+          "note": "vulkan: add tiled-transpose concat shader for Qwen models (#30591)\n\n* vulkan: tiled transpose for dim-0 concat with a transposed source\n\nThe delta-net conv-state path does ggml_transpose() straight into a dim-0\nggml_concat(), so the generic concat kernel reads src1 with the transposed\nstride, one element per thread, and neighbouring lanes land on different cache\nlines. Stage a 32x32 tile through shared memory instead, which keeps both the\nload and the store coalesced. 33 columns pads away the bank conflicts.\n\nGated narrowly: dim 0, 2D, unquantized 4-byte elements, contiguous src0/dst\nrows, and src1 actually transposed. Everything else falls through to the\nexisting kernel.\n\nQwen3.6-35B-A3B on gfx1151/RADV, 30 gated-delta-net layers: the CONCAT op goes\n11877 us -> 957 us, and pp2048 at ub2048 goes 1224 -> 1628 t/s. Generated text\nis unchanged.\n\nThe approach follows the tiled transposed concat Gaetan Puleo wrote for the HIP\nbackend in his Strix Halo fork.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* enable by default, add smaller shader sizes\n\n* clean up comments\n\n* improve shader\n\n* Add non-contiguous concat tests\n\nCo-authored-by: ravel7524 <58877666+ravel7524@users.noreply.github.com>\n\n* handle x or y axis overflow\n\n---------\n\nCo-authored-by: Nathan Wilson <nath.flagman151@passmail.com>\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>\nCo-authored-by: ravel7524 <58877666+ravel7524@users.noreply.github.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65912251>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12249",
+          "created": "2026-11-10T07:40:35Z",
+          "note": "ggml-rpc : fail gracefully on unreachable endpoints and failed handshakes (#30415)\n\n* ggml-rpc: fail gracefully on unreachable endpoints and failed handshakes\n\nrpc_dispatcher::start() aborted the whole process (GGML_ABORT -> SIGABRT) when\nthe endpoint could not be parsed, the transport failed to initialise, the socket\ncould not connect, or the HELLO handshake failed. A typo in --rpc or a\ntemporarily down node killed the host application, and the reason went to a log\nstream the host may never see.\n\nMake the connect-time failure reportable instead of fatal: start() returns bool\n(LOG_ERROR + false; the dispatcher thread only starts after a successful\nhandshake), negotiate_hello() returns false on a half-open socket,\nget_dispatcher() returns nullptr and does not cache failed attempts, and every\nconsumer treats nullptr as \"endpoint did not answer\" with the conservative\nbehaviour of its domain (allocation -> nullptr, alloc-size -> lower bound,\ndevice memory -> 0/0, events -> no-op, device count -> 0, and add_server()\nalready maps 0 devices to nullptr).\n\nMid-stream failures keep the existing RPC_STATUS_ASSERT by design (fail fast\nagainst silent corruption) and are intentionally out of scope.\n\nField motivation: on Android (llama.rn + phone RPC cluster) an unreachable\nworker crashed the app; the crash buffer showed\nabort <- ggml_abort <- rpc_dispatcher::start <- ggml_backend_rpc_add_server.\n\n* tests : add a regression test for unreachable rpc endpoints\n\nCalls ggml_backend_rpc_add_server with a socket that nothing listens on and with a\nmalformed endpoint, and expects nullptr from both. Without the fix in this branch\nthe first call aborts the process, so the test cannot even fail cleanly.\n\n* ggml-rpc remove low-value comments\n\n* tests : drop the internal device-count check after the rpc registry refactor\n\n---------\n\nCo-authored-by: figkcoci-debug <figkcoci-debug@users.noreply.github.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65905943>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12248",
+          "created": "2026-11-10T07:22:28Z",
+          "note": "vulkan: Divide GROUP_NORM workgroup to 2D to avoid maxComputeWorkGroupCount limit (#31930)\n\n* Divide workgroup to 2D to workaround maxComputeWorkGroupCount limit\n\n* Replaced with existing macro\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65886416>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12247",
+          "created": "2026-11-10T07:19:11Z",
+          "note": "vulkan: Fix out of bounds reads/writes on MoltenVK (#31890)\n\n* Fix test-backend-ops sentinel mismatch errors on MoltenVK\n\n* Set disable_robustness for norm_f32, l2_norm_f32, and sum_rows_f32's pipelines\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65857561>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12246",
+          "created": "2026-11-10T07:00:55Z",
+          "note": "vulkan: cap scalar flash attention at 8 rows for large heads on Qualcomm (#30829)\n\nWith head sizes above 128 and KV >= 1024, scalar flash attention uses\n16 rows per workgroup. On the Qualcomm Adreno driver this variant\nspills registers to scratch memory (264 bytes per invocation on the\nX1-85, none at 8 rows) and runs about 40x slower. The largest\ntest-backend-ops case then becomes a single dispatch of several\nseconds, past the Windows GPU timeout, and the test never completes on\nthe X1 Elite.\n\nUse at most 8 rows per workgroup on Qualcomm when hsk or hsv > 128.\nSmaller heads keep 16 rows, which is faster for them on the X2 Elite.\n\nAdreno X1-85, FLASH_ATTN_EXT hsk=256 kv=4096: nb=64 711 ms -> 17 ms,\nnb=512 no result -> 125 ms; test-backend-ops completes. Adreno X2-90:\nGemma 4 E4B pp512 at depth 4096 with flash attention 81-90 -> 117 t/s.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65813913>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12244",
+          "created": "2026-11-10T06:18:44Z",
+          "note": "ci: update oneAPI 2026.2, oneDNN 2026.1 and Level Zero SDK 1.34.0 (#31540)\n\nCo-authored-by: Neo Zhang <zhang.jianyu@outlook.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65697404>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12243",
+          "created": "2026-11-10T06:08:06Z",
+          "note": "sycl: un-gate oneDNN fused SDPA for Alchemist at head_dim=64 (#31574)\n\nCo-authored-by: Titaniumtown <titaniumtown@proton.me>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65688285>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12242",
+          "created": "2026-11-10T00:44:07Z",
+          "note": "chat : don't use lazy grammar when response_format is set with tools (#31956)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65619172>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12241",
+          "created": "2026-11-10T00:10:13Z",
+          "note": "hexagon: fix 64-bit FastRPC handle truncation on close (#30952)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65614982>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12240",
+          "created": "2026-11-09T23:43:38Z",
+          "note": "server: responses api: support conversion of text.format.json_schema to completions (#26145)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65608759>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12239",
+          "created": "2026-11-09T22:59:16Z",
+          "note": "server : use common_chat_input in realtime api (#31978)\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65600616>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12238",
+          "created": "2026-11-09T22:58:52Z",
+          "note": "server: add oai-compat /v1/audio/speech endpoint (#31763)\n\n* server: add oai-compat /v1/audio/speech endpoint\n\n* add e2e pytest\n\n* server: share the s16 rounding, type speech form fields\n\nThe WAV writer of the audio helper truncates while pcm_f32_to_s16\nrounds, so wav and pcm differ by one LSB. Both now round.\n\npcm_f32_to_s16 takes a pointer and a count and converts the TTS\nbytes without an intermediate copy.\n\n/tts and /v1/audio/speech parse their body with parse_tts_body, so\nmultipart fields such as speed get their type before the speech\nconversion checks them.\n\n---------\n\nCo-authored-by: Pascal <admin@serveurperso.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65593042>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12237",
+          "created": "2026-11-09T22:36:31Z",
+          "note": "mtmd: support gemma 4 input audio stream (#31965)\n\n* mtmd: support gemma 4 input audio stream\n\n* use 480ms step\n\n* server: enable realtime embeddings only for audio generation\n\nThe realtime slot forced embeddings on, which marks every row of a\nbatch as an output. Only a model that generates audio reserves\nn_batch outputs, so a chat model with an audio stream (Gemma 4)\naborted on its first batch of audio rows. The hidden state is only\nread by the audio generation pipeline.\n\n---------\n\nCo-authored-by: Pascal <admin@serveurperso.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65581072>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12236",
+          "created": "2026-11-09T22:04:39Z",
+          "note": "mtmd: add mtmd_helper_resampler (#31964)\n\n* mtmd: add mtmd_helper_resampler\n\n* update docs\n\n* add test\n\n* MA_MAX_FILTER_ORDER\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65560925>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12233",
+          "created": "2026-11-09T18:41:01Z",
+          "note": "feat: external PLE file loading (#31185)\n\n* model : allow loading external PLE files\n\nAssisted-by: Codex\n\n* convert : add separate PLE exports\n\nAssisted-by: Codex\n\n* tests : fix PLE export test lint\n\nAssisted-by: Codex\n\n* model : make --ple an alias of --shard, allow multiple shard locations\n\nReuse the multi-shard loading path for external PLE files instead of a\nseparate option.\n\n* --ple is an alias of --shard: both take a comma separated list and may\n  be given more than once, and the shards may live anywhere\n* metadata comes from the main file; numbered shards are still\n  auto-discovered and strictly validated\n* explicit files outside the discovered set are appended as extra shards,\n  exempt from split.no and split.count checks\n* -isnm/--ignore-shard-num-mismatch loads only the given files, in order,\n  with no auto-discovery and no split metadata validation\n* ple_path, path_ple and llama_model_loader::add_ple_file are removed;\n  common_model_load() uses llama_model_load_from_splits for two or more\n  paths\n* common/fit.{h,cpp} take the shard path vector, so --fit and the router\n  memory measurement load every shard\n\nAssisted-by: GPT-6-Astra\n\n* rm -isnm\n\n* make sure to dedup paths\n\n* rm test_convert_ple\n\n* address comments\n\n* allow ple shard to override tensor\n\n---------\n\nCo-authored-by: Xuan Son Nguyen <son@huggingface.co>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65488847>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12230",
+          "created": "2026-11-09T13:48:32Z",
+          "note": "ggml-zdnn: accept non-zdnn tensors, invalidate compute tensors after every op (#31824)\n\nSigned-off-by: Aaron Teo <aaron.teo1@ibm.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65448274>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12229",
+          "created": "2026-11-09T13:10:11Z",
+          "note": "server : fix response_format json_schema when schema is not nested in the json_schema wrapper (#28697)\n\n* server : accept top-level schema in response_format with type json_schema\n\nThe OpenAI-compatible chat completions endpoint only applied the schema\nwhen it was nested inside response_format.json_schema.schema. When the\nschema was provided directly as response_format.schema (as documented in\nthe server README, and used by some clients), it was silently ignored\nand generation ran unconstrained.\n\nAlso mention json_schema in the error message for invalid response_format\ntypes, document the OpenAI wrapper form in the README, and add a test\ncase for the top-level schema form.\n\nFixes #10732\n\n* server : let the json_schema wrapper take precedence by presence\n\nPick the schema source based on whether response_format has a\njson_schema key, instead of falling back when the parsed wrapper schema\nis empty. An empty schema {} is valid (any JSON value), so the old check\nlet a top-level schema override an explicit {} in the wrapper. Use\njson_value() for the top-level schema too, like the rest of the\nfunction, and add tests for the precedence.\n\n---------\n\nCo-authored-by: linsen <251731047+linsen458-spec@users.noreply.github.com>\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65440886>",
+          "cut_from": null
+        },
+        {
+          "tag": "b12228",
+          "created": "2026-11-09T13:03:00Z",
+          "note": "ggml : implement the backward pass for TRI (#30712)\n\n* ggml: implement the backward pass for TRI\n\nGGML_OP_TRI had no case in the backward switch, so a trainable graph containing it aborted with \"unsupported ggml op for backward pass: TRI\". The op is linear, so its gradient is masked the same way. The incoming gradient is not necessarily contiguous (the backward of a transpose hands over a view) and ggml_tri requires contiguity, so it is made contiguous first.\n\ntest_tri gains a post_transpose variant (out = transpose(tri(a))) that aborts as above without this change.\n\n* ggml : simplify the TRI backward pass\n\nPass the gradient directly to ggml_tri and drop the transpose test. The existing TRI cases cover the backward pass for contiguous F32 gradients.\n\n- <https://github.com/ggml-org/llama.cpp/attestations/65433828>",
+          "cut_from": null
+        }
+      ],
+      "commits": null,
+      "left_out": [],
+      "github": null
+    },
+    {
+      "project": "stable-diffusion.cpp",
+      "repository": "leejet/stable-diffusion.cpp",
+      "current": "master-1071-cfdf3cf",
+      "anchor": "2026-11-09T14:16:04Z",
+      "newest": "master-1091-b9d7176",
+      "releases": [
+        {
+          "tag": "master-1091-b9d7176",
+          "created": "2026-11-12T16:23:54Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1090-8b1e9df",
+          "created": "2026-11-12T15:20:18Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1088-32d516c",
+          "created": "2026-11-10T17:24:25Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1087-f8417d0",
+          "created": "2026-11-10T17:06:53Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1086-465adf3",
+          "created": "2026-11-10T17:02:14Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1081-e1ca5e8",
+          "created": "2026-11-10T15:08:05Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1080-a3f46b6",
+          "created": "2026-11-10T13:40:13Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1079-a3c49b1",
+          "created": "2026-11-09T17:58:04Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1078-73fef08",
+          "created": "2026-11-09T15:41:50Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1076-46da352",
+          "created": "2026-11-09T15:40:26Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1073-991f825",
+          "created": "2026-11-09T14:33:43Z",
+          "note": "",
+          "cut_from": null
+        },
+        {
+          "tag": "master-1072-008b9a2",
+          "created": "2026-11-09T14:21:46Z",
+          "note": "",
+          "cut_from": null
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b9d7176bf88fe465576e0aafbe47ba253ffcfc2c",
+          "date": "2026-11-12T16:23:54Z",
+          "message": "feat: unify text encoder selection across H3 variants (#2340)",
+          "cut_from": null
+        },
+        {
+          "sha": "8b1e9df27dd15f7b28ec3638bbcc56f8bd53c6d2",
+          "date": "2026-11-12T15:20:18Z",
+          "message": "feat: allow the P-H3-Image text encoder for MiniMax-H3-Image (#2337)",
+          "cut_from": null
+        },
+        {
+          "sha": "766ce0ec4e3d00c3da3fc6304d4c64fd0cfdab40",
+          "date": "2026-11-12T15:10:48Z",
+          "message": "perf: replace qkv materialized chunks with views (#2335)",
+          "cut_from": null
+        },
+        {
+          "sha": "32d516c0197ed5ca31305b8575e14eb1451fad33",
+          "date": "2026-11-10T17:24:25Z",
+          "message": "feat: add MiniMax-H3-Image support (#2324)",
+          "cut_from": null
+        },
+        {
+          "sha": "f8417d02e186e33db00c955f7931725ed0e83a16",
+          "date": "2026-11-10T17:06:53Z",
+          "message": "perf(cuda): fuse RMSNorm and RoPE in Sol-H3-VAE (#2323)",
+          "cut_from": null
+        },
+        {
+          "sha": "465adf389f252e401257f44efb0ea49da8e4e80b",
+          "date": "2026-11-10T17:02:14Z",
+          "message": "fix: avoid structured binding capture in MiniMax H3 SOL attention",
+          "cut_from": null
+        },
+        {
+          "sha": "0678d04ae72bc13a0b8fb1392fb8f161bbcb6488",
+          "date": "2026-11-10T15:56:53Z",
+          "message": "fix(vae): order Sol attention and FFN writes to reduce VRAM",
+          "cut_from": null
+        },
+        {
+          "sha": "ddc367ab5d502113e0df3b5d9415112ce89fac24",
+          "date": "2026-11-10T15:45:01Z",
+          "message": "refactor: unify runner execution and weight residency (#2321)",
+          "cut_from": null
+        },
+        {
+          "sha": "56070ea0342e0bb93da55c858e952da4543110f9",
+          "date": "2026-11-10T15:38:47Z",
+          "message": "refactor: replace QKV split helpers with ggml_ext_chunk (#2322)",
+          "cut_from": null
+        },
+        {
+          "sha": "0bb132831f4cabf988b8854d6daf80820695aeaf",
+          "date": "2026-11-10T15:29:17Z",
+          "message": "feat: support Sol-H3-VAE decoding for MiniMax-H3 (#2317)",
+          "cut_from": null
+        },
+        {
+          "sha": "e1ca5e8bc7f1b5b8e2cbbbefc7fdaad1caffbd32",
+          "date": "2026-11-10T15:08:05Z",
+          "message": "perf(cuda): fuse bias into INT8 CUTLASS epilogues (#2320)",
+          "cut_from": null
+        },
+        {
+          "sha": "a3f46b665ababfbabd124d9d81e2572c6bf76c84",
+          "date": "2026-11-10T13:40:13Z",
+          "message": "feat(server): make async job queue limits configurable (#2316)",
+          "cut_from": null
+        },
+        {
+          "sha": "a3c49b13be5a64a0b4da2b576af3a17e8ae1ccbf",
+          "date": "2026-11-09T17:58:04Z",
+          "message": "refactor: unify ggml operation helpers around runner context (#2314)",
+          "cut_from": null
+        },
+        {
+          "sha": "73fef08224c50a49961004dc8c6fee2c0f640bcb",
+          "date": "2026-11-09T15:41:50Z",
+          "message": "feat: update server web UI with streaming prompt enhancement (#2312)",
+          "cut_from": null
+        },
+        {
+          "sha": "d36f72bbe5ec5675da3846e3db966ceb0791d565",
+          "date": "2026-11-09T15:41:14Z",
+          "message": "docs: add NodeTool link to README (#2277)",
+          "cut_from": null
+        },
+        {
+          "sha": "46da352af0f16a86a1993e1cc938acb4d1e43a34",
+          "date": "2026-11-09T15:40:26Z",
+          "message": "fix: size layer-split ranges in proportion to device capacity (#2309)",
+          "cut_from": null
+        },
+        {
+          "sha": "c44cbec722347adb351a81068f23cfff676d46ce",
+          "date": "2026-11-09T15:39:31Z",
+          "message": "docs: add Quo to UIs (#2279)",
+          "cut_from": null
+        },
+        {
+          "sha": "fbb381da250d47fabb56c3ab5adfc0c2f76ef7e0",
+          "date": "2026-11-09T15:34:21Z",
+          "message": "docs: add Prisme to the UIs list (#2274)",
+          "cut_from": null
+        },
+        {
+          "sha": "991f82558366b35e16ffabf376fa2cba298c12d3",
+          "date": "2026-11-09T14:33:43Z",
+          "message": "fix: limit default MSVC compilation parallelism",
+          "cut_from": null
+        },
+        {
+          "sha": "008b9a20ca9a3ab1c5d51e8a3456fc0f34435566",
+          "date": "2026-11-09T14:21:46Z",
+          "message": "fix: apply MiniMax-H3 Diffusers LoRA token_refiner weights (#2306)",
+          "cut_from": null
+        }
+      ],
+      "left_out": [],
+      "github": null
+    },
+    {
+      "project": "whisper.cpp",
+      "repository": "ggml-org/whisper.cpp",
+      "current": "v1.9.5",
+      "anchor": "2026-10-06T17:39:13Z",
+      "newest": "v1.9.5",
+      "releases": [],
+      "commits": null,
+      "left_out": [],
+      "github": null
+    }
+  ]
+}

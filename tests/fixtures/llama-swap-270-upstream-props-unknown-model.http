@@ -1,0 +1,6 @@
+HTTP/1.0 404 Not Found
+Content-Type: application/json
+Date: Sat, 07 Nov 2026 19:20:36 GMT
+Content-Length: 121
+
+{"src":"llama-swap","error":{"message":"model not found","type":"invalid_request_error","param":null,"code":"not_found"}}

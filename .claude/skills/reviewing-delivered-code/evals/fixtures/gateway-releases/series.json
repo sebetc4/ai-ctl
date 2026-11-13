@@ -1,0 +1,87 @@
+[
+  {
+    "patch": "01-create-the-roadmap-and-open-phase-1.patch",
+    "message": "docs(gateway-releases): create the roadmap and open phase 1",
+    "date": "2026-10-31T08:00:00+01:00"
+  },
+  {
+    "patch": "02-list-measure-and-remove-the-installed-releases.patch",
+    "message": "feat(gateway): list, measure and remove the installed releases",
+    "date": "2026-10-31T08:50:00+01:00"
+  },
+  {
+    "patch": "03-remove-old-llama-swap-releases-with-gateway-prun.patch",
+    "message": "feat(gateway): remove old llama-swap releases with gateway prune",
+    "date": "2026-10-31T10:05:00+01:00"
+  },
+  {
+    "patch": "04-record-phase-1s-work.patch",
+    "message": "docs(gateway-releases): record phase 1's work",
+    "date": "2026-10-31T10:30:00+01:00"
+  },
+  {
+    "patch": "05-review-phase-1-of-gateway-releases.patch",
+    "message": "docs(reviews): review phase 1 of gateway-releases",
+    "date": "2026-10-31T13:20:00+01:00"
+  },
+  {
+    "patch": "06-prune-releases-by-number-and-report-a-failed-rem.patch",
+    "message": "fix(gateway): prune releases by number, and report a failed removal",
+    "date": "2026-10-31T14:10:00+01:00"
+  },
+  {
+    "patch": "07-prune-spares-the-release-the-running-gateway-run.patch",
+    "message": "fix(gateway): prune spares the release the running gateway runs",
+    "date": "2026-10-31T14:55:00+01:00"
+  },
+  {
+    "patch": "08-tidy-gateway-prune.patch",
+    "message": "refactor(gateway): tidy gateway prune",
+    "date": "2026-10-31T15:20:00+01:00"
+  },
+  {
+    "patch": "09-document-gateway-prune.patch",
+    "message": "docs(commands): document gateway prune",
+    "date": "2026-10-31T15:35:00+01:00"
+  },
+  {
+    "patch": "10-remove-the-clean-alias-of-gateway-prune.patch",
+    "message": "refactor(cli): remove the clean alias of gateway prune",
+    "date": "2026-10-31T15:50:00+01:00"
+  },
+  {
+    "patch": "11-close-phase-1-and-open-phase-2.patch",
+    "message": "docs(gateway-releases): close phase 1 and open phase 2",
+    "date": "2026-10-31T16:05:00+01:00"
+  },
+  {
+    "patch": "12-install-a-release-from-an-archive-on-disk-with.patch",
+    "message": "feat(gateway): install a release from an archive on disk with --from",
+    "date": "2026-10-31T17:30:00+01:00"
+  },
+  {
+    "patch": "13-name-the-release-a-running-gateway-still-runs-af.patch",
+    "message": "feat(gateway): name the release a running gateway still runs after an install",
+    "date": "2026-10-31T18:40:00+01:00"
+  },
+  {
+    "patch": "14-record-phase-2s-work.patch",
+    "message": "docs(gateway-releases): record phase 2's work",
+    "date": "2026-10-31T19:00:00+01:00"
+  },
+  {
+    "patch": "15-review-phase-2-of-gateway-releases.patch",
+    "message": "docs(reviews): review phase 2 of gateway-releases",
+    "date": "2026-10-31T20:15:00+01:00"
+  },
+  {
+    "patch": "16-an-install-warns-of-nothing-when-the-gateway-run.patch",
+    "message": "test(gateway): an install warns of nothing when the gateway runs the new release",
+    "date": "2026-10-31T20:40:00+01:00"
+  },
+  {
+    "patch": "17-show-gateway-install---from-in-the-README.patch",
+    "message": "docs: show gateway install --from in the README",
+    "date": "2026-10-31T20:55:00+01:00"
+  }
+]

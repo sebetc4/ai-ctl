@@ -1,0 +1,1007 @@
+{
+  "review": "2026-11-12-review-skill-v2-5-phase-2",
+  "scope": {
+    "kind": "phase",
+    "roadmap": "review-skill-v2-5",
+    "phase": 2,
+    "base": "`chore(release): release 0.2.0` of 2026-11-06",
+    "end": "`fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11",
+    "hunks": 269,
+    "lines": {
+      "added": 3135,
+      "removed": 882
+    }
+  },
+  "go_ahead": {
+    "by": "the user",
+    "text": "go",
+    "tier": "medium"
+  },
+  "agents": [
+    {
+      "type": "review-security",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "src/infrastructure/download.rs",
+          "docs/security.md"
+        ],
+        "in part": [
+          "src/application/gateway.rs (lines 1-160)",
+          "scope.txt (items, hunks' paths)",
+          "src/domain/gateway.rs (lines 1-112)",
+          "src/infrastructure/gateway_store.rs (lines 1-260)",
+          "src/infrastructure/git.rs (lines 1-440)",
+          "src/application/build.rs (lines 225-440, 735-870)",
+          "src/domain/recipe.rs (lines 40-130, diff `chore(release): release 0.2.0` of 2026-11-06..`fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11)",
+          "src/domain/inventory.rs (diff `chore(release): release 0.2.0` of 2026-11-06..`fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11)",
+          "src/domain/gateway_config.rs (diff `chore(release): release 0.2.0` of 2026-11-06..`fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11)",
+          "src/domain/build.rs (lines 39-111)",
+          "src/application/doctor.rs (lines 155-215)",
+          "src/application/lifecycle.rs (lines 755-790, 905-915)",
+          "src/application/gateway_config.rs (lines 50-115)",
+          "src/infrastructure/gateway_process.rs (lines 100-215)",
+          "src/presentation/lifecycle.rs (lines 50-80, 210-275)",
+          "src/domain/patches/audio.cpp/api-key.patch (whole, and its diff)",
+          "CHANGELOG.md (0.3.0 entry)",
+          "docs/commands.md (gateway install, lines 360-380)",
+          "tests/fixtures/llama-swap-271-checksums.txt",
+          "git show of src/domain/gateway.rs at `chore(release): release 0.2.0` of 2026-11-06 (lines 1-40)",
+          "llama-swap/internal/server/server.go (lines 380-560)",
+          "llama-swap/internal/server/auth.go (lines 15-65)",
+          "llama-swap/internal/server/api.go (lines 460-486)",
+          "llama-swap/llama-swap.go (lines 60-100, 126-134, 260-300)",
+          "~/.local/share/ai-ctl/sources/audio.cpp at v0.9.4 (app/server/main.cpp 290-375, app/server/http.h 82-104, app/server/http.cpp 773-830, app/server/runtime.cpp 150-215, app/server/parallel_runtime.cpp 150-185)"
+        ]
+      },
+      "left_out": [
+        "src/application/build.rs tests, src/presentation/build.rs and tests/cli.rs: rendering and tests of build outdated and update; their inputs, remote tag names, are settled safe by TagPattern::release (digits, a hex hash) and BuildId::parse before any path, command or printed remedy",
+        "src/infrastructure/chat_api.rs, gateway_api.rs, http.rs, server_api.rs: their hunks are tests and fixture names only",
+        "the other backends' sources (llama.cpp b12227, whisper.cpp v1.9.5, stable-diffusion.cpp master-1071-cfdf3cf): no patch of theirs changed in the range; stable-diffusion.cpp's new thirdparty/cutlass submodule comes from its .gitmodules, as §7 states for ggml",
+        "audio.cpp v0.9.4's frontend upload folder, `/tmp/audiocpp-server-<microseconds>` made with create_directories: upstream code older than the range and not reached through ai-ctl's diff",
+        ".claude/, docs/reviews/ and the review skill's scripts: outside ai-ctl's shipped code"
+      ],
+      "probes": [
+        {
+          "command": "d=$(mktemp -d) && curl -fsSL --proto =https -o $d/a.tgz https://github.com/mostlygeek/llama-swap/releases/download/v271/llama-swap_271_linux_amd64.tar.gz && sha256sum $d/a.tgz && tar -xzOf $d/a.tgz llama-swap | sha256sum && sha256sum ~/.local/share/ai-ctl/llama-swap/v271/llama-swap; rm -rf $d",
+          "risk": "one download from GitHub, which these rules forbid an agent; writes only in a temporary folder it removes",
+          "settles": "whether the v271 binary this machine runs is the one in the archive whose SHA-256 ai-ctl pins (58d5c897...), the archive's digest printed first, then its binary's and the installed binary's (49a46b3b...)",
+          "finding": 8
+        }
+      ]
+    },
+    {
+      "type": "review-correctness",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "src/application/gateway.rs (lines 1-160, the production part)",
+          "src/domain/gateway.rs",
+          "src/infrastructure/download.rs"
+        ],
+        "in part": [
+          "src/application/build.rs (lines 1-930, 940-1030, 2902-2921, 3340-3420)",
+          "src/domain/build.rs (lines 1-200)",
+          "src/infrastructure/git.rs (lines 1-460, 660-700)",
+          "src/infrastructure/gateway_store.rs (lines 1-260)",
+          "src/infrastructure/files.rs (lines 65-95, 198-231)",
+          "src/infrastructure/build_store.rs (lines 299-345)",
+          "src/presentation/build.rs (lines 1-320)",
+          "src/presentation/gateway.rs (lines 1-95)",
+          "src/presentation/cli.rs (lines 15-145)",
+          "src/presentation/lifecycle.rs (lines 50-80, 210-275)",
+          "src/presentation/mod.rs (lines 70-155)",
+          "src/application/doctor.rs (lines 140-215)",
+          "src/application/lifecycle.rs (lines 225-340, 740-800, 905-915)",
+          "src/application/gateway_config.rs (lines 40-140)",
+          "src/domain/gateway_config.rs (lines 1-320, 490-720)",
+          "src/domain/inventory.rs (lines 50-100, 205-245, 420-606)",
+          "src/domain/recipe.rs (lines 80-122, diff of 226-388)",
+          "src/domain/machine.rs (lines 91-93)",
+          "docs/commands.md (lines 200-300)",
+          "docs/gpu/llama-swap.md (lines 110-135)",
+          "deploy/inventory.toml (model ids)",
+          "llama-swap internal/config/capacity.go (lines 1-111)",
+          "internal/config/model_config.go (lines 20-110, 190-245)",
+          "internal/router/capacity.go (lines 55-140)",
+          "~/.local/share/ai-ctl/sources/llama.cpp at b12227 tools/server/server.cpp (lines 115-150)",
+          "src/llama-context.cpp (lines 415-440)",
+          "common/arg.cpp (lines 1365-1380, 1610-1630, 1695-1701, 2510-2535)",
+          "common/common.h (kv_unified, n_parallel)",
+          "docs/reviews/delivered-code/2026-11-09-capabilities-status-and-updates-phase-4/findings.json (findings 1 and 7)"
+        ]
+      },
+      "left_out": [
+        "src/infrastructure/chat_api.rs, src/infrastructure/gateway_api.rs, src/infrastructure/http.rs, src/infrastructure/server_api.rs: their hunks are test constants and tests on captures, which belong to the tests axis",
+        "tests/cli.rs and the test items of build.rs, doctor.rs, gateway.rs, lifecycle.rs, presentation/*.rs: read only where a production path needed them",
+        "build outdated and build update against the real remotes: these rules forbid them (they reach the network and the second one builds); the withdrawn-tag case was reproduced on a scratch repository instead",
+        "the generated configuration: checked with `llama-swap -validate` of v271 on tests/snapshots/gateway-shipped.yaml (valid, 13 models, nothing left running); the capacity router's runtime eviction was read in its source, not run",
+        "the llama.cpp source is b12227, which is the current build per its `current` link; the request window's rules were read there, not at the b12111 the documentation cites"
+      ]
+    },
+    {
+      "type": "review-tests",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "src/application/gateway.rs",
+          "src/domain/gateway.rs",
+          "src/infrastructure/download.rs",
+          "src/presentation/gateway.rs"
+        ],
+        "in part": [
+          "src/application/build.rs (lines 1-560, 700-1060, 2680-3523)",
+          "src/domain/build.rs (lines 1-200, 440-597)",
+          "src/presentation/build.rs (lines 1-330, 440-700, 840-872)",
+          "src/infrastructure/git.rs (lines 55-160, 370-400, 500-700; submodule lines located by grep)",
+          "src/infrastructure/gateway_store.rs (lines 60-100, 200-406)",
+          "src/application/doctor.rs (lines 150-215, 990-1050, 2635-2745)",
+          "src/application/gateway_config.rs (lines 40-130, 200-260)",
+          "src/application/lifecycle.rs (lines 755-790, 1170-1200)",
+          "src/presentation/lifecycle.rs (lines 55-80, 210-275)",
+          "src/domain/gateway_config.rs (lines 25-320, 570-720, 1818-1830)",
+          "src/domain/inventory.rs (lines 50-100, 205-245, 420-530, 590-606, 1115-1280)",
+          "tests/cli.rs (lines 1-120, 200-540)",
+          "git diff of src/domain/recipe.rs from `chore(release): release 0.2.0` of 2026-11-06 to `fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11",
+          "src/application/fakes.rs and src/application/ports.rs; llama-swap v271 internal/config/model_config.go (grep for the keys) and changelog/v263-v271.md (grep); llama.cpp b12227 tools/server/server.cpp (lines 115-160)",
+          "common/arg.cpp (lines 1615-1630, 1690-1705)",
+          "tools/server/server-context.cpp (grep for n_ctx_slot)"
+        ]
+      },
+      "left_out": [
+        "src/infrastructure/chat_api.rs, gateway_api.rs, http.rs, server_api.rs: their changes in scope only swap test captures for the v270 ones; not read past the item list",
+        "src/presentation/lifecycle.rs tests (lines 511-619), src/presentation/mod.rs (json_text and its test), src/presentation/cli.rs: not read; status --json was checked only through tests/cli.rs",
+        "src/domain/gateway_config.rs tests from 861 to 1816 (pool, capabilities and yaml-layout tests): read only by name. The two shipped snapshots pass `llama-swap -validate` on v271 (13 models each, exit 0, no process left)",
+        "src/domain/inventory.rs reserved_flags and is_valid_id, src/domain/recipe.rs test 353-388: read in the diff only",
+        "mutants: cargo mutants missed none, so I checked no missed mutant by hand. tests/cli.rs status_with_a_running_gateway_exits_0 and status_json_gives_..., which spawn a process and bind a port, ran 30 times on `fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11 with 0 failures",
+        "the llama.cpp clone is at b12227 (git describe), and its builds directory's current link points to b12227; I did not run `build list`. I checked request_window against that tree, not b12111, which the doc comment cites"
+      ]
+    },
+    {
+      "type": "review-cleanup",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "src/application/gateway.rs (lines 1-160, its production code)",
+          "src/domain/gateway.rs",
+          "src/infrastructure/download.rs",
+          "src/presentation/gateway.rs (lines 1-80, its production code)",
+          "scope.txt"
+        ],
+        "in part": [
+          "src/application/build.rs (lines 1-940)",
+          "src/domain/build.rs (lines 130-200)",
+          "src/presentation/build.rs (lines 1-400)",
+          "src/presentation/lifecycle.rs (lines 150-300)",
+          "src/presentation/bench.rs (lines 195-206, 415-450)",
+          "src/presentation/doctor.rs (lines 10-40)",
+          "src/presentation/compare.rs (lines 1-14, 460-490)",
+          "src/application/doctor.rs (lines 330-440 and the diff of llama_swap_check)",
+          "src/application/lifecycle.rs (lines 140-160, 740-790, 935-975)",
+          "src/application/gateway_config.rs (lines 50-140, 146-170)",
+          "src/application/bench.rs (lines 335-360)",
+          "src/domain/inventory.rs (lines 50-100, 200-245, 420-530, 560-610)",
+          "src/domain/gateway_config.rs (the diff `chore(release): release 0.2.0` of 2026-11-06..`fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11)",
+          "src/infrastructure/git.rs (the diff)",
+          "src/infrastructure/gateway_store.rs (lines 70-100)",
+          "src/domain/recipe.rs (the diff)",
+          "src/presentation/mod.rs and src/presentation/cli.rs (the diff)",
+          "docs/commands.md (lines 205-300)",
+          "tests/fixtures/README.md (lines 270-295)",
+          ".claude/skills/reviewing-delivered-code/evals/test_dependencies.py (lines 30-75)"
+        ]
+      },
+      "left_out": [
+        "tests/cli.rs and the test modules of the scope's files: read through their names and calls only, as callers of the production items, not reviewed as tests",
+        ".claude/ scripts and evals (dependencies.py, scope.py, findings.py and their tests): listed under `other:`, outside the reading",
+        "src/infrastructure/build_store.rs, src/infrastructure/run_store.rs: their `// LEGACY:` comments lie outside the scope; whether builds of format 1 and runs before format 3 remain on this machine was not checked",
+        "deploy/inventory.toml: configuration, outside these two axes"
+      ]
+    },
+    {
+      "type": "review-structure",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "docs/architecture.md",
+          "docs/gpu/llama-swap.md",
+          "docs/README.md",
+          "src/presentation/cli.rs",
+          "src/infrastructure/download.rs"
+        ],
+        "in part": [
+          "src/presentation/build.rs (lines 1-330)",
+          "src/application/build.rs (lines 1-445, 730-870, 2716-2860)",
+          "src/application/doctor.rs (lines 155-215)",
+          "src/application/lifecycle.rs (lines 760-790)",
+          "src/application/ports.rs (lines 140-160)",
+          "src/application/fakes.rs (lines 374-400, 550-560, 690-700)",
+          "src/domain/gateway.rs (lines 1-175)",
+          "src/domain/gateway_config.rs (lines 1-60, 100-320, 570-720)",
+          "src/domain/inventory.rs (lines 205-525)",
+          "src/domain/build.rs (lines 145-195)",
+          "src/infrastructure/git.rs (lines 55-160, 375-400, 440-470)",
+          "src/infrastructure/gateway_store.rs (lines 80-90)",
+          "src/infrastructure/command.rs (lines 168-190)",
+          "src/presentation/lifecycle.rs (lines 1-80, 210-275)",
+          "src/presentation/mod.rs (lines 140-155)",
+          "tests/cli.rs (lines 205-340, 476-540)",
+          "docs/commands.md (lines 1-545)",
+          "docs/security.md (lines 1-12, 270-300 and the range's diff)",
+          "docs/release.md (lines 10-40 and the range's diff)",
+          "docs/stack.md (lines 365-400)",
+          "README.md (lines 86-182 and grep)",
+          "CHANGELOG.md (lines 1-20)",
+          "deploy/inventory.toml (lines 1-70)",
+          "Makefile (lines 30-60)",
+          "tests/snapshots/gateway-shipped.yaml (lines 1-120)",
+          "tests/fixtures/README.md (grep)",
+          "the range's diff of docs/audio/audio-cpp.md",
+          "docs/image/stable-diffusion-cpp.md",
+          "docs/toolchain.md",
+          "src/domain/recipe.rs",
+          "src/domain/patches/audio.cpp/api-key.patch",
+          "src/application/gateway.rs; llama-swap v271: internal/config/model_config.go (lines 20-80)",
+          "internal/capcompat/capcompat.go (grep)",
+          "changelog/v263-v271.md; llama.cpp b12227 (the current build): tools/server/server.cpp (lines 120-150)",
+          "tools/server/server-context.cpp (lines 1436-1470, 5085-5105)",
+          "common/arg.cpp (lines 1620-1626)"
+        ]
+      },
+      "left_out": [
+        "on-disk formats: checked, no finding: inventory.toml (version 1, no field added), build.json and the builds' current links (unchanged, read by build outdated as by doctor), llama-swap/current (v<N>, the same parse as 0.2.0), gateway.json (unchanged), llama-swap.yaml written by up and read back by is_current and starts_program (a 0.2.0 configuration differs and reads as outdated, a v263 current refused by up and doctor with gateway install named), status --json (new, policy in CHANGELOG.md)",
+        "llama-swap v267's own source: the clone holds v271 alone (one commit); the capacity router's keys were checked in v271's source and in the changelogs v267-v271, which name no change to them",
+        "tests/fixtures/README.md and the captures: test inputs, outside the reading",
+        ".claude/, docs/reviews/ and the other `other:` paths: the review skill's files, not ai-ctl's code or contract"
+      ]
+    },
+    {
+      "type": "review-performance",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [],
+        "in part": [
+          "scope.txt (item and hunk lines)",
+          "src/application/build.rs (lines 70-440, 730-870)",
+          "src/application/gateway.rs (lines 1-160)",
+          "src/application/gateway_config.rs (lines 1-140)",
+          "src/application/doctor.rs (lines 60-260)",
+          "src/application/lifecycle.rs (lines 700-800, and its diff over the range)",
+          "src/infrastructure/git.rs (lines 1-200, 370-440)",
+          "src/infrastructure/download.rs (lines 1-80)",
+          "src/infrastructure/gateway_store.rs (lines 1-200)",
+          "src/presentation/build.rs (lines 1-320)",
+          "src/presentation/lifecycle.rs (lines 55-80, 215-275)",
+          "src/presentation/mod.rs and src/presentation/gateway.rs (their diffs over the range)",
+          "src/domain/gateway_config.rs (lines 25-40, 140-320, 575-720)",
+          "src/domain/recipe.rs (recipe repositories and tag globs)",
+          "llama-swap v271 internal/router/capacity.go (lines 1-230) and internal/config/model_config.go (evict_cost, line 152)"
+        ]
+      },
+      "left_out": [
+        "build outdated and build update: not run, the skill allows only doctor, status and build list; their cost was measured on the git ls-remote commands they run, as above",
+        "status --json: run on the scope's end (0.00-0.02 s), but with the GPU unreadable on this machine (NVML driver/library mismatch), so the NVML read and the gateway's API request were not timed; no gateway was running",
+        "Builder::update's gate and git fetch per project: read, not timed; nvidia-smi and the toolchain probes run once per project built, seconds against compiles of minutes, not reported",
+        "domain/inventory.rs capabilities, gateway_config routing and evict_cost: read against llama-swap v271's capacity router; evict_cost as the VRAM budget means keeping the costlier model resident, as the source says (higher EvictCost favors keeping it), no reload cost found",
+        "tests and captures: outside this axis except as callers; not analysed for performance"
+      ]
+    },
+    {
+      "type": "review-dependencies",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "check-cargo_deny_check_.log",
+          "dependencies-run.log",
+          "docs/reviews/delivered-code/2026-11-12-review-skill-v2-5-phase-2/dependencies.json (through python, every crate and project record)",
+          "Cargo.toml"
+        ],
+        "in part": [
+          "scope.txt (lines 1-50)",
+          "src/domain/recipe.rs (lines 150-300)",
+          "src/domain/gateway_config.rs (lines 60-95, grep for capabilities and metadata)",
+          "src/infrastructure/http.rs (grep for the request line and headers, lines 1-10, 107)",
+          "src/infrastructure/server_api.rs (grep for /upstream and props)",
+          "src/infrastructure/gateway_api.rs (grep for routes)",
+          "docs/stack.md (lines 367-368, 739-740)",
+          "Cargo.lock (lines 185-188, 340-355, grep for package lines)"
+        ]
+      },
+      "left_out": [
+        "llama-swap: not needed; the axis judges the lag from the v272 note, and ai-ctl's use of the routes it names was checked in src/",
+        "dependencies.json: its left_out is empty, and no project's left_out or github names anything"
+      ],
+      "facts": [
+        "cargo deny check: advisories ok, bans ok, licenses ok, sources ok; exit 0",
+        "duplicates: syn 2.0.119 and 3.0.10, thiserror 1.0.69 and 2.0.21, thiserror-impl 1.0.69 and 2.0.21; every older copy comes through nvml-wrapper 0.13.0 (darling 0.20, wrapcenum-derive, thiserror 1), which is the newest nvml-wrapper, so ai-ctl cannot remove them",
+        "behind beyond the requirements, with no advisory and nothing yanked: darling, darling_core and darling_macro 0.20.11 (newest 0.24.1), libloading 0.8.9 (0.9.0), r-efi 6.0.0 (7.1.0), syn 2.0.119 (3.0.10), thiserror and thiserror-impl 1.0.69 (2.0.21), windows-link 0.2.1 (0.100.0); all transitive, held there by their parents; every direct crate is at its newest",
+        "last released over a year ago, none archived and none with a RustSec warning: fnv 1.0.7 (2020), ident_case 1.0.1 (2019), static_assertions 1.1.0 (2019), heck 0.5.0, strsim 0.11.1, utf8parse 0.2.2, wrapcenum-derive 0.4.1 (2024), is_terminal_polyfill and once_cell_polyfill 1.70.2, windows-sys 0.61.2 (2025)",
+        "moved repositories, none archived: nvml-wrapper and wrapcenum-derive to rust-nvml/, static_assertions to nvzqz/static-assertions",
+        "unsafe counts that stand out: windows-sys 12530 (Windows only, not built on Fedora), r-efi 332 (UEFI only), nvml-wrapper 317 (FFI to NVML), anyhow 108, libloading 93; single owners on anyhow, thiserror, syn, tempfile, libloading, nvml-wrapper's darling chain",
+        "llama-swap: pinned v271, newest v272 (2026-11-10); none of its six changes touches what ai-ctl does: ai-ctl writes no user metadata beside capabilities (#1326), calls /upstream/<model>/props and not the top-level /props (#1327), and its HTTP/1.0 client sends no Expect: 100-continue (#1319)",
+        "llama.cpp: built b12227, newest b12322, 55 releases read; none fixes #29680, which the keep-alive setting in src/domain/gateway_config.rs:68-77 waits for; b12238 adds an OpenAI-compatible /v1/audio/speech to llama-server, a new route, while ai-ctl serves speech through audio.cpp, which it neither works around nor bounds; nothing reaches the recipe's CMake flags",
+        "stable-diffusion.cpp: built master-1071-cfdf3cf, newest master-1091-b9d7176, 12 releases with empty notes, 20 commits read; none touches the API key, the failed listen or the address reuse its three patches carry; #2316 makes the server's job queue limits configurable, which ai-ctl does not set or bound",
+        "audio.cpp: built v0.9.4, at its newest",
+        "whisper.cpp: built v1.9.5, at its newest"
+      ]
+    },
+    {
+      "type": "review-verifier",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [
+          "review-verifier/findings.md",
+          "scope.txt (head)"
+        ],
+        "in part": [
+          "docs/architecture.md (lines 60-90)",
+          "docs/commands.md (lines 10-14, 40-60, 94-100, 236-246, 280-290, 362-374)",
+          "README.md (lines 88-95, 132-140)",
+          "docs/README.md (lines 1-10, 38-46)",
+          "docs/security.md (lines 25-42, 275-295)",
+          "src/presentation/build.rs (lines 25-50, 180-200, 260-300)",
+          "src/presentation/cli.rs (lines 90-105)",
+          "src/application/build.rs (lines 55-75, 105-160, 225-310, 545-562, 3020-3032, 3340-3445)",
+          "src/domain/build.rs (lines 153-192)",
+          "src/application/gateway.rs (lines 1-140, 180-460)",
+          "src/infrastructure/gateway_store.rs (lines 1-360)",
+          "src/application/ports.rs (lines 278-345)",
+          "src/application/fakes.rs (lines 515-600)",
+          "src/application/lifecycle.rs (lines 755-800, 1160-1200)",
+          "src/application/doctor.rs (lines 160-200, 425-440)",
+          "src/application/gateway_config.rs (lines 115-140, 425-480)",
+          "src/infrastructure/git.rs (lines 60-120, 436-451)",
+          "src/domain/recipe.rs (lines 170-185)",
+          "tests/gateway_lifecycle.rs (lines 165-200)",
+          "v0.2.0 src/application/gateway.rs (lines 130-170)",
+          "llama-swap v271 internal/server/server.go (lines 395-500, 534)",
+          "internal/server/cors.go (lines 179-205)",
+          "internal/server/api.go (lines 395-435)",
+          "llama.cpp b12227 tools/server/server-http.cpp (lines 238-300, 365-450)",
+          "~/.local/state/ai-ctl/logs/gateway.log (lines 1-25)"
+        ]
+      },
+      "left_out": [
+        "finding 9's run: not repeated; the source at the pin shows each route, and the reviewer's run matches it",
+        "finding 8's PROBE (download of v271's archive): not run, under the rules; it bears only on damage on this machine",
+        "doctor.rs:428 and the doctor line for an unrecorded pinned release: named in the fixes of 10 and 8, not patched"
+      ]
+    },
+    {
+      "type": "session",
+      "effort": "medium",
+      "state": "answered",
+      "read": {
+        "in full": [],
+        "in part": [
+          "llama-swap/internal/server/api.go (lines 380-440)",
+          "src/domain/recipe.rs (lines 160-190)",
+          "src/domain/gateway_config.rs (lines 568-604, grep preload)",
+          "docs/commands.md (lines 428-440)",
+          "docs/security.md (grep web UI)",
+          ".claude/skills/reviewing-delivered-code/evals/test_guard.py (lines 320-350)",
+          "deny.toml",
+          "Cargo.lock (grep nvml-wrapper)",
+          "the checks' logs",
+          "mutants.out/outcomes.json"
+        ]
+      },
+      "left_out": [
+        "the missed mutants: none; cargo mutants caught 121 of 141, 20 unviable",
+        "the tests that skip themselves: none in cargo test's output"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo fmt --check",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo test",
+      "result": "exit 0: 929 passed, 0 failed, 0 ignored; no test skipped itself"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py",
+      "result": "exit 0: 34 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py",
+      "result": "exit 0"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py",
+      "result": "exit 0: 34 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py",
+      "result": "exit 0: 53 tests"
+    },
+    {
+      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py",
+      "result": "exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding"
+    },
+    {
+      "command": "python3 .github/scripts/test_check_release.py",
+      "result": "exit 0: 15 tests"
+    },
+    {
+      "command": "sid.py check .",
+      "result": "exit 0: cites 0, names 0, other 0"
+    },
+    {
+      "command": "cargo deny check",
+      "result": "exit 0: advisories, bans, licenses and sources ok; three duplicate warnings, syn, thiserror and thiserror-impl, the session's finding"
+    }
+  ],
+  "mutants": {
+    "diff": "the scope's diff",
+    "tested": 141,
+    "missed": 0,
+    "caught": 121,
+    "unviable": 20,
+    "seconds": 434,
+    "given_to": null
+  },
+  "status": {
+    "stage": "complete",
+    "note": "every finding fixed or registered: batches 1 to 6 in `docs(build): state the exit codes and lock of build outdated and update` of 2026-11-12, `docs: list the gateway's open redirects and explain the preload's 404` of 2026-11-12, `refactor(build): share the swap standing, built projects and table` of 2026-11-12, `build(deps): update errno to 0.3.15` of 2026-11-12, `fix(build): tell how to go on when a build's release was withdrawn` of 2026-11-12 and `fix(gateway): run the pinned llama-swap once checked against its pin` of 2026-11-12; 13, 16 and 17 registered; the recorded mutants at `docs(review): record M78 again on doctor's pinned arm` of 2026-11-12 all caught, M34, M63 to M65, M69 and M78 recorded again on the text the fixes moved"
+  },
+  "findings": [
+    {
+      "number": 1,
+      "axes": [
+        "architecture",
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "review-structure"
+      ],
+      "where": [
+        "docs/architecture.md:70-87 (top level)",
+        "src/presentation/build.rs:31-47 (run)",
+        "src/presentation/build.rs:183-196 (outdated_status)",
+        "src/presentation/build.rs:265-273 (update_status)"
+      ],
+      "title": "architecture.md leaves out build outdated and build update and their exit codes",
+      "cause": "the Path of a Command table maps build list, use and prune to their use cases but has no row for build outdated (application::build::outdated) or build update (Builder::update), and the exit-code paragraph still reads \"1 when doctor finds a failed check, 3 when status finds no gateway running, 0 otherwise\", where build outdated now exits 4 or 1 and build update exits 1 after a failed project, without returning an error to main.rs",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "whoever changes the structure reads that only doctor and status pick an exit code other than 0, and that a command exiting 1 returned its error to main.rs; the two new use cases cannot be found from the table",
+      "fix": "add the rows `build outdated` -> `outdated` of `application::build` and `build update` -> `Builder::update`, and add 4 and 1 for build outdated and 1 for build update to the exit-code paragraph, pointing to docs/commands.md",
+      "test": "none: a document; the exit codes themselves are tested (outdated_exits_4_for_each_standing_update_would_build, outdated_exits_1_over_4_when_a_project_could_not_be_read, update_exits_1_when_a_project_failed_and_0_otherwise)",
+      "evidence": "read: docs/README.md:41-43, a change to the code changes its document in the same commit; docs/architecture.md:75, the table's build rows; docs/architecture.md:86-88, the exit codes; src/presentation/build.rs:34 and :46, ExitCode::from(outdated_status) and ExitCode::from(update_status)",
+      "origin": "older",
+      "floor": "above",
+      "fingerprint": "architecture | docs/architecture.md + src/presentation/build.rs | outdated_status + run + top level + update_status",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 1,
+      "note": null,
+      "fixed_in": "docs(build): state the exit codes and lock of build outdated and update"
+    },
+    {
+      "number": 2,
+      "axes": [
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "review-structure"
+      ],
+      "where": [
+        "docs/commands.md:51 (top level)",
+        "src/presentation/build.rs:183-196 (outdated_status)",
+        "src/presentation/build.rs:265-273 (update_status)",
+        "src/presentation/build.rs:286-294 (render_updated)"
+      ],
+      "title": "commands.md's Exit Status table says 1 is an error printed as error: on stderr, which build outdated and build update do not do",
+      "cause": "build outdated exits 1 when a project's releases cannot be read and build update exits 1 when a project failed, each with its cause on stdout in the project's line (\"cannot read its releases: ...\", \"failed: ...\"), and nothing on stderr as `error: …`; the global table names only doctor as the exception",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "a script author who follows the table looks for the cause on stderr and finds none, or treats exit 1 of build update as nothing done, where the other projects were built",
+      "fix": "extend the row: \"for doctor, at least one check failed; for build outdated, a project could not be read; for build update, a project failed, each with its cause on stdout\"",
+      "test": "none: a document; tests/cli.rs build_outdated_exits_1_when_a_project_cannot_be_read already shows the cause on stdout",
+      "evidence": "read: docs/commands.md:51; tests/cli.rs:288-300, exit 1 with \"cannot read its releases\" on stdout; src/presentation/build.rs:34 and :46, the exit code returned as Ok, never as an error to main.rs",
+      "origin": "older",
+      "floor": "above",
+      "fingerprint": "the CLI's contract | docs/commands.md + src/presentation/build.rs | outdated_status + render_updated + top level + update_status",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 1,
+      "note": null,
+      "fixed_in": "docs(build): state the exit codes and lock of build outdated and update"
+    },
+    {
+      "number": 3,
+      "axes": [
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "review-structure"
+      ],
+      "where": [
+        "src/presentation/cli.rs:96-97 (BuildAction)",
+        "docs/commands.md:12 (top level)",
+        "README.md:92 (top level)",
+        "src/presentation/build.rs:183-196 (outdated_status)"
+      ],
+      "title": "build outdated's help says it exits 4 when a build is behind, where it also exits 4 on a project not built, built from a commit or off its recipe",
+      "cause": "the help reads \"Tell which builds the inventory runs are behind their project's newest release; exit 4 when one is\", while outdated_status returns 4 for every standing but Current (NotBuilt, FromCommit, OffRecipe included) and 1 when a project cannot be read; docs/commands.md:241-243 says so, the help and the summaries in commands.md:12 and README.md:92 do not",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "a user or a script reading `ai-ctl build outdated --help` takes exit 4 for \"a build is behind\" and is surprised by 4 on a machine with a project never built, or by 1",
+      "fix": "help: \"Tell where each current build the inventory runs stands against its project's newest release; exit 4 when build update has something to build, 1 when a project cannot be read\"; the same words in the two summaries",
+      "test": "none: a help text; the exit codes are tested in src/presentation/build.rs tests and tests/cli.rs build_outdated_exits_4_for_a_project_that_was_never_built",
+      "evidence": "read: src/presentation/cli.rs:96-97; src/presentation/build.rs:190-195, `found.standing != Standing::Current` gives 4; docs/commands.md:241-243, 4 for behind, not built, built from a commit or off its recipe",
+      "origin": "new",
+      "floor": "above",
+      "fingerprint": "the CLI's contract | README.md + docs/commands.md + src/presentation/build.rs + src/presentation/cli.rs | BuildAction + outdated_status + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 1,
+      "note": null,
+      "fixed_in": "docs(build): state the exit codes and lock of build outdated and update"
+    },
+    {
+      "number": 4,
+      "axes": [
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "review-structure"
+      ],
+      "where": [
+        "README.md:137-138 (top level)",
+        "src/application/build.rs:232-261 (Builder::update)",
+        "src/application/build.rs:114 (Builder::build)",
+        "docs/commands.md:98 (top level)"
+      ],
+      "title": "the README says one command changes the builds at a time, which build update does not hold",
+      "cause": "build update takes the builds' lock inside each project's build only (Builder::build takes it, Builder::update calls build in turn), so between two projects, and during the git ls-remote of every project before the first, another build, build use or build prune runs; the README states \"One command changes the builds at a time: a second build, use or prune is refused while one runs\" and leaves update out, where commands.md:98 says \"build update during each build\"",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "a user who runs `build use` or `build prune` while `build update` runs expects a refusal and gets the command run between two of update's projects, or update's next project failing on the lock",
+      "fix": "README: \"a second build, update, use or prune is refused while a build runs; build update holds the lock during each project's build only\", as commands.md says",
+      "test": "none: a document; the lock per build is Builder::build's, already tested",
+      "evidence": "read: README.md:137-138; docs/commands.md:98; src/application/build.rs:114, `let _lock = self.store.lock()?` inside build; src/application/build.rs:238-245, update calls update_project, hence build, per project with no lock of its own",
+      "origin": "older",
+      "floor": "above",
+      "fingerprint": "the CLI's contract | README.md + docs/commands.md + src/application/build.rs | Builder::build + Builder::update + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 1,
+      "note": null,
+      "fixed_in": "docs(build): state the exit codes and lock of build outdated and update"
+    },
+    {
+      "number": 5,
+      "axes": [
+        "conventions"
+      ],
+      "reviewers": [
+        "review-structure"
+      ],
+      "where": [
+        "docs/README.md:3-4 (top level)",
+        "docs/README.md:43 (top level)"
+      ],
+      "title": "docs/README.md still sends the reader to the roadmaps, which left the repository",
+      "cause": "the scope deleted the roadmaps' folder under docs/ and the Records line that linked it (the roadmaps now live under private/, outside git), but the index's opening still says \"how they got there is in the roadmaps, the reviews and git's history\" and its rule \"the history stays in the roadmaps and in git\"",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "a reader of the public repository is sent to roadmaps no tracked path holds",
+      "fix": "\"how they got there is in the reviews, CHANGELOG.md and git's history\", and the rule \"the history stays in git\"; a roadmap stays named as a fact's work, which CLAUDE.md allows",
+      "test": "none: a document",
+      "evidence": "read: CLAUDE.md, Working notes, under private/, stay outside git, and no tracked file cites them; docs/README.md:3-4 and :43; deleted: the roadmaps' overview and the completed roadmaps under docs/, in the range",
+      "origin": "older",
+      "floor": "above",
+      "fingerprint": "conventions | docs/README.md | top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 2,
+      "note": null,
+      "fixed_in": "docs: list the gateway's open redirects and explain the preload's 404"
+    },
+    {
+      "number": 6,
+      "axes": [
+        "architecture"
+      ],
+      "reviewers": [
+        "review-structure"
+      ],
+      "where": [
+        "src/presentation/build.rs:253-262 (swap_verdict)",
+        "src/application/doctor.rs:183-204 (Doctor::llama_swap_check)",
+        "src/domain/build.rs:151-192 (Standing, standing)"
+      ],
+      "title": "llama-swap's standing against the pin is a rule decided in presentation and again in doctor",
+      "cause": "each project's standing is a domain value (Standing, standing), but llama-swap's, not installed, behind, ahead or at the pin, is worked out twice from the Release ordering: in swap_verdict, a presentation function, and in Doctor::llama_swap_check; Outdated carries only the raw current release and the pin",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "a change to what ai-ctl tells of llama-swap against its pin, such as a release older than OLDEST, which doctor fails and build outdated calls only \"behind\", has two places to change and one of them in rendering",
+      "fix": "a domain function, such as `gateway::standing(current: Option<Release>) -> SwapStanding { NotInstalled, Unreadable(OLDEST), Behind, Ahead, Pinned }`, used by doctor and carried in Outdated, which presentation only renders",
+      "test": "none: no behaviour changes; the domain function gets its unit tests",
+      "evidence": "read: docs/architecture.md:25, the domain holds the rules, and :28, presentation holds parsing, dispatch and rendering; src/presentation/build.rs:253-262, the comparisons with the pin; src/application/doctor.rs:183-204, the same comparisons with OLDEST in addition",
+      "origin": "new",
+      "floor": "below",
+      "fingerprint": "architecture | src/application/doctor.rs + src/domain/build.rs + src/presentation/build.rs | Doctor::llama_swap_check + Standing, standing + swap_verdict",
+      "matches": [],
+      "verdict": null,
+      "action": "fix at once",
+      "batch": 3,
+      "note": null,
+      "fixed_in": "refactor(build): share the swap standing, built projects and table"
+    },
+    {
+      "number": 7,
+      "axes": [
+        "dead and legacy code"
+      ],
+      "reviewers": [
+        "review-structure",
+        "review-cleanup"
+      ],
+      "where": [
+        "src/domain/gateway.rs:42-52 (Release::parse)",
+        "src/infrastructure/gateway_store.rs:85-88 (FsGatewayStore::current)",
+        "src/infrastructure/gateway_store.rs:80-97 (FsGatewayStore::current)",
+        "src/presentation/cli.rs:135-143 (GatewayAction)"
+      ],
+      "title": "Release::parse's release number without its v serves only tests since gateway install lost --version",
+      "cause": "the form without `v` was read from `gateway install --version 263`, removed in the range; the one production caller, FsGatewayStore::current, filters out every parse whose text is not `v<N>` (`release.to_string() == target`), so the `unwrap_or(text)` branch never yields a release outside tests",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "the parser accepts a form no input of ai-ctl gives, and its doc and test keep a contract nobody uses",
+      "fix": "parse `v<N>` only (`text.strip_prefix('v')?`), drop the filter in FsGatewayStore::current, and write the tests' releases as `v271`",
+      "test": "a_release_is_a_number_with_or_without_its_v becomes \"a release is v and a number\", \"263\" refused",
+      "evidence": "read: src/domain/gateway.rs:42-45, \"with or without the tag's v\"; src/infrastructure/gateway_store.rs:85-88, the filter; grep of Release::parse in src and tests, every other caller under #[cfg(test)]",
+      "origin": "mixed",
+      "floor": "below",
+      "fingerprint": "dead and legacy code | src/domain/gateway.rs + src/infrastructure/gateway_store.rs + src/presentation/cli.rs | FsGatewayStore::current + GatewayAction + Release::parse",
+      "matches": [],
+      "verdict": null,
+      "action": "fix at once",
+      "batch": 3,
+      "note": null,
+      "fixed_in": "refactor(build): share the swap standing, built projects and table"
+    },
+    {
+      "number": 8,
+      "axes": [
+        "security"
+      ],
+      "reviewers": [
+        "review-security"
+      ],
+      "where": [
+        "src/application/gateway.rs:76-93 (Installer::install)",
+        "src/infrastructure/gateway_store.rs:71-78 (FsGatewayStore::is_installed)",
+        "src/application/lifecycle.rs:765-783 (Inspector::target)",
+        "docs/security.md:281-288 (top level)",
+        "docs/commands.md:367-371 (top level)"
+      ],
+      "title": "a llama-swap release is trusted by its directory's name, never by the pinned digest it was checked against",
+      "cause": "install takes a release as verified when `<root>/v<N>/llama-swap` is a file (is_installed), and makes the pinned one current with no download and no hash; up (Inspector::target) runs whatever release `current` names from v267 on, pinned or not. Nothing records which digest a release directory was checked against, so a v270 or v271 that ai-ctl 0.2.0's `gateway install --version <N>` installed against the checksums file published on the same release page, which \"detects a corrupt download, not a replaced one\" (0.2.0's own DigestSource::Published), runs under 0.3.0 as if checked against the pin",
+      "effect": "wrong action",
+      "severity": "low",
+      "consequence": "attacker: whoever can replace a llama-swap GitHub release's archive and its checksums file (§1, last row), before the user ran 0.2.0's `--version` on it; the control 0.3.0 states, the pinned SHA-256 as \"the only source of trust\" (docs/security.md:284, docs/commands.md:370), is never applied to that binary after the upgrade: `gateway install` reports it Reused or Unchanged, doctor says \"v271, the release this ai-ctl pins\", and `up` runs it as the gateway, which holds the key and every prompt. On this machine v270 and v271 were installed on 2026-11-07 21:00 and 2026-11-08 09:31, around the v270 and v271 pin commits (`feat(gateway): pin llama-swap v270` of 2026-11-07 at 21:01, `feat(gateway): pin llama-swap v271` of 2026-11-08 at 09:35), so no damage is shown: the control is weakened, not defeated",
+      "fix": "record at publish the digest the archive was checked against, in the release's directory (such as `v271/archive.sha256`), and have is_installed, set_current and up's target accept a release only when that record equals the digest ai-ctl pins for it; a release without the record is downloaded and checked again by `gateway install`, and up refuses it with `ai-ctl gateway install`",
+      "test": "install downloads and verifies again a pinned release whose directory holds the binary but no recorded digest (FakeGatewayStore with is_installed true and no record), where today it returns Outcome::Reused with no download",
+      "evidence": "read: src/application/gateway.rs:76-93, the `else if previous == Some(release) { Unchanged } else { Reused }` branches with no digest; src/application/lifecycle.rs:770-775, only `release >= OLDEST` checked; base src/application/gateway.rs at `chore(release): release 0.2.0` of 2026-11-06, expected_sha256 returning DigestSource::Published for any release but the pinned v263; `ls -la --time-style=full-iso ~/.local/share/ai-ctl/llama-swap/` shows v263, v270 and v271, the last two installed before their pin commits",
+      "origin": "mixed",
+      "floor": "above",
+      "fingerprint": "security | docs/commands.md + docs/security.md + src/application/gateway.rs + src/application/lifecycle.rs + src/infrastructure/gateway_store.rs | FsGatewayStore::is_installed + Inspector::target + Installer::install + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 6,
+      "note": "the verifier's fix narrowed to the pinned release, the user's choice on 2026-11-12; sibling paths: doctor fails the pinned release without the record or with another digest, as up refuses it; the end-to-end test skips itself until gateway install records the digest; input class: no record, an empty or malformed record, another digest, a record that cannot be read; review-security's PROBE run at the user's word on 2026-11-12: the v271 archive's SHA-256 is the pin's and the installed binary is the archive's, so no damage on this machine; mutants M82 to M86 by hand",
+      "fixed_in": "fix(gateway): run the pinned llama-swap once checked against its pin"
+    },
+    {
+      "number": 9,
+      "axes": [
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "review-security"
+      ],
+      "where": [
+        "docs/security.md:30-39 (top level)"
+      ],
+      "title": "§2 omits the routes llama-swap v271 answers without the key: the root, /ui and /upstream redirects and every CORS preflight",
+      "cause": "§2 says every route answers 401 without the key except /health, /wol-health, /favicon.ico and the manifest and its two icons; v271 also registers `GET /{$}` (handleRootRedirect), `/ui` (a 308 for any method) and `GET /upstream` (handleUpstreamRedirect) with no auth middleware, and its CORS middleware, wrapped around the mux, answers OPTIONS before any route",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "no boundary crossed: each of these answers a constant redirect or an empty 204, telling another account or a page no more than /health does, that a gateway listens; the list the document gives as complete is not, and the next reader who checks a new release against it will start from a wrong list",
+      "fix": "add to §2's list `GET /`, `/ui` and `GET /upstream`, constant redirects to the web UI, and the CORS preflight of every route, each telling only that a gateway runs, with the date of the probe",
+      "test": "none: a document; the probe below is its check",
+      "evidence": "read: llama-swap v271 internal/server/server.go:453-477 and :493 (Server::routes); reproduced: llama-swap v271 (`~/.local/share/ai-ctl/llama-swap/current`) alone on 127.0.0.1:53867 with `apiKeys: [\"${env.PROBE_KEY}\"]` and `touch` as its model's cmd, curl with no key: `GET /` 302 to /ui/, `GET /ui` 308 to /ui/, `GET /upstream` 302 to /ui/#/models, `OPTIONS /v1/chat/completions` 204, `GET /health` 200, `GET /ui/site.webmanifest` 200, `GET /v1/models` 401, `GET /ui/` 401; stopped, `pgrep -a llama-swap` empty",
+      "origin": "mixed",
+      "floor": "above",
+      "fingerprint": "the CLI's contract | docs/security.md | top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 2,
+      "note": null,
+      "fixed_in": "docs: list the gateway's open redirects and explain the preload's 404"
+    },
+    {
+      "number": 10,
+      "axes": [
+        "bugs",
+        "error handling",
+        "tests",
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "review-correctness",
+        "review-tests"
+      ],
+      "where": [
+        "src/application/build.rs:284-287 (Builder::update_project)",
+        "src/infrastructure/git.rs:78-91 (GitSources::update)",
+        "src/application/gateway_config.rs:128-133 (Configurator::runtime)",
+        "src/application/build.rs:3401-3415 (tests::a_build_off_its_recipe_is_built_again_at_its_own_release)",
+        "docs/commands.md:285-286 (top level)",
+        "src/application/build.rs:285 (Builder::update_project)",
+        "src/application/build.rs:3402-3415 (tests::a_build_off_its_recipe_is_built_again_at_its_own_release)",
+        "src/infrastructure/git.rs:69-93 (GitSources::update)",
+        "docs/commands.md:285 (top level)"
+      ],
+      "title": "an off-recipe build past the newest release can never be rebuilt, yet update and up's remedy both send the user to rebuild it",
+      "cause": "a build is past the newest release only when the remote no longer holds its tag, and the closing pass's --prune-tags makes the fetch that Builder::build runs before its checkout delete that tag from the clone. update_project still rebuilds such a build at its own tag, with force, and Configurator::runtime's refusal names `ai-ctl build <project> --ref <id> --force`. Both fail at resolve with \"`<id>` is not a tag, a branch or a commit\". The test that shows the rebuild succeeding relies on \"the clone that made it keeps the tag\", which the adapter no longer allows since the fetch prunes it",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "the project withdraws the tag of the current build, say b12200, and the recipe has since gained a patch or a CMake option. `build outdated` says `off its recipe` and exits 4. `build update` fails with \"`b12200` is not a tag, a branch or a commit of …\" and exits 1, and so does every later run. `up` refuses the build and names `ai-ctl build llama.cpp --ref b12200 --force`, which fails the same way. No message names the command that works, `ai-ctl build llama.cpp` (the newest release, b12177)",
+      "fix": "in update_project, when the off-recipe build is past `found.newest`, fail without fetching. The message says the release was withdrawn and names `ai-ctl build <project>` for the newest release; or, if returning to an older release is now accepted here because `up` refuses the current build anyway, build the newest release. Make Configurator::runtime's remedy say the same when the build's release is not the newest. Change the test so its FakeSources checkout drops the withdrawn tag, as the pruning fetch does",
+      "test": "a_build_off_its_recipe_is_never_sent_back_to_an_older_release, with the failure asserted to name `ai-ctl build llama.cpp` instead of a missing tag; it fails today on the message",
+      "evidence": "reproduced: in a scratch repository, tags b1 and b2 in the upstream, a `clone --filter=blob:none --no-checkout`, then `tag -d b2` in the upstream and `fetch --quiet --prune --prune-tags --tags --force origin` in the clone. `git tag --list` printed b1 alone, and `rev-parse --verify --quiet b2^{commit}` failed, which is the fall-through of GitSources::resolve (git.rs:99-114). Builder::build runs sources.fetch (build.rs:140) before sources.checkout (build.rs:145). git.rs:671-693 (a_tag_the_remote_withdrew_leaves_the_clone_at_the_next_fetch) asserts the same pruning",
+      "origin": "new",
+      "floor": "above",
+      "fingerprint": "bugs | docs/commands.md + src/application/build.rs + src/application/gateway_config.rs + src/infrastructure/git.rs | Builder::update_project + Configurator::runtime + GitSources::update + tests::a_build_off_its_recipe_is_built_again_at_its_own_release + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 5,
+      "note": "the verifier's fix, the user's choice on 2026-11-12 to fail with a message rather than build the newest release; sibling paths: Configurator::runtime's refusal, doctor's off-recipe, smoke-test and unreadable-build remedies and Current::installed's error now name both commands through rebuild_remedy; mutants M79 to M81 by hand",
+      "fixed_in": "fix(build): tell how to go on when a build's release was withdrawn"
+    },
+    {
+      "number": 11,
+      "axes": [
+        "refactoring"
+      ],
+      "reviewers": [
+        "review-cleanup"
+      ],
+      "where": [
+        "src/presentation/build.rs:198-239 (render_outdated)",
+        "src/presentation/build.rs:275-316 (render_updated)",
+        "src/presentation/bench.rs:424-443 (table)"
+      ],
+      "title": "render_outdated and render_updated pad their columns by hand, a copy of the presentation's table",
+      "cause": "render_outdated builds rows of cells, measures each column's widest cell in chars and writes them two spaces apart, the last unpadded; render_updated does the same for two columns. presentation/bench.rs's `table`, shared already by bench.rs (6 calls) and compare.rs (5 calls), does exactly this, with a two-space indent and the line's end trimmed, which equals an unpadded last column",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "three column writers to keep alike; a change to how ai-ctl aligns its tables (a wide character, a separator) reaches bench and compare but not `build outdated` and `build update`, whose output docs/commands.md shows",
+      "fix": "move `table` from presentation/bench.rs to presentation/mod.rs with the indent as a parameter (bench and compare pass \"  \", which they print today; build passes \"\"), and have render_outdated push its rows and llama-swap's into it, and render_updated its [project, what] rows; each keeps its own rows, verdicts and trailing lines",
+      "test": "none: a refactoring under the existing render_outdated and render_updated tests, which pin the output and must pass unchanged",
+      "evidence": "read: src/presentation/build.rs:226-237 (width closure over rows, `{name:<project$}  {build:<current$}  {release:<newest$}  {verdict}`) and :278-295; src/presentation/bench.rs:424-443 (`table`: widths by chars().count(), \" {cell:<width$} \" per cell, trim_end); grep \"table(\" in src/presentation: bench.rs and compare.rs only",
+      "origin": "new",
+      "floor": "below",
+      "fingerprint": "refactoring | src/presentation/bench.rs + src/presentation/build.rs | render_outdated + render_updated + table",
+      "matches": [],
+      "verdict": null,
+      "action": "fix at once",
+      "batch": 3,
+      "note": null,
+      "fixed_in": "refactor(build): share the swap standing, built projects and table"
+    },
+    {
+      "number": 12,
+      "axes": [
+        "refactoring"
+      ],
+      "reviewers": [
+        "review-cleanup"
+      ],
+      "where": [
+        "src/application/build.rs:798-822 (inventory_projects)",
+        "src/application/doctor.rs:343-379 (Doctor::build_checks)"
+      ],
+      "title": "inventory_projects copies doctor's reading of the projects the inventory builds and of those with no recipe",
+      "cause": "both map backends through `match &backend.source { BackendSource::Build(project) => Some(project.as_str()), BackendSource::Image(_) => None }` into a BTreeSet, then split it into the RECIPES it holds and the projects `recipe(project).is_none()`. They differ only in which backends they start from: doctor the backends a model uses, as `up` resolves them; outdated every backend, as docs/commands.md's `build outdated` says",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "two definitions of \"the projects the inventory builds\" to keep in step; the difference between them (a backend no model uses is updated by `build update`, hours of compile, but not required by doctor nor run by `up`) is visible only by comparing the two closures",
+      "fix": "one domain method, Inventory::built_projects(&self, backends: impl Iterator<Item = &Backend>) -> BTreeSet<&str>, holding the source match, called by doctor with the models' backends and by inventory_projects with inventory.backends(); each keeps its own handling of the projects with no recipe (a failed Check, an Err ProjectStanding). If the cost of the method outweighs the eight lines it saves, keeping both is an answer, with a comment in inventory_projects naming doctor's different set",
+      "test": "none: a refactoring under the existing tests outdated_covers_only_the_projects_the_inventory_builds and doctor's build checks, which must pass unchanged",
+      "evidence": "read: src/application/build.rs:804-820 and src/application/doctor.rs:347-372, the same filter_map and the same `recipe(project).is_none()` split; grep \"BackendSource::Build(project) =>\" over src/: these two sites, plus gateway_config.rs:118, bench.rs:348 and inventory.rs:570, which use the project to resolve or check a backend, not to list projects",
+      "origin": "new",
+      "floor": "below",
+      "fingerprint": "refactoring | src/application/build.rs + src/application/doctor.rs | Doctor::build_checks + inventory_projects",
+      "matches": [],
+      "verdict": null,
+      "action": "fix at once",
+      "batch": 3,
+      "note": null,
+      "fixed_in": "refactor(build): share the swap standing, built projects and table"
+    },
+    {
+      "number": 13,
+      "axes": [
+        "performance"
+      ],
+      "reviewers": [
+        "review-performance"
+      ],
+      "where": [
+        "src/application/build.rs:767-796 (outdated)",
+        "src/application/build.rs:824-862 (project_standing)",
+        "src/infrastructure/git.rs:139-157 (GitSources::remote_tags)",
+        "src/presentation/build.rs:24-78 (run)"
+      ],
+      "title": "build outdated and build update read the four remotes one after the other",
+      "cause": "outdated maps project_standing over the recipes in turn, and each runs its own `git ls-remote` to GitHub and waits for it before the next starts, so the command's wait is the sum of the four round trips, not the longest one; build update reads all four the same way before it builds anything",
+      "effect": "slow",
+      "severity": null,
+      "consequence": "measured on this machine on 2026-11-12, `git -C / ls-remote --tags --refs -- <repository> <glob>` took 0.70 s for llama.cpp (7767 tags), 0.69 s for whisper.cpp, 0.49 s for stable-diffusion.cpp and 0.45 s for audio.cpp: 2.3 s in sequence against 0.7 s for the slowest alone, so about 1.6 s of waiting on every `build outdated` with the shipped inventory. The cost grows with each project a recipe adds. On build update it is lost in the compiles, so only build outdated, a read-only check, pays it",
+      "fix": "in outdated, run each recipe's `sources.remote_tags` on its own thread with std::thread::scope (Sources: Sync, which GitSources, a PathBuf, already is), and keep project_standing's store reads and the warn calls on the calling thread, joining in the recipes' order so the table and the warnings stay as they are; or `none:` if 1.6 s on a command run by hand is judged not worth a Sync bound on the port",
+      "test": "none: the gain is a matter of timing, which the project's tests may not depend on; the existing outdated tests (order, one read per project, a failing remote not hiding the others) keep the behavior fixed through the change",
+      "evidence": "reproduced: for each recipe's repository and glob, `git -C / ls-remote --tags --refs -- URL GLOB | wc -l` timed with date: llama.cpp 7767 refs 0.697 s, whisper.cpp 44 refs 0.686 s, stable-diffusion.cpp 748 refs 0.486 s, audio.cpp 18 refs 0.446 s; GIT_TRACE_PACKET shows only `ref-prefix refs/tags/` sent, so the glob filters on the client and the wait is per round trip, not per tag; read: src/application/build.rs:779-782 `recipes.into_iter().map(|recipe| project_standing(sources, store, recipe, warn)).collect()`",
+      "origin": "new",
+      "floor": "below",
+      "fingerprint": "performance | src/application/build.rs + src/infrastructure/git.rs + src/presentation/build.rs | GitSources::remote_tags + outdated + project_standing + run",
+      "matches": [],
+      "verdict": null,
+      "action": "register",
+      "batch": null,
+      "note": "not a local fix: the remotes read on threads need a Sync bound on the Sources port, its fake's RefCells made Mutexes and its call-order assertions made order-free, for about 1.6 s on a command run by hand",
+      "fixed_in": null
+    },
+    {
+      "number": 14,
+      "axes": [
+        "dependencies"
+      ],
+      "reviewers": [
+        "review-dependencies"
+      ],
+      "where": [
+        "Cargo.lock:185 (errno)"
+      ],
+      "title": "errno 0.3.14 is locked where 0.3.15 is within the requirements",
+      "cause": "Cargo.lock was not refreshed since errno 0.3.15 came out on 2026-11-12; errno comes through rustix (Cargo.lock:351), from the dev-dependency tempfile",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "none today: no advisory names errno 0.3.14 and it is not yanked; it is a lock one release behind what Cargo.toml already accepts",
+      "fix": "cargo update -p errno",
+      "test": "none: a lock refresh, checked by cargo deny check and cargo test",
+      "evidence": "read: dependencies.json, errno record: version 0.3.14, update 0.3.15, yanked false; dependencies-run.log: \"update: errno 0.3.14 -> 0.3.15\"",
+      "origin": "older",
+      "floor": "below",
+      "fingerprint": "dependencies | Cargo.lock | errno",
+      "matches": [],
+      "verdict": null,
+      "action": "fix at once",
+      "batch": 4,
+      "note": null,
+      "fixed_in": "build(deps): update errno to 0.3.15"
+    },
+    {
+      "number": 15,
+      "axes": [
+        "bugs",
+        "the CLI's contract"
+      ],
+      "reviewers": [
+        "session"
+      ],
+      "where": [
+        "src/domain/recipe.rs:176-179 (LLAMA_CPP)",
+        "src/domain/gateway_config.rs:579-604 (GatewayConfig::to_yaml)",
+        "docs/commands.md:432-435 (top level)"
+      ],
+      "title": "each preload of a llama-server model logs failed to preload model: status 404, the model loaded all the same",
+      "cause": "llama-swap v271's startPreload sends `GET /` to each model of hooks.on_startup.preload through its local proxy and counts a status of 400 or more as a failure; llama-server b12227 registers `/` only with its web UI, which the recipe leaves out (LLAMA_USE_PREBUILT_UI OFF, the user's decision of 2026-11-05), so it answers 404 once the model is loaded",
+      "effect": "misleading",
+      "severity": "low",
+      "consequence": "each `up` with a llama-server model marked preload writes `[ERROR] failed to preload model <id>: status 404` into the gateway's log and emits a failed preload event, where the model is loaded and answers; a user reading the log after a slow first request takes the preload for broken, and no document of ai-ctl says otherwise",
+      "fix": "docs/gpu/llama-swap.md and `up` in docs/commands.md say that the log's `failed to preload model <id>: status 404` is llama-server without its web UI answering the preload's `GET /`, the model loaded; the web UI stays out by the decision of docs/security.md §7. Asking llama-swap upstream to count any answer of a started upstream as loaded leaves the repository, the user's call",
+      "test": "none: a document; the gateway's log of 2026-11-09 is its proof",
+      "evidence": "read: llama-swap v271 internal/server/api.go:400-435 (startPreload: `http.MethodGet, \"/\"`, `success := dw.status < http.StatusBadRequest`); llama.cpp b12227 tools/server/server-http.cpp:372-448, `/` registered only under `params.ui` with LLAMA_UI_HAS_ASSETS; ~/.local/state/ai-ctl/logs/gateway.log, `[INFO] preloading model: qwen3.8-27b` then `[ERROR] failed to preload model qwen3.8-27b: status 404`; the release notes of v272 read by review-dependencies name no change to the preload",
+      "origin": "older",
+      "floor": "above",
+      "fingerprint": "bugs | docs/commands.md + src/domain/gateway_config.rs + src/domain/recipe.rs | GatewayConfig::to_yaml + LLAMA_CPP + top level",
+      "matches": [],
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 2,
+      "note": null,
+      "fixed_in": "docs: list the gateway's open redirects and explain the preload's 404"
+    },
+    {
+      "number": 16,
+      "axes": [
+        "tests"
+      ],
+      "reviewers": [
+        "session"
+      ],
+      "where": [
+        ".claude/skills/reviewing-delivered-code/evals/test_guard.py:335-342 (Sandbox::child)"
+      ],
+      "title": "test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run",
+      "cause": "child() opens the listener with `stdout=subprocess.PIPE` and registers its kill and wait as cleanups, never the pipe's close, so unittest's cleanup prints `ResourceWarning: unclosed file <_io.TextIOWrapper name=3>`",
+      "effect": "maintenance",
+      "severity": null,
+      "consequence": "no effect on the guard; the check's output carries a warning every run, beside which a new one passes unread",
+      "fix": "`self.addCleanup(process.stdout.close)` after the kill and wait cleanups, as orphan() closes its shell's stdout",
+      "test": "none: the check's own output, the warning gone",
+      "evidence": "reproduced: `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py` at `fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11, 37 tests OK with `ResourceWarning: unclosed file <_io.TextIOWrapper name=3 encoding='UTF-8'>` from unittest/case.py:704",
+      "origin": "older",
+      "floor": "below",
+      "fingerprint": "tests | .claude/skills/reviewing-delivered-code/evals/test_guard.py | Sandbox::child",
+      "matches": [],
+      "verdict": null,
+      "action": "register",
+      "batch": null,
+      "note": "older code below the floor: the skill's own test, from `chore(release): release 0.2.0` of 2026-11-06, which this roadmap did not change",
+      "fixed_in": null
+    },
+    {
+      "number": 17,
+      "axes": [
+        "dependencies"
+      ],
+      "reviewers": [
+        "session"
+      ],
+      "where": [
+        "deny.toml:17-18 (top level)",
+        "Cargo.lock:286 (top level)"
+      ],
+      "title": "cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds",
+      "cause": "nvml-wrapper 0.13.0, its newest release, depends on thiserror 1 and, through wrapcenum-derive and darling 0.20, on syn 2, where ai-ctl's other crates take thiserror 2 and syn 3; deny.toml warns on multiple versions and names no exception",
+      "effect": "none",
+      "severity": null,
+      "consequence": "none today: advisories, bans, licenses and sources ok, exit 0; the check prints three warnings each run, beside which a fourth would pass unread",
+      "fix": "deny.toml's [bans] skips syn 2.0.119, thiserror 1.0.69 and thiserror-impl 1.0.69 by their exact versions, nvml-wrapper 0.13.0 as the reason, so that cargo deny prints a new duplicate alone and warns of an unmatched skip once nvml-wrapper drops them",
+      "test": "none: cargo deny check's output, the three warnings gone",
+      "evidence": "reproduced: cargo deny check at `fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11, exit 0, `warning[duplicate]` for syn, thiserror and thiserror-impl, each older copy's tree ending in nvml-wrapper v0.13.0; dependencies.json, nvml-wrapper at its newest",
+      "origin": "older",
+      "floor": "below",
+      "fingerprint": "dependencies | Cargo.lock + deny.toml | top level",
+      "matches": [],
+      "verdict": null,
+      "action": "register",
+      "batch": null,
+      "note": "older, effect none: the three duplicates come through nvml-wrapper 0.13.0, its newest release; the exception in deny.toml waits for the next change to the dependencies",
+      "fixed_in": null
+    }
+  ]
+}

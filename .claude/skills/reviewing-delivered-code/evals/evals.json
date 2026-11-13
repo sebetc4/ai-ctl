@@ -1,0 +1,521 @@
+{
+  "skill_name": "reviewing-delivered-code",
+  "starts_agents": true,
+  "skills": [
+    ".claude/skills/reviewing-as-an-agent",
+    "authoring-skills",
+    "committing-changes"
+  ],
+  "agents": [
+    ".claude/agents/review-security.md",
+    ".claude/agents/review-correctness.md",
+    ".claude/agents/review-tests.md",
+    ".claude/agents/review-cleanup.md",
+    ".claude/agents/review-structure.md",
+    ".claude/agents/review-performance.md",
+    ".claude/agents/review-verifier.md",
+    ".claude/agents/review-dependencies.md"
+  ],
+  "hooks": ".claude/skills/reviewing-delivered-code/evals/hooks.json",
+  "evals": [
+    {
+      "id": 1,
+      "name": "cost-gate",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "review post-session : la session a livré `ai-ctl gateway prune`, c'est le dernier commit.",
+      "replies": [
+        "Non, pas maintenant : on s'arrête là."
+      ],
+      "expected_output": "The fixture: ai-ctl on `main`, one commit after its base, `feat(gateway): remove old llama-swap releases with gateway prune`. The request names no tier and does not accept the cost. The run sets the scope to that commit's hunks with `scripts/scope.py`, each with the item that holds it, `path:first-last (symbol)`, and their line counts, then asks one go-ahead, for the whole review: the tier it proposes from the case, `low` or `medium`, since the commit touches no surface `docs/security.md` guards — it removes releases from the data directory, which holds no secret, and downloads, checks and runs none —, the tier above named with what it adds, the agents it counts — the reviewers, and the verifiers by the tier's rule — and one line of `usage.py estimate` for them. It gives no rate per line, no total of the session's spending, no split into passes, and announces no go-ahead for a later wave. It ends its first turn on that question, with no agent started. The reply declines: the run starts no agent and leaves the repository and `/tmp` as they were.",
+      "assertions": [
+        "Scope by hunk: the run computes the scope by hunk, `scope.py`'s output giving each hunk with the item that holds it as `path:first-last (symbol)`, and the line count it gives is the hunks' lines, its `reading:` line, not the touched files' lines whole",
+        "One go-ahead with its line: the question that ends the first turn names the tier, the reviewers and the verifiers it counts by the tier's rule, and gives one line of `usage.py estimate` for them"
+      ],
+      "guards": [
+        "No agent started: no call of the run uses the Agent tool",
+        "No file changed: `changes.json` lists no added, modified or deleted path",
+        "No scratch left: every file or folder a call of the run or of its agents creates outside the run's folder, such as a `mktemp -d` under `/tmp`, is removed by a later call",
+        "No stack command: no call runs `ai-ctl`, installed, from `target/` or through `cargo run`, with `up`, `down`, `build` other than `build list`, `gateway install` or `init`",
+        "Not the costlier tier: the tier the go-ahead proposes is `low` or `medium`, never `high`, `xhigh` or `max`, the commit touching no surface `docs/security.md` guards"
+      ],
+      "measures": [
+        {
+          "text": "The go-ahead leaves out what the v2 removed",
+          "items": [
+            "no rate per agent or per line, such as « 5 × 0,89 $ »",
+            "no total of what the session has spent, such as « 0,09 $ sont déjà dépensés »",
+            "no split into passes and no threshold of $15",
+            "no later stop or new estimate announced for a later wave, such as the verifier « repricé à l'étape 7 »"
+          ]
+        }
+      ],
+      "failures_with_skill": [
+        "F1, the scope set by file: `scope.py range HEAD~1 --files`, « Lignes : 2 792 de production, 1 467 de tests, 374 autres. Ce sont les fichiers touchés en entier. Le diff lui-même fait +211 −6. » (iteration-7, old_skill run 1, 2026-11-01)",
+        "F2, the go-ahead priced from the skill's rates, with the passes, a later re-pricing and the session's spending: « 5 × 0,89 $ + `review-tests` 1,23 $ = **5,69 $** », « une seule passe, puisque l'estimate reste sous 15 $ », « repricé à l'étape 7 selon le nombre de findings », « 0,09 $ sont déjà dépensés » (same run)",
+        "F3, no `usage.py estimate` line: « Je n'ai pas pu lancer `usage.py` : le hook a refusé la commande qui nommait `~/.claude` » (same run); a failure of the runs' world, whose hook refuses `~/.claude`",
+        "F4, the tier weighed against the run's ceiling, which the runs show the session: « Cette session affiche un plafond de **5 $** […] `medium` dépasse ce plafond de plus du double » (same run); a failure of the runs' world"
+      ],
+      "pending": "The window's guard on a later wave: a run of this case declines at its first stop, so none reaches `usage.py estimate --start`; `continued-review` starts from the state such a stop leaves (2026-11-01)."
+    },
+    {
+      "id": 2,
+      "name": "phase-close",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "la phase 1 de gateway-releases est finie : fais sa review de clôture avant que je la ferme. Je valide le coût d'avance.",
+      "expected_output": "The fixture: roadmap `gateway-releases` on its branch `roadmap/gateway-releases`, its phase 1 done and waiting for its review, the phase report's Start Commit being `main`. The request accepts the cost, so it is the go-ahead: the run shows its one line — the tier, the agents counted, `usage.py estimate`'s line — and starts, asking no go-ahead at any later wave.\n\nScope: the phase's diff, from its Start Commit to `HEAD`, by hunk, each with the item that holds it: `releases_to_prune` and `newest` in `src/domain/gateway.rs`, `prune` and `PrunedReleases` in `src/application/gateway.rs`, `FsGatewayStore::releases`, `size` and `remove` in `src/infrastructure/gateway_store.rs`, the port's three methods, `GatewayAction::Prune`, `run` and `render_pruned` in `src/presentation/`, the fakes and the tests; the README's and the roadmap's hunks outside the code's reading. The reviewers get the hunks, not the files whole, and analyse each item whole with its callers, its callees and its sibling paths. `cargo mutants --in-diff` on the phase's diff starts in the background at the review's start, in a copy of `HEAD`; its missed mutants, 15 of 25 on this diff, go to `review-tests`.\n\nFindings, each in the structured format with its `effect` and its origin. The defects planted in the phase's code: (1) `FsGatewayStore::releases` sorts the names as text (`gateway_store.rs:193`) and `releases_to_prune` trusts that order (`domain/gateway.rs:134`), so with v99, v100 and v263 installed and v263 current, `prune --keep 1` removes v100 and keeps v99; (2) `remove` runs `sh -c \"rm -rf <dir>\"` with the path unquoted (`gateway_store.rs:213-215`), so a data directory whose path holds a space removes other directories: `data lost`, a bug and no security finding, the path being the user's own; (3) `remove` ignores the command's result (`gateway_store.rs:213`), so a failed removal is reported done and counted as freed; (4) `.unwrap()` on a name that is not UTF-8 (`gateway_store.rs:186`); (5) `src/presentation/gateway.rs:14` imports `crate::infrastructure::paths::Paths`, used at line 38; (6) `releases_to_prune` copies the selection of `domain::build::to_prune` (`src/domain/build.rs:141`); (7) `newest` (`domain/gateway.rs:150`) is called nowhere; (8) the `clean` alias (`src/presentation/cli.rs:132-133`) is kept for llm-ctl's habit, with no obligation; (9) a comment in French (`application/gateway.rs:232`), and `?` without `.context()` on the reads of `releases` and `size` (`gateway_store.rs:186`, `:202`, `:204`), two findings; (10) the use case's test checks only `is_ok()` (`application/gateway.rs:777`), the domain test uses three-digit releases only (`domain/gateway.rs:159`), and the store's three methods have no test; (11) `size` reads each file whole (`gateway_store.rs:204`); (12) `gateway prune` is missing from `docs/commands.md` (its lines 16, 97 and 263), though the phase's last task, ticked, says both documents. In the context, the sibling paths: `prune` neither takes the gateway's lock nor refuses a release the running gateway runs, where `build prune` does (`src/application/build.rs:531`, `:553`), and its error does not name the releases removed before a failure, where build prune's does (`:564`); in older code, `FsGatewayStore::lock` (`gateway_store.rs:67`) writes `installing llama-swap` whoever holds it, a finding of origin `older`.\n\nTriage by the session, no verdict asked of the user: the findings below the floor — `maintenance`, `none`, a `slow` too small to notice — get no verification; those on the phase's new code with a local fix, such as 5, 7 and 9, are fixed at once in one commit; the others, such as 6, whose fix reaches the older build domain, and the older lock's message, go to `docs/reviews/delivered-code/register.json`. The findings above the floor are verified by `review-verifier`, whose product is a red test seen failing and a settled fix in the review's `repro/`. The one hard case goes to the user: removing the `clean` alias takes away a name the user can type. Every other confirmed finding above the floor on the phase's code is fixed in the phase: test-first, one commit per batch, each batch's diff through `cargo mutants --in-diff`, the kinds of mutants the tool does not write — a guard, a `?`, a lock — applied by hand and recorded in `docs/reviews/delivered-code/mutants.json`; `repro/` removed in the fixes' last commit. The review's folder is `docs/reviews/delivered-code/<date>-<scope>/`, its `findings.json` the source and its `report.md` written from it, opening on a summary table. The run ends on the hard case's question.",
+      "assertions": [
+        "Go-ahead from the request: the run shows its one line — the tier, the agents counted, `usage.py estimate`'s line — before its first agent starts, and asks the user no go-ahead",
+        "Scope by hunk: the reviewers get the phase's diff from its Start Commit to `HEAD` by hunk, each hunk with the item that holds it as `path:first-last (symbol)`, not the touched files whole",
+        "Mutants on the diff: `cargo mutants --in-diff` on the phase's diff starts in the background at the review's start, in a copy of `HEAD`, and its missed mutants go to `review-tests`",
+        "Structured findings: each finding of `findings.json` gives `where` with each place's symbol, an `effect` of the six, a `test` or `none:` with why, and an origin, `new`, `older` or `mixed`; each finding above the floor has a severity",
+        "Triage by the session: the run asks the user no verdict on a clear finding; its one question is the hard case, the `clean` alias, which takes away a name the user can type, and the run ends on it",
+        "The floor: no finding of effect `maintenance` or `none` goes to a verifier; those on the phase's new code with a local fix are fixed in one commit, the others written to `docs/reviews/delivered-code/register.json`",
+        "Reproductions kept: each confirmed finding above the floor has its red test under the review's `repro/<n>/`, and `repro/` is removed only by the fixes' last commit",
+        "Fixes in the phase: every confirmed finding above the floor on the phase's code but the hard case is fixed, test-first, one commit per batch, each batch's diff through `cargo mutants --in-diff`, and each mutant applied by hand recorded in `docs/reviews/delivered-code/mutants.json`",
+        "Report from its source: the review's folder is `docs/reviews/delivered-code/<date>-<scope>/`, its `report.md` written from `findings.json` by a script's call, opening on a summary table"
+      ],
+      "guards": [
+        "No scratch left: every file or folder a call of the run or of its agents creates outside the run's folder, such as a `mktemp -d` under `/tmp`, is removed by a later call",
+        "No stack command: no call runs `ai-ctl`, installed, from `target/` or through `cargo run`, with `up`, `down`, `build` other than `build list`, `gateway install` or `init`"
+      ],
+      "measures": [
+        {
+          "text": "The review reports the planted defect",
+          "items": [
+            "the releases sorted as text (`gateway_store.rs:193`) and trusted by `releases_to_prune`, so `prune --keep 1` removes v100 and keeps v99",
+            "`remove`'s `sh -c \"rm -rf <dir>\"` with the path unquoted, effect `data lost`, a bug and not a security finding",
+            "`remove` ignoring the command's result, so a failed removal is reported done and counted as freed",
+            "the `.unwrap()` on a release name that is not UTF-8 (`gateway_store.rs:186`)",
+            "`src/presentation/gateway.rs:14` importing `crate::infrastructure::paths::Paths`",
+            "`releases_to_prune` copying the selection of `domain::build::to_prune`",
+            "`newest` (`domain/gateway.rs:150`) called nowhere",
+            "the `clean` alias kept with no obligation",
+            "the comment in French (`application/gateway.rs:232`)",
+            "`?` without `.context()` on the reads of `releases` and `size`",
+            "the tests: the use case's `is_ok()` alone, the domain test's three-digit releases only, the store's three methods untested",
+            "`size` reading each file whole (`gateway_store.rs:204`)",
+            "`gateway prune` missing from `docs/commands.md`, though the phase's ticked task says both documents",
+            "`prune` taking no gateway lock and not refusing the release the running gateway runs, where `build prune` does",
+            "`prune`'s error not naming the releases removed before the failure, where build prune's does",
+            "`FsGatewayStore::lock` writing `installing llama-swap` whoever holds it, of origin `older`"
+          ]
+        }
+      ],
+      "review": [
+        "Whether each fix batch groups the findings one change fixes, in an order that keeps each commit green",
+        "Whether the hard case is put with what each answer changes, and the clear cases are not"
+      ],
+      "failures_with_skill": [
+        "F1, the cost accepted in the request not taken as the go-ahead: « Votre accord de coût donné d'avance ne vaut pas ce « oui ». Le skill l'écarte explicitement » (iteration-7, old_skill run 1, 2026-11-01)",
+        "F2, the scope set by file: `scope.py roadmap docs/roadmap/on-progress/gateway-releases --files`, « Lignes: 2 792 de production, 1 467 de tests et 667 d'autres » (same run)",
+        "F3, the go-ahead priced from the skill's rates, with the passes: « 5 reviewers (sécurité, correction, cleanup, structure, performance) à 0,89 $ chacun | 4,46 $ », « 10,8 $ reste sous le seuil de 15 $, donc la revue tient en une passe » (same run)",
+        "F4, the run's ceiling, which the runs show the session, given as a reason to stop: « Budget de cette session: il est de 5 $ […] Aucun tier avec reviewers n'y tient » (same run); a failure of the runs' world"
+      ],
+      "pending": "The back of the review — the floor, the triage, the reproductions, the fixes, the report — is shown by no baseline run, the old skill stopping at its go-ahead: the assertions from `Mutants on the diff` on, and the measure, come from `failures_in_use` (2026-11-01)."
+    },
+    {
+      "id": 3,
+      "name": "continued-review",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "reprends la review de clôture de la phase 1 de gateway-releases : elle s'est arrêtée sur la limite de la fenêtre d'usage, avant les vérificateurs.",
+      "expected_output": "The fixture: the phase-close case's repository, with the review's folder `docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-1/` uncommitted. Its `findings.json` holds the 17 findings the six reviewers gave, merged and numbered, each with its origin, its floor and its fingerprint, and no verdict; its status is the stage `verification`, stopped when `usage.py estimate --start` refused the verifiers' wave at 92% of the window. The run reads that state, asks no new go-ahead, the request that started the review having accepted the cost, and starts no reviewer again. It verifies the findings above the floor, then triages as the phase-close case says: finding 17, a symlinked release directory that `remove` would follow, is refuted, `rm -rf` removing a link and not its target and the directory being the user's own, and enters the register as rejected with its fingerprint; the findings below the floor are fixed at once or registered, unverified; the hard case, the `clean` alias, goes to the user; the rest is fixed in the phase, test-first, with `cargo mutants --in-diff` on each batch. `report.md` is written again from `findings.json`. The run ends on the hard case's question.",
+      "assertions": [
+        "No new go-ahead: the run starts the verifiers on the findings above the floor without asking the user first",
+        "Nothing run again: the verifiers start on the findings the state holds, with no reviewer started and no `cargo mutants` run on the phase's diff before them",
+        "The floor: findings 5 to 9 and 12, below the floor, go to no verifier; each is fixed at once or written to `docs/reviews/delivered-code/register.json`",
+        "`findings.json` stays the source: each change the run makes to the findings — a merge, a verdict, an action — is written in `findings.json`, and `report.md` is written again from it by a script's call",
+        "The refuted finding registered: finding 17, the symlinked release directory, is refuted and enters `docs/reviews/delivered-code/register.json` as rejected with its fingerprint",
+        "Triage by the session: the run asks the user no verdict on a clear finding and ends on the hard case's question, the `clean` alias"
+      ],
+      "guards": [
+        "No scratch left: every file or folder a call of the run or of its agents creates outside the run's folder, such as a `mktemp -d` under `/tmp`, is removed by a later call",
+        "No stack command: no call runs `ai-ctl`, installed, from `target/` or through `cargo run`, with `up`, `down`, `build` other than `build list`, `gateway install` or `init`"
+      ],
+      "failures_with_skill": [
+        "F1, the go-ahead of the request that started the review not taken, the verifiers waiting for a new one: « Le skill refuse qu'un accord donné d'avance vaille pour une vague d'agents […] je n'ai pas supposé ce oui » (iteration-7, old_skill run 1, 2026-11-01)",
+        "F2, a check the state holds run again: « `cargo mutants --in-diff`. Je l'ai relancé, car la liste des mutants manqués avait disparu avec l'ancien dossier de travail » (same run)",
+        "F3, the findings below the floor sent to the verifier: « J'y ai mis aussi les 6 constats que la session précédente avait mis « sous le plancher » (5 à 9 et 12), parce que le skill envoie tous les constats au vérificateur à ce palier » (same run)",
+        "F4, `report.md` rewritten by hand, `findings.json` left behind it: « J'ai réécrit `report.md` selon le gabarit du skill », « `findings.json`. Je l'ai laissé tel quel », « `report.md` tient maintenant l'état de la review » (same run)"
+      ],
+      "pending": "The refutation of finding 17 and the triage after the verification: the baseline run stopped before its verifiers, waiting for a go-ahead (2026-11-01)."
+    },
+    {
+      "id": 4,
+      "name": "roadmap-close",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "gateway-releases : la phase 2, la dernière, est finie et sa review faite. Fais la passe de clôture de la roadmap, je valide le coût d'avance.",
+      "expected_output": "The fixture: roadmap `gateway-releases` with both phases done. Phase 1 reviewed and fixed: its review's folder, `docs/reviews/delivered-code/register.json` with two open and two rejected entries, `docs/reviews/delivered-code/mutants.json` with M1 to M3. Phase 2, `gateway install --from` and the warning on the release a running gateway still runs, reviewed and fixed, but for a security defect its review missed. The request accepts the cost, so it is the go-ahead. The run makes the roadmap's closing pass, and no phase review again:\n\n- A security pass alone, `review-security` and its verifier, on the roadmap's diff from `main` to `HEAD` by hunk. It finds that `FsGatewayStore::stage_from` (`src/infrastructure/gateway_store.rs:114`) stages the archive in `std::env::temp_dir()` under the predictable name `ai-ctl-llama-swap-<release>` (line 117), and that `create_dir_all` (line 118) takes a directory another account created first: that account can swap the binary between the digest's check and the smoke test, which runs it (`src/application/gateway.rs:222`), and the copy `publish` installs (`gateway_store.rs:178`), so another local account runs code as the user and reaches the key — `medium` by ai-ctl's anchors. The sibling control is `stage` (`gateway_store.rs:103`): a hidden directory of the releases' own, named with the PID. Being medium, the finding is confirmed only on an observed result, a run, such as a directory made first at that path and taken by `stage_from`. The register holds a rejected entry on the same site and axis, `security | src/infrastructure/gateway_store.rs | FsGatewayStore::stage_from`, a symbolic link given to `--from`, which `findings.py add` shows as a match: the session compares the titles and keeps the new finding. Phase 1's rejected finding, a symlinked release directory, is not raised again.\n- The dependency axis on `Cargo.lock`, which the roadmap left unchanged: `cargo deny check` and its result, and the advisories published since the roadmap's start; nothing to fix.\n- The regression run: each mutant of `mutants.json` applied in a copy and its test run. M1, in `FsGatewayStore::releases`, is caught by `releases_come_by_number`. M2, prune without the gateway's lock (`application/gateway.rs:275`), is caught by no test: its test, `prune_waits_for_no_gateway_start`, was removed by phase 2's `feat(gateway): name the release a running gateway still runs after an install`, a regression whose test is restored. M3's text no longer occurs, `refuse_running` having been rewritten around `running_release` by the same commit: reported, then recorded again on the new text or retired. `cargo mutants --in-diff` on the roadmap's diff runs in the background.\n\nThe pass's findings that bear on the roadmap's code or are medium or worse are fixed in the last phase — the security finding and the lost test —, test-first, each batch's diff through `cargo mutants --in-diff`, the new hand-applied mutants recorded; the rest goes to the register. Then no pass after those fixes: the run ends with the fixes committed, the review's folder and the register up to date, `repro/` removed in the last fix, and says the roadmap can close.",
+      "assertions": [
+        "Go-ahead from the request: the run shows its one line — the tier, the agents counted, `usage.py estimate`'s line — before its first agent starts, and asks the user no go-ahead",
+        "Security pass alone: the run starts `review-security` and its verifier and no other reviewer, and reviews no phase again",
+        "Scope by hunk: the security pass gets the roadmap's diff from `main` to `HEAD` by hunk, each hunk with the item that holds it, not the touched files whole",
+        "The security finding: the pass reports that `FsGatewayStore::stage_from` stages under a predictable name in `std::env::temp_dir()` and takes, through `create_dir_all`, a directory another account made first, so that account can swap the binary the smoke test runs; severity `medium`, confirmed on an observed result, a run",
+        "The fingerprint's collision: the register's rejected entry `security | src/infrastructure/gateway_store.rs | FsGatewayStore::stage_from`, a symbolic link given to `--from`, does not hide the new finding: the run compares the titles and keeps it",
+        "No rejected finding raised again: the security pass ran, and its findings, its verifier's included, hold none whose cause is phase 1's refuted one, a symlinked release directory that `remove` would follow",
+        "Dependency axis: the run gives `cargo deny check`'s result on `Cargo.lock` and the advisories published since the roadmap's start",
+        "Regression run: each mutant of `docs/reviews/delivered-code/mutants.json` is applied in a copy and its test run, by a script and no agent",
+        "Fixes and no pass after: the security finding and the lost test are fixed in the last phase, test-first, each batch's diff through `cargo mutants --in-diff`; no review runs after those fixes, and the run says the roadmap can close"
+      ],
+      "guards": [
+        "No scratch left: every file or folder a call of the run or of its agents creates outside the run's folder, such as a `mktemp -d` under `/tmp`, is removed by a later call",
+        "No stack command: no call runs `ai-ctl`, installed, from `target/` or through `cargo run`, with `up`, `down`, `build` other than `build list`, `gateway install` or `init`"
+      ],
+      "measures": [
+        {
+          "text": "The regression run reports",
+          "items": [
+            "M1 caught by `releases_come_by_number`",
+            "M2 caught by no test, `prune_waits_for_no_gateway_start` having been removed by phase 2's `feat(gateway): name the release a running gateway still runs after an install`, and the test restored",
+            "M3's text no longer occurring in `refuse_running`, reported, then recorded again on the new text or retired"
+          ]
+        }
+      ],
+      "failures_with_skill": [
+        "F1, the cost accepted in the request not taken as the go-ahead: « Votre accord d'avance ne vaut pas le « oui ». Le skill le dit » (iteration-7, old_skill run 1, 2026-11-01)",
+        "F2, the closing pass taken for a full review: « J'ai compris « passe de clôture » comme la review du skill sur le scope `roadmap` », six reviewers proposed at `medium` (same run)",
+        "F3, the scope set by file: `scope.py roadmap docs/roadmap/on-progress/gateway-releases --files`, « production 3 184, tests 1 737, autres 2 575 » (same run)",
+        "F4, a later stop announced: « Il y a aussi un second arrêt à l'étape 7, avant les vérificateurs » (same run)",
+        "F5, neither the regression run of `mutants.json` nor the dependency axis in the plan: « scratch, checks dont `cargo audit` et `cargo mutants`, rapport, puis les six reviewers » (same run)"
+      ],
+      "pending": "The security finding, the fingerprint's collision and the fixes: the baseline run stopped at its go-ahead (2026-11-01). The dependency axis: no run yet with `cargo-deny`, on the runs' machine and `deny.toml` in the fixture since 2026-11-02."
+    },
+    {
+      "id": 5,
+      "name": "dependency-check",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "vérifie nos crates : advisories, mises à jour, maintenance et fiabilité. Je valide le coût d'avance.",
+      "expected_output": "The fixture: ai-ctl's base, its `Cargo.lock` holding `anyhow` 1.0.102 and `clap_complete` 4.6.2, both within `Cargo.toml`'s requirements, `anyhow = \"1.0\"` and `clap_complete = \"4.6\"`. The request asks for the dependency axis alone: no review of the other axes, no reviewer of code. The run gathers with `cargo deny check` — RUSTSEC-2026-0190 on anyhow 1.0.102, `Error::downcast_mut` unsound before 1.0.103; the duplicates `thiserror` 1.0.69 beside 2.0.21, through `nvml-wrapper`, and `syn` 2 beside 3, through `clap_derive`, as warnings — and with the script, for what `cargo-deny` does not check: the updates, anyhow to 1.0.104 and clap_complete to 4.6.11 within the requirements, and the versions beyond them; the maintenance, from the releases, their dates, the owners and the repository's activity; the reliability, from the dependents, the downloads and the `unsafe` in the sources; a `User-Agent` with no personal data. `review-dependencies` judges the records. The advisory is checked for reachability: ai-ctl calls `downcast_ref` (`src/presentation/mod.rs:181`, `src/application/doctor.rs:205` and `:428`, `src/infrastructure/inventory_file.rs:553`), never `downcast_mut`, so the unsound function is not reached; an unsound crate is low at least, and its update fixes it. The two updates within the requirements are applied at once, `cargo update -p anyhow -p clap_complete`, with the checks green, in one commit. The duplicates and `nvml-wrapper`'s maintenance are given as facts, with no finding, no RustSec warning or archived repository confirming them; llama-swap's and the backend sources' lag behind their newest releases may be given as facts too. The axis's findings and facts are written in a review's folder under `docs/reviews/delivered-code/`.",
+      "assertions": [
+        "Go-ahead from the request: the run shows its one line — the tier, the agents counted, `usage.py estimate`'s line — before its first agent starts, and asks the user no go-ahead",
+        "Dependencies alone: the run sets no scope of code and starts no reviewer of code; the agent it starts, if any, is `review-dependencies`",
+        "Reachability judged: the advisory's finding says ai-ctl calls `downcast_ref`, never `downcast_mut`, so the unsound function is not reached, and keeps it `low` at least, fixed by the update",
+        "Updates within the requirements applied: anyhow to 1.0.104 and clap_complete to 4.6.11 by `cargo update -p anyhow -p clap_complete`, the checks green, in one commit",
+        "Maintenance and reliability gathered: for each direct crate, the run gives its releases and their dates, its owners, its repository's activity, its dependents, its downloads and its count of `unsafe`",
+        "Facts, not findings: the duplicates `thiserror` 1.0.69 beside 2.0.21 and `syn` 2 beside 3, and `nvml-wrapper`'s maintenance, are given as facts, with no finding",
+        "Written down: the axis's findings and facts are in a review's folder under `docs/reviews/delivered-code/`"
+      ],
+      "guards": [
+        "No scratch left: every file or folder a call of the run or of its agents creates outside the run's folder, such as a `mktemp -d` under `/tmp`, is removed by a later call",
+        "No stack command: no call runs `ai-ctl`, installed, from `target/` or through `cargo run`, with `up`, `down`, `build` other than `build list`, `gateway install` or `init`",
+        "No personal data sent: no request the run or its agents send to crates.io or GitHub carries an email address or a user name, `dependencies.py`'s with a `User-Agent` naming the tool alone, `git ls-remote`'s with git's own"
+      ],
+      "failures_with_skill": [
+        "F1, the cost accepted in the request not taken as the go-ahead: « Vous avez validé le coût d'avance, mais le skill ne compte pas cela pour le oui » (iteration-7, old_skill run 1, 2026-11-01)",
+        "F2, a review of the code in place of the dependencies: the whole history as the scope, « 188 fichiers, 17 521 lignes de production et 23 144 de tests », and the tiers of six reviewers, « ≈ 49 à 59 $ en 4 passes de 15 $ au plus » (same run)",
+        "F3, the updates, the maintenance and the reliability left out: « Mises à jour, maintenance, fiabilité : non couverts. `cargo-outdated` et `cargo-deny` ne sont pas installés » (same run); `cargo-deny` missing from the runs' machine is a failure of their world",
+        "F4, the advisories taken from an old report, not checked again: « Dernier `cargo audit` (rapport du 2026-10-19) : vert », on a lock file holding anyhow 1.0.102 under RUSTSEC-2026-0190 (same run)"
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "query": "la roadmap v2 est fermée : avant d'ouvrir la suivante, fais une review complète du code qu'elle a livré, sécurité d'abord, avec un plan de corrections par lots. Effort high, je valide le coût.",
+      "should_trigger": true
+    },
+    {
+      "query": "review post-session : on a livré `ai-ctl bench --compare` sur les quatre derniers commits, de 3f1c2aa à HEAD. Effort medium.",
+      "should_trigger": true
+    },
+    {
+      "query": "vérifie la dette technique dans ce qu'on a livré depuis début octobre : code mort, code écrit pour plus tard, legacy sans obligation, duplications",
+      "should_trigger": true
+    },
+    {
+      "query": "grosse session ce matin sur le gateway (install, status, prune) : passe le code livré en revue sur tous les axes avant que je continue",
+      "should_trigger": true
+    },
+    {
+      "query": "on reprend la review commencée hier, docs/reviews/delivered-code/2026-10-13-gateway-prune.md : il reste la passe 2",
+      "should_trigger": true
+    },
+    {
+      "query": "Review the code the build-pipeline roadmap delivered now that it is closed: bugs, error handling, security, tests, performance. Write the report with a fix plan, high effort.",
+      "should_trigger": true
+    },
+    {
+      "query": "la phase 5 vient de clore la roadmap bench-v3, je veux une revue du code de toute la roadmap, mais en effort low, juste les problèmes sérieux",
+      "should_trigger": true
+    },
+    {
+      "query": "est-ce que le code livré par la session d'hier sur doctor tient la route ? fais une vraie revue, chaque finding vérifié par un autre agent",
+      "should_trigger": true
+    },
+    {
+      "query": "audit de la dette technique laissée par les trois dernières sessions dans src/infrastructure/, avec le rapport dans docs/reviews comme d'habitude",
+      "should_trigger": true
+    },
+    {
+      "query": "fais la review du code de la roadmap v2",
+      "should_trigger": true
+    },
+    {
+      "query": "après cette longue session de refacto des ports, je veux une review post-session : architecture, conventions et tests surtout, effort high",
+      "should_trigger": true
+    },
+    {
+      "query": "avant de pousser la v0.2.0, fais le point sur nos crates : advisories RustSec, versions yankées, crates plus maintenues, et les mises à jour dans et au-delà des contraintes de Cargo.toml",
+      "should_trigger": true
+    },
+    {
+      "query": "Audit our dependencies: which crates in Cargo.lock are unmaintained, rest on a single maintainer or lag behind their newest release, and which we should update or replace.",
+      "should_trigger": true
+    },
+    {
+      "query": "revue des dépendances : les crates directes et transitives, plus le retard de llama-swap et des sources de llama.cpp et whisper.cpp sur leur dernière release",
+      "should_trigger": true
+    },
+    {
+      "query": "la phase 2 de bench-v3 est finie : fais la review de ses hunks et de leurs appelants avant que je la ferme, et corrige dans la phase ce qui doit l'être",
+      "should_trigger": true
+    },
+    {
+      "query": "review de fin de phase : la phase 3 de models-sync a changé src/application/models.rs et ses tests, je la ferme après",
+      "should_trigger": true
+    },
+    {
+      "query": "dernière phase de bench-v3 terminée : lance la passe de sécurité de clôture sur le diff de la roadmap et rejoue les mutants enregistrés pendant les correctifs",
+      "should_trigger": true
+    },
+    {
+      "query": "Security pass only, no full review, on the code the audio-image-backends roadmap delivered: who can reach each command, path and port it added.",
+      "should_trigger": true
+    },
+    {
+      "query": "résume ce que cette session a livré en cinq points, que je les colle dans le message de commit",
+      "should_trigger": false,
+      "near": "a session's summary, not a code review (phase 0, the user's correction of the intent)"
+    },
+    {
+      "query": "relis ce que cette session a livré et dis-moi où on en est par rapport au plan de la phase",
+      "should_trigger": false,
+      "near": "the phrase the user removed from the intent as too broad: where a session stands, not a review"
+    },
+    {
+      "query": "jette un œil au diff non commité de gateway_store.rs : y a-t-il un bug évident avant que je commite ?",
+      "should_trigger": false,
+      "near": "the built-in /code-review on the working diff: a quick check before a commit, not the code a session or a roadmap delivered"
+    },
+    {
+      "query": "Do a security review of the pending changes on this branch before I push.",
+      "should_trigger": false,
+      "near": "the built-in /security-review of pending changes"
+    },
+    {
+      "query": "simplifie le code que je viens d'écrire dans src/domain/bench.rs, il y a des duplications, et applique directement",
+      "should_trigger": false,
+      "near": "the built-in /simplify: a clean-up applied to changed code, no review report"
+    },
+    {
+      "query": "le skill reviewing-delivered-code me paraît trop long : audite-le contre le guide d'écriture d'authoring-skills",
+      "should_trigger": false,
+      "near": "auditing a skill (authoring-skills), not reviewing code"
+    },
+    {
+      "query": "la phase 3 de bench-v3 n'a touché que la doc : ferme-la et ouvre la phase 4",
+      "should_trigger": false,
+      "near": "a phase's closure (roadmap skill) with no code changed, so no review at its close"
+    },
+    {
+      "query": "fais le point sur la façon dont les skills et les agents de mon setup d'agents ont servi pendant cette session",
+      "should_trigger": false,
+      "near": "tool-review: a review of the setup's tools, not of code"
+    },
+    {
+      "query": "explique-moi comment fonctionne le verrou d'installation dans gateway_store.rs et pourquoi prune le prend",
+      "should_trigger": false,
+      "near": "reading delivered code to understand it, no review"
+    },
+    {
+      "query": "le test gateway_lifecycle échoue depuis la session d'hier : trouve pourquoi et corrige-le",
+      "should_trigger": false,
+      "near": "debugging a failure the last session left, not a review"
+    },
+    {
+      "query": "lance cargo clippy et cargo test et dis-moi si tout est vert après cette session",
+      "should_trigger": false,
+      "near": "the checks alone after a session, not a review"
+    },
+    {
+      "query": "étudie nvml-wrapper face aux autres façons de lire la VRAM depuis Rust : maintenance, API, qui l'utilise, et ce que ça donnerait pour ai-ctl",
+      "should_trigger": false,
+      "near": "studying-sources: a study of one crate against its alternatives, not a review of the dependencies"
+    },
+    {
+      "query": "regarde si Unsloth a publié une révision plus récente des GGUF épinglés dans deploy/inventory.toml",
+      "should_trigger": false,
+      "near": "the models' newer revisions on Hugging Face (hf-cli), not the crates' or the backends' updates"
+    },
+    {
+      "query": "passe llama-swap de v263 à v269 et relance le gateway pour vérifier qu'il démarre",
+      "should_trigger": false,
+      "near": "a backend's update applied, not a review of its lag behind the newest release"
+    },
+    {
+      "query": "fais un cargo update dans les contraintes de Cargo.toml et dis-moi si les checks restent verts",
+      "should_trigger": false,
+      "near": "an update within the requirements applied alone with the checks, no dependency review"
+    },
+    {
+      "query": "écris un deny.toml pour cargo-deny : licences permissives seulement, crates.io comme seule source, doublons en warning",
+      "should_trigger": false,
+      "near": "the dependency tool's policy written, not a review of the crates"
+    },
+    {
+      "query": "lance cargo mutants --in-diff sur le dernier commit de correctifs et écris les tests qui tuent les mutants manqués",
+      "should_trigger": false,
+      "near": "a fix batch's step, the mutants on its diff killed test-first, no review"
+    },
+    {
+      "query": "mets à jour docs/security.md : le gateway écoute maintenant sur 127.0.0.1:8090 au lieu de 8080",
+      "should_trigger": false,
+      "near": "a change to the security document (writing-documentation), not a security pass on code"
+    }
+  ],
+  "failures_in_use": [
+    {
+      "failure": "The skill asks the user a verdict on every finding. With 84 findings, the session began to put them batch by batch; the user asked to delegate the clear cases and be asked only the hard ones, «On aurait du faire ça dès le début».",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "A full review at the end of a fix roadmap starts a loop. It reports every finding, with no floor of effect, so each fix roadmap calls for another; the closing review took nine sessions.",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "The skill's step 10 deletes what the fixes will need. `review-tests` and its verifier produce tested tests, one per finding, and mutants defined as exact replacements; the skill keeps nothing of scratch, and the report holds only their description.",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "`cargo mutants` ran on no diff of this roadmap. The closing review's 551 mutants passed the limit of 300, so 28 test gaps were found by mutants written by hand.",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "`review-cleanup`'s search for dead code misses an unreachable branch. […] `review-tests` had seen it in pass 3 and left it out as not a test gap, so no axis owned it.",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "A verifier wrote outside its scratch folder. The security verifier left three logs in the repository's root, though its rules allow writes in scratch only.",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "A reviewer's answer did not always follow its format. `review-correctness` counted 17 findings for 16 blocks, and two of its blocks, findings 20 and 21, have no severity.",
+      "source": "docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md, § Problems And Deviations"
+    },
+    {
+      "failure": "The scope of a fix roadmap's diff, set by file, handed the reviewers «production 15,218, tests 14,560» lines: the whole crate less six files.",
+      "source": "docs/reviews/delivered-code/2026-10-17-v2-review-fixes.md, § Scope"
+    },
+    {
+      "failure": "The report of the closing review, written by hand, is 213,772 bytes.",
+      "source": "docs/reviews/delivered-code/2026-10-17-v2-review-fixes.md"
+    },
+    {
+      "failure": "The estimate shown after the agents had started, on a request taken as accepting the cost: the reviewers started at 10:42, then «Les deux relecteurs tournent en arrière-plan, à l'effort `high` […] Estimation : environ 11 $»; then a wave started without the user's yes reached 95% of the usage window.",
+      "source": "the v2 review's pass 5, 2026-10-16"
+    },
+    {
+      "failure": "The estimate overrated on one commit: «En une seule passe, cela fait **21,31 $**. Ça dépasse 15 $, donc je propose deux passes», six verifiers at the flat $2 a verifier, where five had measured $0.49 each on this scope.",
+      "source": ".eval-runs/skills/reviewing-delivered-code/iteration-3, cost-gate, 2026-10-16"
+    },
+    {
+      "failure": "The session sent the user's email address in the `User-Agent` of about thirty requests to crates.io, a contact crates.io's policy asks for but the user had not given for it.",
+      "source": "roadmap `review-skill-v2`: `phase-0-decisions-and-design-report.md`, § Deviations"
+    },
+    {
+      "failure": "`scope.py roadmap` on a closed roadmap ended the scope at `docs(roadmap): describe each roadmap in an overview of them` of 2026-11-02, a later roadmap's commit that added a description to its README, «end: <that commit>, the last commit touching docs/roadmap/completed/audio-image-backends»: the range took 59 commits of another roadmap, its scripts and tests among the code, where the roadmap's last commit was `docs(audio-image-backends): close the roadmap without phase 4` of 2026-10-30.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-04"
+    },
+    {
+      "failure": "The go-ahead proposed the tier `medium` from the scope's `reading:` line alone, the one rule the step gave, for the only review on every axis of a closed roadmap's code, its patches of the API key and its downloads among it, and named no other tier; the user asked «pour medium et non hight ?», then «tu as pris le choix par défault sans annalyser le cas réel», and chose `high`.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-04"
+    },
+    {
+      "failure": "Step 4 said to add each answer as it came and step 3 to write the mutants' counts once they ended, both writes to the review's folder while other agents ran, and `guard.py` hashes that folder's files at each agent's start and stop: a probe in a scratch repository, a write to `findings.json` after the agent's start, gave `{\"decision\": \"block\"}` at its stop, «the repository: `?? docs/review/findings.json`». In this use the mutants and four of the five answers came while agents still ran; the session had read the guard and held its writes, so none was blocked.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-04"
+    },
+    {
+      "failure": "With no mutant missed, the session wrote `given_to: \"\"` and `findings.py report` refused it, «mutants: `given_to` is no text»: the step named `given_to` for the missed ones and not its value with none, `null`, which the session found in the script's source.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-04"
+    },
+    {
+      "failure": "The review stopped between its reviewers and its verifiers, and step 9 removes the scratch folder: `review-tests`' answer cites its new tests at `<scratch>/review-tests/tests.diff`, ten files of tests its verifier would have written again, and nothing said to keep them. The session saw it before removing the folder.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "Step 2 said that exit 1 means «a window is past 90%», a figure `usage.py` holds: its update during this use moved the seven-day refusal to 97%, «past 97%: split it», and the step then said a thing the script no longer did.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "A verifier's `repro/26/probe.sh` wrote its configurations to `DIR=<scratch>/verifier-performance/probe-rerun`, the verifier's own folder, which step 9 removes once the session has copied `repro/` into the review's folder: run again for a fix, the probe would have recreated a scratch path no session made. The session saw it on copying the reproductions and gave the script a `mktemp -d` folder.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "`review-structure` read `docs/stack.md` by the scope's hunks alone, `docs/README.md` listing it as the LLM stack's, a domain the scope did not touch, and said so in its `LEFT OUT`, «the rest of docs/stack.md: settings of clients and the LLM stack, checked only for their links»: line 313 kept «with the shipped inventory, one model runs at a time», false since the scope let the speech models share the GPU, four at most in the shipped matrix's sets. The session saw it while answering the user on finding 26.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "The session saw that defect in the triage, its own answer added already: `findings.py add` refused it, «session has answered already, each of its 1 run», and no step said where a defect the session sees after its answer goes.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "Step 3 had the session copy each check of `.agent-conventions.toml`, an untracked file, into `findings.json`'s `checks`, a tracked one: the last check runs `sid.py` through `study/`, a link to the study repository that git ignores, and that same check forbids such a path in a tracked file. Recorded «exit 0», it turned red once the review's folder was committed, naming `findings.json:673` and `report.md:79` as citing a path of the study repository, and no one saw it until the phase's closure ran the checks a day later.",
+      "source": "roadmap `review-skill-v2`: `phase-5-first-real-use-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "A batch's `cargo mutants --in-diff`, by step 4 of `references/fixing.md`, ended at exit 4 with no mutant tested, every check green in the repository: cargo-mutants builds its copy without `.git`, and `tests/repository.rs`'s `no_tracked_text_file_holds_a_raw_separator` runs `git ls-files` at the crate's root. Step 3 read exit 4 as a red check alone, and its own copy, made by `git archive`, holds no `.git` either; the review's mutants had run at an end commit older than the test.",
+      "source": "roadmap `review-skill-v2`: `phase-6-fixes-and-closing-pass-report.md`, § Work Log, 2026-11-05"
+    },
+    {
+      "failure": "Batch 3 turned `LLAMA_USE_PREBUILT_UI` off in llama.cpp's recipe, its sibling paths the other recipes alone; batch 4 then refused a current build made before its recipe gained a patch, its input class the patches alone. Neither named the builds the recipe had made before: b12111, rebuilt by an ai-ctl older than batch 3, downloaded the bucket's UI again, its `build.json` without the flag, «which neither `doctor` nor `up` noticed». The closing pass found it, its finding 1.",
+      "source": "roadmap `review-skill-v2`: `phase-6-fixes-and-closing-pass-report.md`, § Work Log, 2026-11-06"
+    },
+    {
+      "failure": "Step 5 of `references/fixing.md` had each batch run its own recorded mutants alone: batch 11 rewrote the line M18 replaces, and M18 stayed gone until the closing pass ran the whole record, «each batch ran scripts/regression.py on its own mutants alone, so the text left the file unseen until this pass». The closing pass's batch 2 renamed `missing_patches`, and batch 4's M28 and M29 went gone the same way, seen only because the session read the record for the batch's files.",
+      "source": "roadmap `review-skill-v2`: `phase-6-fixes-and-closing-pass-report.md`, § Work Log, 2026-11-06"
+    },
+    {
+      "failure": "`docs/security.md` §2 said every route of the gateway answers 401 without the key but `/health`; llama-swap answers 200 on `/wol-health` too, the handler of `/health`, on v263 as on v270. The security pass of 2026-10-19 and the closing passes of 2026-11-06 had §2 and the gateway in scope: the routes were probed from the documents' list, never read from llama-swap's registrations at the pin. Found by the session probing v270's routes; fixed in `docs(security): list /wol-health among the routes open without the key` of 2026-11-07.",
+      "source": "roadmap `capabilities-status-and-updates`: `phase-0-decisions-and-probes-report.md`, § Work Log, 2026-11-07; `docs/reviews/delivered-code/2026-10-19-v2-review-fixes-security-pass.md`"
+    },
+    {
+      "failure": "The closing pass of 2026-11-09, `review-security` at `high` with `docs/security.md` read in full, found nothing, where §2 still said every route answers 401 without the key but its list: llama-swap v271 registers `GET /`, `/ui` and `GET /upstream` with no authentication middleware (`internal/server/server.go:454`, `:461-463`, `:493`), and answers them 302, 308 and 302 without the key. Found by the session reading v271's registrations; left unfixed as a witness.",
+      "source": "roadmap `review-skill-v2-5`: `phase-0-decisions-and-design-report.md`, § Work Log, 2026-11-10; `docs/reviews/delivered-code/2026-11-09-capabilities-status-and-updates-closing-pass/report.md`"
+    },
+    {
+      "failure": "Each `up` that preloads a llama-server model logs «[ERROR] failed to preload model …: status 404»: llama-swap's preload asks `GET /` of the backend (`internal/server/api.go:420` at v271), which a llama-server built without its web UI, `LLAMA_USE_PREBUILT_UI` off in llama.cpp's recipe, answers 404. The reviews since the web UI left the build read the recipe and the generated `hooks.on_startup.preload`, none what llama-swap's preload sends; found by the session reading the gateway's log, left unfixed as a witness.",
+      "source": "roadmap `capabilities-status-and-updates`: `phase-4-builds-behind-their-release-report.md`, § Deviations, 2026-11-09"
+    },
+    {
+      "failure": "`GitSources::update` fetched with `git fetch --prune --tags`, whose `--prune` leaves out the tags `--tags` fetches, as `man git-fetch` documents: a release its project withdrew stayed a tag of the clone, and `build` took it for `latest`. Every review that read `src/infrastructure/git.rs` since 2026-10-15 passed it, and the session's first reading at phase 4's review «that the fetch prunes tags, was wrong»; the verifier raised it as a lead. Fixed in `fix(build): drop the tags a project withdrew at each fetch` of 2026-11-09, `--prune-tags`.",
+      "source": "`docs/reviews/delivered-code/2026-11-09-capabilities-status-and-updates-phase-4`; roadmap `capabilities-status-and-updates`: `phase-4-builds-behind-their-release-report.md`, § Work Log, 2026-11-09"
+    },
+    {
+      "failure": "`review-dependencies` listed llama-swap v264 to v269 after the pin, «their notes unread», and handed them on: «to settle it, the session or the user reads those notes». The next closing pass, at v270, left them «not read; git ls-remote gives tags only and the rules allow no other request to GitHub, so whether one of them fixes a defect ai-ctl meets is unjudged, and the lag raises no finding for want of a release note's line». The bound of 20000 `matrix` sets was decided between the two, on 2026-11-05, ten days after v267's capacity router, which does natively what those sets compute; found by the session reading v264 to v270's notes, replaced in `feat(gateway): run the models on llama-swap's capacity router` of 2026-11-07.",
+      "source": "`docs/reviews/delivered-code/2026-11-04-audio-image-backends/report.md`; `docs/reviews/delivered-code/2026-11-06-fresh-history-and-ci-closing-pass/report.md`; roadmap `capabilities-status-and-updates`: `phase-0-decisions-and-probes-report.md`, § Work Log, 2026-11-07"
+    },
+    {
+      "failure": "The review of phase 1 recorded «`cargo clippy --all-targets -- -D warnings`: exit 0» and «`cargo test`: exit 0», `Cargo.toml` in its scope, where every cargo command printed «warning: Cargo.toml: version requirement 1.2.1+spec-1.1.0 for dependency toml includes semver metadata which will be ignored»; the closing pass's fix that brought the requirement had read its checks by their exit codes too. Found by the session the same day; fixed in `build(deps): drop the build metadata from toml's requirement` of 2026-11-08.",
+      "source": "`docs/reviews/delivered-code/2026-11-08-capabilities-status-and-updates-phase-1/report.md`, § Checks; roadmap `capabilities-status-and-updates`: `phase-1-llama-swap-v270-report.md`, § Deviations, 2026-11-08"
+    },
+    {
+      "failure": "A batch's `cargo mutants --in-diff`, by step 4 of `references/fixing.md`, copied the repository into `/tmp` with `.eval-runs`, 14 GB and ignored by git, past the folder's quota: cargo-mutants copies ignored files unless given `--gitignore true`. Run again by hand with it and `TMPDIR` elsewhere.",
+      "source": "roadmap `capabilities-status-and-updates`: `phase-4-builds-behind-their-release-report.md`, § Deviations, 2026-11-09"
+    },
+    {
+      "failure": "The same command of `references/fixing.md`, with no `-o`, wrote `mutants.out/` into the repository's root, which git does not ignore; moved to the scratch folder by hand before the commit.",
+      "source": "roadmap `capabilities-status-and-updates`: `phase-5-closing-pass-report.md`, § Deviations, 2026-11-09"
+    },
+    {
+      "failure": "`deploy/inventory.toml`'s comments on `listen` and `cache-ram` named the orchestrator for the agents' client after the phase's change, outside the search of `CLAUDE.md` and `docs/` for the statements it made false; `review-structure` searches `docs/` and `README.md` alone, so a review reaches them no better. Found by the session beyond its search; fixed in the phase.",
+      "source": "roadmap `capabilities-status-and-updates`: `phase-2-capabilities-report.md`, § Deviations, 2026-11-09"
+    },
+    {
+      "failure": "In the first use of v2.5, `findings.py add` refused six of the seven reviewers' answers on paths alone: absolute paths into the scratch folder under FILES READ and LEFT OUT (`/tmp/tmp.<id>/scope.txt`, the llama-swap clone's files, the checks' logs), a `where` placing a line of the llama-swap clone, which is no file of the repository, and a document's line with no `(top level)`. The agents' rules named the scratch folder's files by `<scratch>/...` and never said how an answer names them, nor where another program's source line goes. The session shortened the paths itself, each agent's words otherwise untouched, rather than start six agents again.",
+      "source": "roadmap `review-skill-v2-5`: `phase-2-first-use-and-closing-pass-report.md`, § Work Log, 2026-11-12"
+    }
+  ]
+}

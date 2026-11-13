@@ -1,0 +1,29 @@
+---
+cdiVersion: 0.7.0
+kind: nvidia.com/gpu
+devices:
+    - name: all
+containerEdits:
+    env:
+        - NVIDIA_CTK_LIBCUDA_DIR=/usr/lib64
+    hooks:
+        - hookName: createContainer
+          path: /usr/bin/nvidia-cdi-hook
+          args:
+            - nvidia-cdi-hook
+            - create-symlinks
+            - --link
+            - libGLX_nvidia.so.615.71.09::/usr/lib64/libGLX_nvidia.so.0
+            - --link
+            - libcuda.so.1::/usr/lib64/libcuda.so
+            - --link
+            - libcuda.so.615.71.09::/usr/lib64/libcuda.so.1
+    mounts:
+        - hostPath: /usr/lib64/libcuda.so.615.71.09
+          containerPath: /usr/lib64/libcuda.so.615.71.09
+          options:
+            - ro
+            - nosuid
+            - nodev
+            - rbind
+            - rprivate

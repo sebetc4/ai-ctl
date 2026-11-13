@@ -1,0 +1,2 @@
+time="2026-10-16T21:26:42+02:00" level=error msg="Failed to GetDriver graph bogus /tmp/claude-1000/-code-ai-ai-ctl/33333333-3333-4333-8333-333333333333/scratchpad/probe-l2/graph"
+Error: configure storage: failed to GetDriver graph bogus /tmp/claude-1000/-code-ai-ai-ctl/33333333-3333-4333-8333-333333333333/scratchpad/probe-l2/graph: driver not supported

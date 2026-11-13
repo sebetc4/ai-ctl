@@ -1,0 +1,1600 @@
+{
+  "commit": "docs(review-skill-v2): record the session's close",
+  "gathered": "2026-11-06",
+  "rust_version": "1.89",
+  "crates": [
+    {
+      "name": "anstream",
+      "version": "1.0.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.0",
+      "yanked": false,
+      "last_release": "2026-02-11",
+      "releases_past_year": 1,
+      "releases": 32,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 465,
+      "downloads": 818520464,
+      "recent_downloads": 218460363,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 3
+    },
+    {
+      "name": "anstyle",
+      "version": "1.0.14",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.14",
+      "yanked": false,
+      "last_release": "2026-03-13",
+      "releases_past_year": 1,
+      "releases": 31,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 632,
+      "downloads": 887146104,
+      "recent_downloads": 239115970,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 1
+    },
+    {
+      "name": "anstyle-parse",
+      "version": "1.0.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.0",
+      "yanked": false,
+      "last_release": "2026-02-11",
+      "releases_past_year": 1,
+      "releases": 12,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 28,
+      "downloads": 803603109,
+      "recent_downloads": 216805751,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 3
+    },
+    {
+      "name": "anstyle-query",
+      "version": "1.1.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.5",
+      "yanked": false,
+      "last_release": "2025-11-13",
+      "releases_past_year": 1,
+      "releases": 10,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 28,
+      "downloads": 782214937,
+      "recent_downloads": 207932748,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 1
+    },
+    {
+      "name": "anstyle-wincon",
+      "version": "3.0.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.0.11",
+      "yanked": false,
+      "last_release": "2025-11-13",
+      "releases_past_year": 1,
+      "releases": 21,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 3,
+      "downloads": 392902042,
+      "recent_downloads": 105552689,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "anyhow",
+      "version": "1.0.104",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.104",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 4,
+      "releases": 103,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 53157,
+      "downloads": 1135813939,
+      "recent_downloads": 277128648,
+      "repository": "https://github.com/dtolnay/anyhow",
+      "github": {
+        "asked": "dtolnay/anyhow",
+        "repository": "dtolnay/anyhow",
+        "archived": false,
+        "pushed": "2026-11-03"
+      },
+      "unsafe": 108
+    },
+    {
+      "name": "bitflags",
+      "version": "2.13.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.13.2",
+      "yanked": false,
+      "last_release": "2026-09-10",
+      "releases_past_year": 6,
+      "releases": 57,
+      "owners": [
+        "KodrAus",
+        "rust-lang-owner"
+      ],
+      "dependents": 5424,
+      "downloads": 2201482503,
+      "recent_downloads": 562608571,
+      "repository": "https://github.com/bitflags/bitflags",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "cfg-if",
+      "version": "1.0.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.5",
+      "yanked": false,
+      "last_release": "2026-09-16",
+      "releases_past_year": 1,
+      "releases": 16,
+      "owners": [
+        "rust-lang-owner"
+      ],
+      "dependents": 2764,
+      "downloads": 1710742124,
+      "recent_downloads": 426006693,
+      "repository": "https://github.com/rust-lang/cfg-if",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "clap",
+      "version": "4.6.7",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.7",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 18,
+      "releases": 370,
+      "owners": [
+        "kbknapp",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 50514,
+      "downloads": 1308175126,
+      "recent_downloads": 279639881,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": {
+        "asked": "clap-rs/clap",
+        "repository": "clap-rs/clap",
+        "archived": false,
+        "pushed": "2026-11-02"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "clap_builder",
+      "version": "4.6.7",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.7",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 15,
+      "releases": 109,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 27,
+      "downloads": 904637730,
+      "recent_downloads": 245224536,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "clap_complete",
+      "version": "4.6.11",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.11",
+      "yanked": false,
+      "last_release": "2026-09-15",
+      "releases_past_year": 19,
+      "releases": 134,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 3953,
+      "downloads": 136741894,
+      "recent_downloads": 36093409,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": {
+        "asked": "clap-rs/clap",
+        "repository": "clap-rs/clap",
+        "archived": false,
+        "pushed": "2026-11-02"
+      },
+      "unsafe": 1
+    },
+    {
+      "name": "clap_derive",
+      "version": "4.6.7",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "4.6.7",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 7,
+      "releases": 92,
+      "owners": [
+        "kbknapp",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 137,
+      "downloads": 897611184,
+      "recent_downloads": 221523514,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "clap_lex",
+      "version": "1.1.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.1",
+      "yanked": false,
+      "last_release": "2026-09-14",
+      "releases_past_year": 5,
+      "releases": 28,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers",
+        "github:clap-rs:admins"
+      ],
+      "dependents": 35,
+      "downloads": 1029433492,
+      "recent_downloads": 245905082,
+      "repository": "https://github.com/clap-rs/clap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 6
+    },
+    {
+      "name": "colorchoice",
+      "version": "1.0.5",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.5",
+      "yanked": false,
+      "last_release": "2026-03-13",
+      "releases_past_year": 1,
+      "releases": 6,
+      "owners": [
+        "epage",
+        "github:rust-cli:maintainers"
+      ],
+      "dependents": 15,
+      "downloads": 783880832,
+      "recent_downloads": 211126019,
+      "repository": "https://github.com/rust-cli/anstyle.git",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "darling",
+      "version": "0.20.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.24.1",
+      "yanked": false,
+      "last_release": "2026-08-20",
+      "releases_past_year": 3,
+      "releases": 66,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 1163,
+      "downloads": 889204910,
+      "recent_downloads": 253163184,
+      "repository": "https://github.com/TedDriggs/darling",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "darling_core",
+      "version": "0.20.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.24.1",
+      "yanked": false,
+      "last_release": "2026-08-20",
+      "releases_past_year": 3,
+      "releases": 66,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 5,
+      "downloads": 889412671,
+      "recent_downloads": 253255990,
+      "repository": "https://github.com/TedDriggs/darling",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "darling_macro",
+      "version": "0.20.11",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.24.1",
+      "yanked": false,
+      "last_release": "2026-08-20",
+      "releases_past_year": 3,
+      "releases": 66,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 2,
+      "downloads": 889221081,
+      "recent_downloads": 252985146,
+      "repository": "https://github.com/TedDriggs/darling",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "equivalent",
+      "version": "1.0.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.3",
+      "yanked": false,
+      "last_release": "2026-10-13",
+      "releases_past_year": 1,
+      "releases": 5,
+      "owners": [
+        "cuviper"
+      ],
+      "dependents": 44,
+      "downloads": 1019110062,
+      "recent_downloads": 300927005,
+      "repository": "https://github.com/indexmap-rs/equivalent",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "errno",
+      "version": "0.3.14",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.3.14",
+      "yanked": false,
+      "last_release": "2025-09-09",
+      "releases_past_year": 0,
+      "releases": 33,
+      "owners": [
+        "lambda-fairy",
+        "sunfishcode"
+      ],
+      "dependents": 261,
+      "downloads": 1018343607,
+      "recent_downloads": 278411156,
+      "repository": "https://github.com/lambda-fairy/rust-errno",
+      "github": {
+        "asked": "lambda-fairy/rust-errno",
+        "repository": "lambda-fairy/rust-errno",
+        "archived": false,
+        "pushed": "2026-11-02"
+      },
+      "unsafe": 12
+    },
+    {
+      "name": "fastrand",
+      "version": "2.5.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.5.0",
+      "yanked": false,
+      "last_release": "2026-07-19",
+      "releases_past_year": 2,
+      "releases": 29,
+      "owners": [
+        "taiki-e",
+        "github:smol-rs:admins"
+      ],
+      "dependents": 1840,
+      "downloads": 1088266279,
+      "recent_downloads": 281968240,
+      "repository": "https://github.com/smol-rs/fastrand",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "fnv",
+      "version": "1.0.7",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.7",
+      "yanked": false,
+      "last_release": "2020-05-14",
+      "releases_past_year": 0,
+      "releases": 8,
+      "owners": [
+        "SimonSapin",
+        "github:servo:cargo-publish"
+      ],
+      "dependents": 839,
+      "downloads": 936641104,
+      "recent_downloads": 217377403,
+      "repository": "https://github.com/servo/rust-fnv",
+      "github": {
+        "asked": "servo/rust-fnv",
+        "repository": "servo/rust-fnv",
+        "archived": false,
+        "pushed": "2024-03-20"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "getrandom",
+      "version": "0.4.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.4.3",
+      "yanked": false,
+      "last_release": "2026-06-17",
+      "releases_past_year": 7,
+      "releases": 46,
+      "owners": [
+        "dhardy",
+        "github:rust-random:maintainers"
+      ],
+      "dependents": 6024,
+      "downloads": 2507387300,
+      "recent_downloads": 766566206,
+      "repository": "https://github.com/rust-random/getrandom",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 113
+    },
+    {
+      "name": "hashbrown",
+      "version": "0.17.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.17.1",
+      "yanked": false,
+      "last_release": "2026-05-09",
+      "releases_past_year": 3,
+      "releases": 52,
+      "owners": [
+        "rust-lang-owner"
+      ],
+      "dependents": 2549,
+      "downloads": 2989878160,
+      "recent_downloads": 860184624,
+      "repository": "https://github.com/rust-lang/hashbrown",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 455
+    },
+    {
+      "name": "heck",
+      "version": "0.5.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.5.0",
+      "yanked": false,
+      "last_release": "2024-03-12",
+      "releases_past_year": 0,
+      "releases": 11,
+      "owners": [
+        "withoutboats",
+        "jplatte"
+      ],
+      "dependents": 1903,
+      "downloads": 1519630744,
+      "recent_downloads": 362862606,
+      "repository": "https://github.com/withoutboats/heck",
+      "github": {
+        "asked": "withoutboats/heck",
+        "repository": "withoutboats/heck",
+        "archived": false,
+        "pushed": "2025-08-09"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "ident_case",
+      "version": "1.0.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.1",
+      "yanked": false,
+      "last_release": "2019-03-18",
+      "releases_past_year": 0,
+      "releases": 2,
+      "owners": [
+        "TedDriggs"
+      ],
+      "dependents": 24,
+      "downloads": 561894363,
+      "recent_downloads": 150815280,
+      "repository": "https://github.com/TedDriggs/ident_case",
+      "github": {
+        "asked": "TedDriggs/ident_case",
+        "repository": "TedDriggs/ident_case",
+        "archived": false,
+        "pushed": "2026-08-18"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "indexmap",
+      "version": "2.14.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.14.2",
+      "yanked": false,
+      "last_release": "2026-09-05",
+      "releases_past_year": 6,
+      "releases": 56,
+      "owners": [
+        "bluss",
+        "cuviper"
+      ],
+      "dependents": 6618,
+      "downloads": 1832550945,
+      "recent_downloads": 462325523,
+      "repository": "https://github.com/indexmap-rs/indexmap",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 13
+    },
+    {
+      "name": "is_terminal_polyfill",
+      "version": "1.70.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.70.2",
+      "yanked": false,
+      "last_release": "2025-10-21",
+      "releases_past_year": 0,
+      "releases": 6,
+      "owners": [
+        "epage"
+      ],
+      "dependents": 4,
+      "downloads": 652830755,
+      "recent_downloads": 195216514,
+      "repository": "https://github.com/polyfill-rs/is_terminal_polyfill",
+      "github": {
+        "asked": "polyfill-rs/is_terminal_polyfill",
+        "repository": "polyfill-rs/is_terminal_polyfill",
+        "archived": false,
+        "pushed": "2025-10-21"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.18",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.18",
+      "yanked": false,
+      "last_release": "2026-03-20",
+      "releases_past_year": 3,
+      "releases": 37,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 806,
+      "downloads": 1595551792,
+      "recent_downloads": 405521196,
+      "repository": "https://github.com/dtolnay/itoa",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 13
+    },
+    {
+      "name": "libc",
+      "version": "0.2.191",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.2.191",
+      "yanked": false,
+      "last_release": "2026-10-16",
+      "releases_past_year": 18,
+      "releases": 200,
+      "owners": [
+        "rust-lang-owner"
+      ],
+      "dependents": 18241,
+      "downloads": 1922086233,
+      "recent_downloads": 464544756,
+      "repository": "https://github.com/rust-lang/libc",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 800
+    },
+    {
+      "name": "libloading",
+      "version": "0.8.9",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.9.0",
+      "yanked": false,
+      "last_release": "2025-11-05",
+      "releases_past_year": 0,
+      "releases": 40,
+      "owners": [
+        "nagisa"
+      ],
+      "dependents": 1638,
+      "downloads": 619724466,
+      "recent_downloads": 151850543,
+      "repository": "https://github.com/nagisa/rust_libloading/",
+      "github": {
+        "asked": "nagisa/rust_libloading",
+        "repository": "nagisa/rust_libloading",
+        "archived": false,
+        "pushed": "2026-08-02"
+      },
+      "unsafe": 93
+    },
+    {
+      "name": "linux-raw-sys",
+      "version": "0.12.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.12.1",
+      "yanked": false,
+      "last_release": "2025-12-23",
+      "releases_past_year": 1,
+      "releases": 102,
+      "owners": [
+        "sunfishcode"
+      ],
+      "dependents": 39,
+      "downloads": 1283747012,
+      "recent_downloads": 327944331,
+      "repository": "https://github.com/sunfishcode/linux-raw-sys",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 6930
+    },
+    {
+      "name": "memchr",
+      "version": "2.8.3",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.8.3",
+      "yanked": false,
+      "last_release": "2026-07-08",
+      "releases_past_year": 4,
+      "releases": 46,
+      "owners": [
+        "BurntSushi"
+      ],
+      "dependents": 2416,
+      "downloads": 1689384048,
+      "recent_downloads": 446822439,
+      "repository": "https://github.com/BurntSushi/memchr",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 333
+    },
+    {
+      "name": "nvml-wrapper",
+      "version": "0.13.0",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.13.0",
+      "yanked": false,
+      "last_release": "2026-08-31",
+      "releases_past_year": 3,
+      "releases": 15,
+      "owners": [
+        "brayniac",
+        "Cldfire",
+        "swlynch99"
+      ],
+      "dependents": 145,
+      "downloads": 7601992,
+      "recent_downloads": 2435116,
+      "repository": "https://github.com/Cldfire/nvml-wrapper",
+      "github": {
+        "asked": "Cldfire/nvml-wrapper",
+        "repository": "rust-nvml/nvml-wrapper",
+        "archived": false,
+        "pushed": "2026-08-31"
+      },
+      "unsafe": 317
+    },
+    {
+      "name": "nvml-wrapper-sys",
+      "version": "0.10.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.10.0",
+      "yanked": false,
+      "last_release": "2026-08-31",
+      "releases_past_year": 2,
+      "releases": 14,
+      "owners": [
+        "brayniac",
+        "Cldfire"
+      ],
+      "dependents": 6,
+      "downloads": 7626877,
+      "recent_downloads": 2440430,
+      "repository": "https://github.com/Cldfire/nvml-wrapper",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 794
+    },
+    {
+      "name": "once_cell",
+      "version": "1.21.4",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.21.4",
+      "yanked": false,
+      "last_release": "2026-03-12",
+      "releases_past_year": 1,
+      "releases": 59,
+      "owners": [
+        "matklad",
+        "vorner"
+      ],
+      "dependents": 8668,
+      "downloads": 1486302898,
+      "recent_downloads": 364724520,
+      "repository": "https://github.com/matklad/once_cell",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 49
+    },
+    {
+      "name": "once_cell_polyfill",
+      "version": "1.70.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.70.2",
+      "yanked": false,
+      "last_release": "2025-10-21",
+      "releases_past_year": 0,
+      "releases": 5,
+      "owners": [
+        "epage"
+      ],
+      "dependents": 3,
+      "downloads": 252284171,
+      "recent_downloads": 93042431,
+      "repository": "https://github.com/polyfill-rs/once_cell_polyfill",
+      "github": {
+        "asked": "polyfill-rs/once_cell_polyfill",
+        "repository": "polyfill-rs/once_cell_polyfill",
+        "archived": false,
+        "pushed": "2025-10-21"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.107",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.107",
+      "yanked": false,
+      "last_release": "2026-07-19",
+      "releases_past_year": 4,
+      "releases": 161,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 16663,
+      "downloads": 1898759673,
+      "recent_downloads": 458946036,
+      "repository": "https://github.com/dtolnay/proc-macro2",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 6
+    },
+    {
+      "name": "quote",
+      "version": "1.0.47",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.47",
+      "yanked": false,
+      "last_release": "2026-07-19",
+      "releases_past_year": 5,
+      "releases": 95,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 18521,
+      "downloads": 1907930401,
+      "recent_downloads": 466868701,
+      "repository": "https://github.com/dtolnay/quote",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "r-efi",
+      "version": "6.0.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "7.1.0",
+      "yanked": false,
+      "last_release": "2026-08-10",
+      "releases_past_year": 3,
+      "releases": 22,
+      "owners": [
+        "dvdhrm"
+      ],
+      "dependents": 17,
+      "downloads": 480795252,
+      "recent_downloads": 210863243,
+      "repository": "https://github.com/r-efi/r-efi",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 332
+    },
+    {
+      "name": "rustix",
+      "version": "1.1.6",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.6",
+      "yanked": false,
+      "last_release": "2026-10-27",
+      "releases_past_year": 4,
+      "releases": 162,
+      "owners": [
+        "sunfishcode"
+      ],
+      "dependents": 1917,
+      "downloads": 1360774242,
+      "recent_downloads": 345323257,
+      "repository": "https://github.com/bytecodealliance/rustix",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 1610
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.229",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 1,
+      "releases": 313,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 137993,
+      "downloads": 1656937128,
+      "recent_downloads": 409930961,
+      "repository": "https://github.com/serde-rs/serde",
+      "github": {
+        "asked": "serde-rs/serde",
+        "repository": "serde-rs/serde",
+        "archived": false,
+        "pushed": "2026-10-16"
+      },
+      "unsafe": 2
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.229",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 1,
+      "releases": 10,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 238,
+      "downloads": 811638145,
+      "recent_downloads": 368643358,
+      "repository": "https://github.com/serde-rs/serde",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.229",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.229",
+      "yanked": false,
+      "last_release": "2026-07-18",
+      "releases_past_year": 1,
+      "releases": 270,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 6498,
+      "downloads": 1572824138,
+      "recent_downloads": 397739485,
+      "repository": "https://github.com/serde-rs/serde",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.154",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.154",
+      "yanked": false,
+      "last_release": "2026-10-11",
+      "releases_past_year": 9,
+      "releases": 184,
+      "owners": [
+        "dtolnay",
+        "github:serde-rs:publish"
+      ],
+      "dependents": 118156,
+      "downloads": 1562479695,
+      "recent_downloads": 411254007,
+      "repository": "https://github.com/serde-rs/json",
+      "github": {
+        "asked": "serde-rs/json",
+        "repository": "serde-rs/json",
+        "archived": false,
+        "pushed": "2026-10-16"
+      },
+      "unsafe": 17
+    },
+    {
+      "name": "serde_spanned",
+      "version": "1.1.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.2",
+      "yanked": false,
+      "last_release": "2026-10-08",
+      "releases_past_year": 4,
+      "releases": 18,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 16,
+      "downloads": 724625247,
+      "recent_downloads": 233473496,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "static_assertions",
+      "version": "1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.0",
+      "yanked": false,
+      "last_release": "2019-11-03",
+      "releases_past_year": 0,
+      "releases": 15,
+      "owners": [
+        "nvzqz"
+      ],
+      "dependents": 1717,
+      "downloads": 590034227,
+      "recent_downloads": 143888445,
+      "repository": "https://github.com/nvzqz/static-assertions-rs",
+      "github": {
+        "asked": "nvzqz/static-assertions-rs",
+        "repository": "nvzqz/static-assertions",
+        "archived": false,
+        "pushed": "2023-11-18"
+      },
+      "unsafe": 1
+    },
+    {
+      "name": "strsim",
+      "version": "0.11.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.11.1",
+      "yanked": false,
+      "last_release": "2024-04-02",
+      "releases_past_year": 0,
+      "releases": 24,
+      "owners": [
+        "dguo",
+        "maxbachmann"
+      ],
+      "dependents": 757,
+      "downloads": 1244770734,
+      "recent_downloads": 272281803,
+      "repository": "https://github.com/rapidfuzz/strsim-rs",
+      "github": {
+        "asked": "rapidfuzz/strsim-rs",
+        "repository": "rapidfuzz/strsim-rs",
+        "archived": false,
+        "pushed": "2025-11-27"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "syn",
+      "version": "2.0.119",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.0.9",
+      "yanked": false,
+      "last_release": "2026-10-12",
+      "releases_past_year": 20,
+      "releases": 345,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 19180,
+      "downloads": 2934887081,
+      "recent_downloads": 839441907,
+      "repository": "https://github.com/dtolnay/syn",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 69
+    },
+    {
+      "name": "syn",
+      "version": "3.0.9",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.0.9",
+      "yanked": false,
+      "last_release": "2026-10-12",
+      "releases_past_year": 20,
+      "releases": 345,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 19180,
+      "downloads": 2934887081,
+      "recent_downloads": 839441907,
+      "repository": "https://github.com/dtolnay/syn",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 78
+    },
+    {
+      "name": "tempfile",
+      "version": "3.27.0",
+      "direct": [
+        "dev"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "3.27.0",
+      "yanked": false,
+      "last_release": "2026-03-11",
+      "releases_past_year": 4,
+      "releases": 63,
+      "owners": [
+        "Stebalien"
+      ],
+      "dependents": 39951,
+      "downloads": 966219978,
+      "recent_downloads": 241434612,
+      "repository": "https://github.com/Stebalien/tempfile",
+      "github": {
+        "asked": "Stebalien/tempfile",
+        "repository": "Stebalien/tempfile",
+        "archived": false,
+        "pushed": "2026-10-30"
+      },
+      "unsafe": 3
+    },
+    {
+      "name": "thiserror",
+      "version": "1.0.69",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 92,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 78490,
+      "downloads": 1788444077,
+      "recent_downloads": 499906842,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "thiserror",
+      "version": "2.0.21",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 92,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 78490,
+      "downloads": 1788444077,
+      "recent_downloads": 499906842,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": {
+        "asked": "dtolnay/thiserror",
+        "repository": "dtolnay/thiserror",
+        "archived": false,
+        "pushed": "2026-10-16"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "thiserror-impl",
+      "version": "1.0.69",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 91,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 5,
+      "downloads": 1788609889,
+      "recent_downloads": 499839075,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "thiserror-impl",
+      "version": "2.0.21",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "2.0.21",
+      "yanked": false,
+      "last_release": "2026-09-23",
+      "releases_past_year": 4,
+      "releases": 91,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 5,
+      "downloads": 1788609889,
+      "recent_downloads": 499839075,
+      "repository": "https://github.com/dtolnay/thiserror",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "toml",
+      "version": "1.2.0+spec-1.1.0",
+      "direct": [
+        "normal"
+      ],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.2.0+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-11-04",
+      "releases_past_year": 22,
+      "releases": 120,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 21593,
+      "downloads": 1103037422,
+      "recent_downloads": 300478684,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": {
+        "asked": "toml-rs/toml",
+        "repository": "toml-rs/toml",
+        "archived": false,
+        "pushed": "2026-11-04"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "toml_datetime",
+      "version": "1.1.2+spec-1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.2+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-10-08",
+      "releases_past_year": 7,
+      "releases": 25,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 30,
+      "downloads": 999407008,
+      "recent_downloads": 326231167,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "toml_parser",
+      "version": "1.1.5+spec-1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.1.5+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-10-09",
+      "releases_past_year": 12,
+      "releases": 17,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 28,
+      "downloads": 407908938,
+      "recent_downloads": 180539309,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 51
+    },
+    {
+      "name": "toml_writer",
+      "version": "1.2.0+spec-1.1.0",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.2.0+spec-1.1.0",
+      "yanked": false,
+      "last_release": "2026-11-04",
+      "releases_past_year": 8,
+      "releases": 13,
+      "owners": [
+        "epage",
+        "github:toml-rs:maintainers"
+      ],
+      "dependents": 16,
+      "downloads": 275594152,
+      "recent_downloads": 126978857,
+      "repository": "https://github.com/toml-rs/toml",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.27",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.27",
+      "yanked": false,
+      "last_release": "2026-10-12",
+      "releases_past_year": 5,
+      "releases": 27,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 241,
+      "downloads": 1652759648,
+      "recent_downloads": 437353208,
+      "repository": "https://github.com/dtolnay/unicode-ident",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 2
+    },
+    {
+      "name": "utf8parse",
+      "version": "0.2.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.2.2",
+      "yanked": false,
+      "last_release": "2024-06-08",
+      "releases_past_year": 0,
+      "releases": 5,
+      "owners": [
+        "jwilm",
+        "chrisduerr",
+        "github:alacritty:publishers"
+      ],
+      "dependents": 13,
+      "downloads": 745927887,
+      "recent_downloads": 198485958,
+      "repository": "https://github.com/alacritty/vte",
+      "github": {
+        "asked": "alacritty/vte",
+        "repository": "alacritty/vte",
+        "archived": false,
+        "pushed": "2026-10-25"
+      },
+      "unsafe": 1
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.100.0",
+      "yanked": false,
+      "last_release": "2026-09-03",
+      "releases_past_year": 1,
+      "releases": 7,
+      "owners": [
+        "kennykerr"
+      ],
+      "dependents": 51,
+      "downloads": 544176832,
+      "recent_downloads": 195141371,
+      "repository": "https://github.com/microsoft/windows-rs",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 0
+    },
+    {
+      "name": "windows-sys",
+      "version": "0.61.2",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.61.2",
+      "yanked": false,
+      "last_release": "2025-10-06",
+      "releases_past_year": 0,
+      "releases": 21,
+      "owners": [
+        "kennykerr"
+      ],
+      "dependents": 3167,
+      "downloads": 1872889535,
+      "recent_downloads": 499992015,
+      "repository": "https://github.com/microsoft/windows-rs",
+      "github": {
+        "asked": "microsoft/windows-rs",
+        "repository": "microsoft/windows-rs",
+        "archived": false,
+        "pushed": "2026-11-06"
+      },
+      "unsafe": 12530
+    },
+    {
+      "name": "winnow",
+      "version": "1.0.4",
+      "direct": [],
+      "update": "1.0.5",
+      "available": null,
+      "requires": null,
+      "newest": "1.0.5",
+      "yanked": false,
+      "last_release": "2026-11-05",
+      "releases_past_year": 8,
+      "releases": 112,
+      "owners": [
+        "epage"
+      ],
+      "dependents": 463,
+      "downloads": 1130255696,
+      "recent_downloads": 356203224,
+      "repository": "https://github.com/winnow-rs/winnow",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 44
+    },
+    {
+      "name": "wrapcenum-derive",
+      "version": "0.4.1",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "0.4.1",
+      "yanked": false,
+      "last_release": "2024-02-10",
+      "releases_past_year": 0,
+      "releases": 5,
+      "owners": [
+        "brayniac",
+        "Cldfire"
+      ],
+      "dependents": 1,
+      "downloads": 8996639,
+      "recent_downloads": 2585017,
+      "repository": "https://github.com/Cldfire/wrapcenum-derive",
+      "github": {
+        "asked": "Cldfire/wrapcenum-derive",
+        "repository": "rust-nvml/wrapcenum-derive",
+        "archived": false,
+        "pushed": "2024-02-10"
+      },
+      "unsafe": 0
+    },
+    {
+      "name": "zmij",
+      "version": "1.0.23",
+      "direct": [],
+      "update": null,
+      "available": null,
+      "requires": null,
+      "newest": "1.0.23",
+      "yanked": false,
+      "last_release": "2026-07-13",
+      "releases_past_year": 37,
+      "releases": 37,
+      "owners": [
+        "dtolnay"
+      ],
+      "dependents": 112,
+      "downloads": 645181108,
+      "recent_downloads": 336569228,
+      "repository": "https://github.com/dtolnay/zmij",
+      "github": "not asked: transitive, released within a year",
+      "unsafe": 70
+    }
+  ],
+  "left_out": []
+}

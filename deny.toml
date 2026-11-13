@@ -1,0 +1,23 @@
+# cargo-deny's policy for ai-ctl's dependencies, checked by `cargo deny check`.
+
+[graph]
+# Fedora on x86_64 is the only target platform.
+targets = ["x86_64-unknown-linux-gnu"]
+
+[advisories]
+# Every advisory of RustSec fails the check; an unsound one in any crate, not only a direct one.
+unmaintained = "all"
+unsound = "all"
+yanked = "warn"
+
+[licenses]
+# The licences the lock needs; a crate bringing another one is a decision.
+allow = ["MIT", "Apache-2.0", "ISC", "Unicode-3.0"]
+
+[bans]
+multiple-versions = "warn"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

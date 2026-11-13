@@ -1,0 +1,147 @@
+# Checks and builds ai-ctl in Fedora 44, the only target, at each pushed tag vX.Y.Z and by hand;
+# a pushed tag also publishes the binary and its SHA256SUMS on the tag's release. Every image,
+# action and download is pinned: the image by digest, each action by its commit, each download by
+# its SHA-256 (docs/release.md).
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    container:
+      image: registry.fedoraproject.org/fedora:44@sha256:b22ccd18a49a976e65b1e8fb0aceb25eb83df8b018ab31a068e90b43b7fc7638
+    steps:
+      - name: Packages
+        # git before the checkout, which otherwise downloads the tree without its history.
+        run: dnf install -y --setopt=install_weak_deps=False git-core gcc python3 tar gzip iproute
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Trust the checkout
+        # The workspace is the runner's, the container's user root: git refuses it otherwise.
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: The tag is the release Cargo.toml and CHANGELOG.md describe
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        env:
+          TAG: ${{ github.ref_name }}
+        run: python3 .github/scripts/check_release.py "$TAG"
+
+      - name: Rust, as rust-toolchain.toml pins it
+        run: |
+          curl -fsSLo /tmp/rustup-init https://static.rust-lang.org/rustup/archive/1.29.3/x86_64-unknown-linux-gnu/rustup-init
+          echo 'b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55  /tmp/rustup-init' | sha256sum -c
+          chmod +x /tmp/rustup-init
+          /tmp/rustup-init -y --no-modify-path --default-toolchain none --profile minimal
+          export PATH="$HOME/.cargo/bin:$PATH"
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          # --no-self-update: rustup would otherwise replace itself with the newest rustup-init
+          # of its update root, unchecked, wherever CI is unset (docs/release.md).
+          rustup toolchain install --no-self-update
+          # The evals run cargo in folders outside the repository, where the default applies.
+          rustup default "$(rustup show active-toolchain | cut -d' ' -f1)"
+          rustc --version
+
+      - name: cargo-deny
+        run: |
+          curl -fsSLo /tmp/cargo-deny.tar.gz https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-x86_64-unknown-linux-musl.tar.gz
+          echo '9f12ed4c49936e09b48bf862b595cde2fe64fcbd9d74dfacac6131ca824c8d5f  /tmp/cargo-deny.tar.gz' | sha256sum -c
+          tar -xzf /tmp/cargo-deny.tar.gz -C /tmp
+          install -m 0755 /tmp/cargo-deny-0.20.2-x86_64-unknown-linux-musl/cargo-deny "$HOME/.cargo/bin/cargo-deny"
+          cargo deny --version
+
+      - name: Build
+        run: cargo build --release --locked
+
+      - name: llama-swap, for the gateway's test end to end
+        run: ./target/release/ai-ctl gateway install
+
+      - name: cargo fmt
+        run: cargo fmt --check
+
+      - name: cargo clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
+
+      - name: cargo test
+        run: cargo test --locked
+
+      - name: The review skill's evals
+        run: |
+          for t in scope fixtures findings regression dependencies guard; do
+            python3 ".claude/skills/reviewing-delivered-code/evals/test_$t.py"
+          done
+
+      - name: The release guard's tests
+        run: python3 .github/scripts/test_check_release.py
+
+      - name: cargo deny
+        run: cargo deny check
+
+      - name: Binary and SHA256SUMS
+        run: |
+          mkdir dist
+          cp target/release/ai-ctl dist/
+          cd dist
+          sha256sum ai-ctl > SHA256SUMS
+          cat SHA256SUMS
+          ./ai-ctl --version
+
+      - name: Upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ai-ctl
+          path: |
+            dist/ai-ctl
+            dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    needs: build
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ai-ctl
+          path: dist
+
+      - name: Check the sum
+        working-directory: dist
+        run: sha256sum -c SHA256SUMS
+
+      - name: Publish
+        # gh's --notes-from-tag reads the tag from a clone, which this job has not: the notes, the
+        # tag's message, come from GitHub's API.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          ref=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" --jq '.object.type + " " + .object.sha')
+          if [ "${ref%% *}" != tag ]; then
+            echo "::error::$TAG is not an annotated tag"
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/git/tags/${ref#* }" --jq .message > notes.md
+          gh release create "$TAG" dist/ai-ctl dist/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --notes-file notes.md --title "ai-ctl $TAG"

@@ -1,0 +1,4 @@
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 24075 MiB):
+  Device 0: NVIDIA GeForce RTX 5090 Laptop GPU, compute capability 12.0, VMM: yes, VRAM: 24075 MiB
+CUDA0	NVIDIA GeForce RTX 5090 Laptop GPU
+CPU	Intel(R) Core(TM) Ultra 9 275HX

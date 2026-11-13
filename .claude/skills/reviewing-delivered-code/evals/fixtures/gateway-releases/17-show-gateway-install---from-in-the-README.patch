@@ -1,0 +1,90 @@
+diff --git a/README.md b/README.md
+index d95345d..204b2d1 100644
+--- a/README.md
++++ b/README.md
+@@ -147,6 +147,7 @@ left, which `doctor` reports.
+ ai-ctl gateway install                    # the llama-swap release this ai-ctl pins, v263
+ ai-ctl gateway install --version 264      # another release
+ ai-ctl gateway install --version 264 --sha256 <hex>   # checked against a digest you trust
++ai-ctl gateway install --from llama-swap_263_linux_amd64.tar.gz   # an archive already on disk
+ ai-ctl gateway prune --keep 1                         # remove all but the newest release and the current one
+ ```
+ 
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json
+index f56cf6b..c5825e9 100644
+--- a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json
++++ b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/findings.json
+@@ -78,8 +78,8 @@
+     "given_to": "review-tests"
+   },
+   "status": {
+-    "stage": "fixing",
+-    "note": "verified and triaged; batches 1 and 2 next"
++    "stage": "complete",
++    "note": "every finding fixed or rejected"
+   },
+   "findings": [
+     {
+@@ -110,7 +110,7 @@
+       "action": "fix",
+       "batch": 2,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "docs: show gateway install --from in the README"
+     },
+     {
+       "number": 2,
+@@ -139,7 +139,7 @@
+       "action": "fix",
+       "batch": 1,
+       "note": null,
+-      "fixed_in": null
++      "fixed_in": "test(gateway): an install warns of nothing when the gateway runs the new release"
+     },
+     {
+       "number": 3,
+diff --git a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md
+index 2eddaa2..7ece1b6 100644
+--- a/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md
++++ b/docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/report.md
+@@ -1,6 +1,6 @@
+ # Review: 2026-10-31-gateway-releases-phase-2
+ 
+-**Status:** fixing — verified and triaged; batches 1 and 2 next
++**Status:** complete — every finding fixed or rejected
+ **Scope:** roadmap `gateway-releases`, phase 2, {{commit:10}}..{{commit:14}}: 29 hunks, +213 −36 lines of code
+ **Go-ahead:** the request, tier `medium`
+ 
+@@ -49,6 +49,7 @@ evidence: read: the README and the phase file's task
+ 
+ Reviewers: review-structure. Origin: new. Floor: above. Fingerprint: `the CLI's contract | README.md + src/presentation/cli.rs | GatewayAction::Install + gateway`.
+ Verdict: CONFIRMED. Action: fix, batch 2.
++Fixed in `docs: show gateway install --from in the README`.
+ 
+ ### 2. no test installs the release the gateway already runs
+ 
+@@ -68,6 +69,7 @@ evidence: cargo mutants --in-diff: `replace match guard running != release with
+ 
+ Reviewers: review-tests. Origin: new. Floor: above. Fingerprint: `tests | src/application/gateway.rs | Installer::install`.
+ Verdict: CONFIRMED. Action: fix, batch 1.
++Fixed in `test(gateway): an install warns of nothing when the gateway runs the new release`.
+ 
+ ### 3. an archive given as a symbolic link is copied from its target
+ 
+diff --git a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
+index b2580a4..0f7b2cf 100644
+--- a/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
++++ b/docs/roadmap/on-progress/gateway-releases/phase-2-install-from-an-archive-report.md
+@@ -17,6 +17,12 @@ directory being another file system on this machine. Its digest is the one given
+ one. An install then names the release a running gateway still runs, through prune's lookup of
+ that release, now shared. Every task done, the checks green; the phase waits for its review.
+ 
++The phase's review, `docs/reviews/delivered-code/2026-10-31-gateway-releases-phase-2/`, tier
++`medium`: 3 findings. The README's missing `--from` and the test the one missed mutant asked for
++fixed in two commits; a symbolic link given to `--from` refuted, the path being the user's own argument, and
++registered as rejected. The phase is the roadmap's last: its closure waits for the roadmap's
++closing pass.
++
+ ---
+ 
+ ## Decisions

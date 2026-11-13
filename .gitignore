@@ -1,0 +1,4 @@
+/target
+/.agent-conventions.toml
+/.eval-runs
+/private
