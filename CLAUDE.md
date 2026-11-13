@@ -8,8 +8,8 @@ failure paths come before anything else. The project was called llm-ctl until 20
 ## Where Things Are
 
 - **Current work**: the roadmaps under `private/` (contract in `.agent-conventions.toml`).
-  Open: `history-reset`, which started the history again on 2026-11-13 from one root commit,
-  the 0.3.0 release, and closes once the remote is published. 0.3.0 is the only release on
+  None is open. The history started again on 2026-11-13 from one root commit, the 0.3.0
+  release (roadmap `history-reset`), on a public remote. 0.3.0 is the only release on
   GitHub, its entry holding 0.2.0's lines, its tag checked, built and published by the CI
   (`docs/release.md`).
   Each closed roadmap's `summary.md`, under `completed/`, says what it left open.
