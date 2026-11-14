@@ -45,7 +45,8 @@ repository          its GitHub repository, owner/name
 current             the release or build ai-ctl runs
 anchor              the date its releases are compared with: its own release's on GitHub's page,
                     else its commit's in its clone
-newest              the newest release on the page
+newest              the newest release on the page; a pre-release, such as llama.cpp's nightly
+                    b<N>, is none, here and below
 releases            each release made after the anchor, newest first, on one page of 100: its
                     tag, the date it was made, its note and cut_from; a note leaves out the lines
                     in more than half the page's releases and in two at least, the project's
@@ -375,12 +376,13 @@ def moment(text):
 
 
 def releases_of(body):
-    """A page of GitHub's releases: each one's tag, the date it was made and its note, newest first."""
+    """A page of GitHub's releases: each one's tag, the date it was made, its note and whether it is a pre-release,
+    newest first."""
     try:
-        page = [{"tag": item["tag_name"], "created": item["created_at"], "body": item["body"]}
-                for item in items_of(body)]
+        page = [{"tag": item["tag_name"], "created": item["created_at"], "body": item["body"],
+                 "prerelease": item.get("prerelease", False)} for item in items_of(body)]
         if not all(isinstance(release["tag"], str) and isinstance(release["body"], (str, type(None)))
-                   and moment(release["created"]) for release in page):
+                   and isinstance(release["prerelease"], bool) and moment(release["created"]) for release in page):
             raise TypeError
     except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
         raise DependencyError("GitHub's answer is no release list") from None
@@ -449,10 +451,11 @@ def release_notes(found, web, refused):
         record["github"] = f"not asked: GitHub answered {refused} earlier"
         return record, refused
     repository = found["repository"]
-    status, page, more = listing(web, f"{GITHUB}{repository}/releases?per_page={PAGE}", releases_of)
-    if isinstance(page, str):
-        record["github"] = page
+    status, listed, more = listing(web, f"{GITHUB}{repository}/releases?per_page={PAGE}", releases_of)
+    if isinstance(listed, str):
+        record["github"] = listed
         return record, status if status in REFUSALS else refused
+    page = [release for release in listed if not release["prerelease"]]
     record["newest"] = page[0]["tag"] if page else None
     record["anchor"] = next((release["created"] for release in page if release["tag"] == found["current"]),
                             found["date"])
@@ -468,8 +471,8 @@ def release_notes(found, web, refused):
             note, cut_from = cut(notes[release["tag"]])
             record["releases"].append({"tag": release["tag"], "created": release["created"], "note": note,
                                        "cut_from": cut_from})
-    if more and page and moment(page[-1]["created"]) > anchor:
-        record["left_out"].append(f"the releases before {page[-1]['tag']}, past the page")
+    if more and listed and moment(listed[-1]["created"]) > anchor:
+        record["left_out"].append(f"the releases before {listed[-1]['tag']}, past the page")
     if not record["releases"] or any(release["note"] for release in record["releases"]):
         return record, refused
     since = anchor.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")

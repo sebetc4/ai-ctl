@@ -434,6 +434,27 @@ class ReleaseNotesTest(unittest.TestCase):
         self.assertEqual([release["tag"] for release in record["releases"]], AFTER_B12227 + ["b12224"])
         self.assertEqual(record["left_out"], ["the releases before b12224, past the page"])
 
+    def test_a_project_s_pre_releases_are_no_release(self):
+        # llama.cpp's nightly `b<N>`, pre-releases about its weekly `vX.Y.Z`.
+        page = {RELEASES.format("ggml-org/llama.cpp"): captured("github-releases-ggml-org-llama.cpp-v1.0.0.http")}
+        record, _, _ = self.notes_of({**LLAMA_CPP, "current": "v1.0.0", "date": "2026-11-13T11:09:55+02:00"}, page)
+        self.assertEqual(record, notes("llama.cpp", "ggml-org/llama.cpp", "v1.0.0", anchor="2026-11-13T10:20:13Z",
+                                       newest="v1.0.0"))
+        record, _, _ = self.notes_of({**LLAMA_CPP, "current": "v0.9.0", "date": "2026-11-06T08:00:00+02:00"}, page)
+        self.assertEqual(([release["tag"] for release in record["releases"]], record["newest"], record["left_out"]),
+                         (["v1.0.0"], "v1.0.0", ["the releases before b12359, past the page"]))
+        v1 = record["releases"][0]
+        self.assertIn("\n\n## Overview\n\nllama.cpp v1.0.0 removes the deprecated public API", v1["note"])
+        self.assertEqual(v1["cut_from"], 28800)
+        # A page of pre-releases alone may hide releases past it.
+        nightlies = dependencies.Response(200, {"link": '<https://api.github.com/x?page=2>; rel="next"'}, json.dumps([
+            {"tag_name": "b2", "prerelease": True, "created_at": "2026-11-14T00:00:00Z", "body": "two"},
+            {"tag_name": "b1", "prerelease": True, "created_at": "2026-11-13T00:00:00Z", "body": "one"}]).encode())
+        record, _, _ = self.notes_of({**LLAMA_CPP, "current": "v0.9.0", "date": "2026-11-06T08:00:00+02:00"},
+                                     {RELEASES.format("ggml-org/llama.cpp"): nightlies})
+        self.assertEqual(record, notes("llama.cpp", "ggml-org/llama.cpp", "v0.9.0", anchor="2026-11-06T08:00:00+02:00",
+                                       left_out=["the releases before b1, past the page"]))
+
     def test_a_build_neither_on_the_page_nor_dated_reads_no_note(self):
         self.assertEqual(self.notes_of({**LLAMA_CPP, "date": None})[0], notes(
             "llama.cpp", "ggml-org/llama.cpp", "b12227", newest="b12242",
@@ -501,7 +522,8 @@ class ReleaseNotesTest(unittest.TestCase):
         for body in (b'{"message": "Moved"}', b"[{\"tag_name\": 271}]", b"not json",
                      b'[{"tag_name": "v271", "created_at": "yesterday", "body": ""}]',
                      b'[{"tag_name": "v271", "created_at": "2026-11-08T05:16:44", "body": ""}]',
-                     b'[{"tag_name": "v271", "created_at": "2026-11-08T05:16:44Z", "body": 5}]'):
+                     b'[{"tag_name": "v271", "created_at": "2026-11-08T05:16:44Z", "body": 5}]',
+                     b'[{"tag_name": "v271", "created_at": "2026-11-08T05:16:44Z", "body": "", "prerelease": 0}]'):
             record, status, _ = self.notes_of(LLAMA_SWAP, {releases: dependencies.Response(200, {}, body)})
             self.assertEqual((record["github"], record["releases"], status), ("GitHub's answer is no release list", [],
                                                                               None), body)
