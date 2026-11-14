@@ -1,5 +1,9 @@
 # Changelog — ai-ctl
 
+## 0.3.1 — unreleased
+
+- llama.cpp built from its releases `vX.Y.Z` (roadmap `release-0-3-1`): `build`'s `latest`, `build outdated` and `build update` take llama.cpp's newest weekly release, its nightly tags `b<N>`, pre-releases, being no release; a commit both forms tag, such as `b12359`, is built as `v1.0.0`; a release is built with `LLAMA_BUILD_IS_DEV=OFF`, so that `llama-server --version` prints its version, `1.0.0`, where a commit no release tags still prints `1.0.0-dev`, an option no installed build is compared with; an installed `b<N>` build keeps serving and passing `doctor`, reads as built from a commit, and `build update` builds the newest release beside it, `build use` going back to it.
+
 ## 0.3.0 — 2026-11-13
 
 - llama-swap v271 and its capacity router (roadmap `capabilities-status-and-updates`): `gateway install` installs v271 and no other, checked against its pinned SHA-256, its `--version` and `--sha256` removed with the release's own checksums as a source of digest: llama-swap is updated only through ai-ctl's pin, and `doctor` warns on a current release behind the pin, with `ai-ctl gateway install`, and on one ahead of it, which this ai-ctl was not tested with; the generated configuration runs the models on llama-swap's `capacity` router, each model taking its `vram_mib` from one pool, the GPU's usable memory less `vram_margin_mib`, and a model larger than the pool running alone, in place of the `matrix` sets ai-ctl computed, so that an inventory is no longer refused past 20000 sets; a margin that leaves the models none of the GPU's memory is refused by `doctor`, `gateway config` and `up`; `up` refuses, and `doctor` fails, a current llama-swap older than v267, which cannot read that configuration: run `ai-ctl gateway install` once after upgrading; `Cargo.toml`'s `rust-version` is 1.99.1, the toolchain `rust-toolchain.toml` pins.
