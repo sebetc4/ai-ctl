@@ -18,7 +18,7 @@ which `ai-ctl init` installs; that file is the source of truth for every value q
 | Topic | Decision |
 |---|---|
 | Engine | **llama.cpp** (`llama-server`), one process per model, the only LLM engine |
-| Runtime | **Native build** from source for sm_120a by default; the official `server-cuda` and `server-cuda13` images as a second runtime, for comparison |
+| Runtime | **Native build** from source for sm_120a by default, at llama.cpp's releases `vX.Y.Z`; the official `server-cuda` and `server-cuda13` images as a second runtime, for comparison |
 | Gateway | **llama-swap**, the single entry point: it starts and stops the backends by the request's `model` field; **ai-ctl** runs it between `up` and `down`; no systemd unit |
 | Second engine | **vLLM**, only for a targeted NVFP4 test. **SGLang abandoned** on this machine |
 | Main model | **Qwen3.8-27B**, GGUF UD-Q4_K_M + MTP head |
@@ -140,7 +140,7 @@ Facts checked on 2026-10-08 in the llama.cpp repository:
 
 | | Native build | Official image |
 |---|---|---|
-| Freshness | Any commit, including an unmerged pull request | Rebuilt **once a day** (`cron: '12 4 * * *'`, "rather than on every push because it is expensive"); a failed run leaves it one or two days behind. Releases (`b####`) come out about ten times a day. |
+| Freshness | Any commit, including an unmerged pull request; ai-ctl takes the releases `vX.Y.Z`, one a week | Rebuilt **once a day** (`cron: '12 4 * * *'`, "rather than on every push because it is expensive"); a failed run leaves it one or two days behind. Nightly tags (`b####`) come out about ten times a day. |
 | Blackwell kernels | `CMAKE_CUDA_ARCHITECTURES=120a-real` | `server-cuda`: CUDA 12.8.1, default architecture list including `120a-real`. `server-cuda13`: CUDA 13.4.1. |
 | Host needs | NVIDIA driver, CUDA toolkit, a host compiler `nvcc` accepts, CMake, git | NVIDIA driver, podman, NVIDIA Container Toolkit, a CDI specification |
 | Rollback | Versioned builds kept side by side | Image tag (`server-cuda-b####`), pinned by digest |
@@ -584,8 +584,8 @@ connection, the empty task model and autocomplete turned off among them.
 
 5. **Inventory and check**: `ai-ctl init --models-dir "$MODELS_DIR"` installs the inventory, then
    `ai-ctl doctor` checks every point of this section and prints a remedy for each problem.
-6. **Native build**: `ai-ctl build llama.cpp` compiles the newest release for `120a-real` and makes
-   it the current build; `ai-ctl build use` returns to an older one (see the README).
+6. **Native build**: `ai-ctl build llama.cpp` compiles the newest release, `vX.Y.Z`, for `120a-real`
+   and makes it the current build; `ai-ctl build use` returns to an older one (see the README).
 7. **Gateway**: `ai-ctl gateway install` installs the pinned llama-swap release; `ai-ctl up` starts
    it on `127.0.0.1:8080`, `ai-ctl status` shows it, its models and the VRAM, `ai-ctl logs` prints
    its log, and `ai-ctl down` stops it once the models' VRAM is free (see the README). Nothing runs
@@ -706,6 +706,38 @@ overhead scenario, whose short requests leave the GPU waiting.
 - [ ] Same model ID in the agents' client's setting for text and in OpenCode (`model` **and** `small_model`); OpenWebUI's task model left empty
 - [ ] OpenWebUI autocomplete off
 - [ ] `timings.cache_n` high from an agent's second turn on
+
+---
+
+## Decisions
+
+### 2026-11-14 — llama.cpp built from its releases `vX.Y.Z`
+
+Decided with the user at the opening of the roadmap `release-0-3-1`, built in its phase 0: ai-ctl
+builds llama.cpp at its releases `vX.Y.Z`, which `latest`, `build outdated` and `build update`
+take, and never at its nightly tags `b<N>`. A release is built with `LLAMA_BUILD_IS_DEV=OFF`, as
+llama.cpp's own release binaries are, so that `--version` prints `1.0.0` and not `1.0.0-dev`. An
+installed `b<N>` build is not migrated: it reads as built from a commit, `build update` builds the
+newest release beside it, and `build use` goes back to it. It shapes §1, §4.4 and §8, and the
+recipe in [commands.md](commands.md#build).
+
+- Set aside: the nightly tags `b<N>`, several a day, pre-releases built as development builds: a
+  production with several users runs the releases a project publishes, not its nightlies.
+- Set aside: code that recognises an installed `b<N>` build by its commit and renames it after
+  its release; building the release beside it costs a rebuild of the same commit, 16 s with
+  ccache on 2026-11-14.
+- Set aside: `LLAMA_BUILD_IS_DEV=OFF` among the options an installed build is compared with,
+  which would have had `doctor` fail, and `up` refuse, every installed nightly; the option only
+  changes the version the server prints.
+- Facts: llama.cpp has published a release `vX.Y.Z` each week since v0.8.0, of 2026-10-28,
+  marked Latest on GitHub; its `b<N>` are pre-releases, 99 of the 100 releases on its GitHub
+  page on 2026-11-14. `v1.0.0`, `b12359` and `v1.0.0-b12359-b1b770d` name one commit,
+  `b1b770d` (`git ls-remote`, 2026-11-14). `LLAMA_BUILD_IS_DEV`, on by default, sets the version
+  alone, its comment asking it off "when making a release from a release tag" (`CMakeLists.txt`
+  at `v1.0.0`). llama.cpp's own CUDA 13 binaries have been built with CUDA 13.5 since
+  2026-11-06 (the backend updates tour, 2026-11-13 and 2026-11-14).
+- Revisit: when llama.cpp stops publishing `vX.Y.Z` each week, or a fix ai-ctl needs waits in a
+  nightly for longer than a release.
 
 ---
 

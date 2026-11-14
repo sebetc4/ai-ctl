@@ -176,7 +176,7 @@ Each project's recipe:
 
 | Project | Repository, and the submodules built | Release tags | Server | Smoke test | Device listing | Patches |
 |---|---|---|---|---|---|---|
-| `llama.cpp` | `ggml-org/llama.cpp` | `b<N>` | `llama-server` | `--version` prints `version: ` | `--list-devices` | — |
+| `llama.cpp` | `ggml-org/llama.cpp` | `vX.Y.Z`; its nightly `b<N>` are none | `llama-server` | `--version` prints `version: ` | `--list-devices` | — |
 | `whisper.cpp` | `ggml-org/whisper.cpp` | `vX.Y.Z` | `whisper-server` | `--help` names `--inference-path` | — | `api-key.patch`, `reuse-address.patch` |
 | `stable-diffusion.cpp` | `leejet/stable-diffusion.cpp`, with `ggml` and CUTLASS, `thirdparty/cutlass` or, in an older release, `ggml`'s `src/ggml-cuda/vendors/cutlass` | `master-<N>-<hash>` | `sd-server` | `--version` prints `stable-diffusion.cpp version` | `--list-devices` | `api-key.patch`, `listen-failure.patch`, `reuse-address.patch` |
 | `audio.cpp` | `0xShug0/audio.cpp` | `vX.Y.Z` | `audiocpp_server` | `--version` prints `audio.cpp ` | `--list-devices` | `api-key.patch` |
@@ -186,7 +186,10 @@ the repository once (`--filter=blob:none`), checks out the commit with the submo
 names, fetched the same way, a submodule's own within it and none the commit does not hold, a submodule a kill left without a commit during its first fetch cloned again, applies the recipe's patches, configures a fresh CMake tree with every
 compiler named, builds the target, runs the new binary's smoke test, which must exit 0 and print
 its text, and its device listing, which must list a CUDA device, and installs it under its id: the
-release tag, or the commit's first ten digits. Nothing is installed when a step fails: a release one of the patches does not apply to is refused before the
+release tag, or the commit's first ten digits. A release's build also takes the options its recipe
+sets for a release alone: llama.cpp's `LLAMA_BUILD_IS_DEV=OFF`, with which `--version` prints the
+release's version, `1.0.0`, where a commit no release tags prints `1.0.0-dev`; a commit both forms
+tag, such as `b12359`, which `v1.0.0` tags too, is built as `v1.0.0`. Nothing is installed when a step fails: a release one of the patches does not apply to is refused before the
 compile, naming the patch; a failed compile's error quotes the last lines of
 `logs/build-<project>.log`, the other steps' errors their own cause, such as the new binary's
 output, and the build tree stays in `work/<project>/` until the next build. A build whose id is
@@ -199,7 +202,7 @@ serves that build, before the compile and again before the install: the error na
 ```bash
 ai-ctl build llama.cpp                  # the newest release
 ai-ctl build llama.cpp --ref 79e2e74    # a tag, a branch or a commit
-ai-ctl build llama.cpp --ref b11538 --force --jobs 8
+ai-ctl build llama.cpp --ref v1.0.0 --force --jobs 8
 ```
 
 ### build outdated
@@ -231,7 +234,7 @@ llama-swap            v271                 pinned v271                 current
 | `current` | At the newest release, or past it, as after a release its project withdrew |
 | `behind` | At an older release |
 | `not built` | No current build; one a `current` link names but that cannot be read is warned of on stderr, and counts as none |
-| `built from a commit` | Built through a `--ref` that no release names |
+| `built from a commit` | Built through a `--ref` that no release names, or at a llama.cpp nightly `b<N>`, as ai-ctl built them before 0.3.1 |
 | `off its recipe: …` | At the newest release or past it, but built before its recipe applied a patch or set a CMake option, as `doctor` reports it |
 | `cannot read its releases: …` | The repository could not be read or holds no release, or ai-ctl has no recipe for the project; the other projects are still told |
 

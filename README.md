@@ -118,7 +118,7 @@ each recipe. A build:
 
 1. passes the GPU and Toolchain checks of `doctor`, or is refused with their remedies;
 2. clones the repository once without file contents (`git clone --filter=blob:none`), or fetches
-   it, resolves `latest` to the clone's newest release tag (`b<number>` for llama.cpp) and checks
+   it, resolves `latest` to the clone's newest release tag (`vX.Y.Z` for llama.cpp) and checks
    out the commit, with the submodules its recipe names;
 3. applies the recipe's patches to the sources, such as those that make `whisper-server`,
    `sd-server` and `audiocpp_server` require the gateway's key, or refuses a release one of them
