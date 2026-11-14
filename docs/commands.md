@@ -218,7 +218,7 @@ newest release comes from `git ls-remote --tags --refs` on the recipe's reposito
 recipe's form ordered by number, as `build` chooses `latest`.
 
 ```text
-llama.cpp             b12111               newest b12226               behind
+llama.cpp             v0.9.0               newest v1.0.0               behind
 whisper.cpp           v1.9.5               newest v1.9.5               current
 stable-diffusion.cpp  master-1024-77b72a2  newest master-1068-fc350be  behind
 audio.cpp             v0.9.3               newest v0.9.4               behind
@@ -268,7 +268,7 @@ removed. The progress goes to stderr; stdout gets one line per project, built wi
 replaces, already current, or failed with its cause, then what is left to do.
 
 ```text
-llama.cpp             built b12226 (was b12111)
+llama.cpp             built v1.0.0 (was v0.9.0)
 whisper.cpp           already current
 stable-diffusion.cpp  failed: stable-diffusion.cpp master-1068-fc350be cannot be built: its patch listen-failure.patch does not apply; `--ref` builds a release it applies to: …
 audio.cpp             built v0.9.4 (was v0.9.3)
@@ -332,7 +332,7 @@ running gateway keeps its build until `ai-ctl down` then `ai-ctl up`.
 | `ID` | Build id, as `build list` shows it; it must be installed |
 
 ```bash
-ai-ctl build use llama.cpp b11400
+ai-ctl build use llama.cpp v0.9.0
 ```
 
 ### build prune

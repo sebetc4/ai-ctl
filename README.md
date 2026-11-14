@@ -87,12 +87,12 @@ with a summary and a `healthy` verdict.
 ### Build a backend
 
 ```bash
-ai-ctl build llama.cpp                    # the newest release, such as b11538
+ai-ctl build llama.cpp                    # the newest release, such as v1.0.0
 ai-ctl build llama.cpp --ref 79e2e74      # a tag, a branch or a commit
 ai-ctl build outdated                     # where each current build stands against its newest release
 ai-ctl build update                       # build what outdated finds, at the newest release
 ai-ctl build list                         # installed builds; * marks the current one
-ai-ctl build use llama.cpp b11400         # back to an older build, without compiling
+ai-ctl build use llama.cpp v0.9.0         # back to an older build, without compiling
 ai-ctl build prune --keep 3               # remove all but the 3 newest and the current one
 ```
 
@@ -147,8 +147,8 @@ build becomes the current one, but the gateway runs on the build it started with
 ~/.local/share/ai-ctl/
   sources/llama.cpp/               the git clone
   work/llama.cpp/                  the CMake tree, kept after a failed build until the next one
-  builds/llama.cpp/b11538/         llama-server, build.json, build.log
-  builds/llama.cpp/current -> b11538
+  builds/llama.cpp/v1.0.0/         llama-server, build.json, build.log
+  builds/llama.cpp/current -> v1.0.0
   builds/whisper.cpp/v1.9.5/       whisper-server, build.json, build.log, patches/
 ```
 
