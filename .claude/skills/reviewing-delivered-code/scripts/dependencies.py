@@ -379,6 +379,9 @@ def releases_of(body):
     """A page of GitHub's releases: each one's tag, the date it was made, its note and whether it is a pre-release,
     newest first."""
     try:
+        # LEGACY: a release without `prerelease` is taken for a release, for the pages captured before 2026-11-14,
+        # whose excerpts kept `tag_name`, `created_at` and `body` alone; GitHub's own answer always holds the field.
+        # The default goes once those pages are captured again with it.
         page = [{"tag": item["tag_name"], "created": item["created_at"], "body": item["body"],
                  "prerelease": item.get("prerelease", False)} for item in items_of(body)]
         if not all(isinstance(release["tag"], str) and isinstance(release["body"], (str, type(None)))
