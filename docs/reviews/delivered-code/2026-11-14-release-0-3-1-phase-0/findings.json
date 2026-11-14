@@ -236,7 +236,33 @@
     {
       "type": "review-verifier",
       "effort": "medium",
-      "state": "not started"
+      "state": "answered",
+      "read": {
+        "in full": [],
+        "in part": [
+          "scope.txt (its summary lines, without the hunk and item lines)",
+          "src/application/build.rs (lines 100-235, 440-600, 605-617, 640-650, 846-856, 1425-1465, 2270-2330, 3085-3102)",
+          "src/application/doctor.rs (lines 405-475, 1160-1185, 1425-1470)",
+          "src/application/gateway_config.rs (lines 105-135, 455-480)",
+          "src/application/fakes.rs (lines 385-412)",
+          "src/domain/build.rs (lines 15-105, 160-285)",
+          "src/domain/recipe.rs (lines 9-120, 164-172)",
+          "src/infrastructure/git.rs (lines 95-200, 375-590, 1312-1335)",
+          "src/presentation/build.rs (lines 232-237, 494-502, 568-576)",
+          "README.md (lines 78-155)",
+          "docs/commands.md (lines 210-240, 262-296, 415-430, 452-459)",
+          "docs/security.md (lines 322-335)",
+          "docs/README.md (line 41)",
+          "~/.local/share/ai-ctl/builds/llama.cpp (its listing and each build.json's id, commit, LLAMA_ options and patches)",
+          "~/.local/share/ai-ctl/sources/llama.cpp",
+          "whisper.cpp and audio.cpp (tags and their object types, read only)"
+        ]
+      },
+      "left_out": [
+        "cargo mutants --in-diff on the fix of finding 1: not run; its new test names each branch of rebuild_remedy and of BuildId::is_short_commit by hand",
+        "finding 3: below the floor, not mine",
+        "the remedy for a short-commit build whose commit a release tags since: seen while verifying finding 1, not reproduced as a separate finding, said in its evidence"
+      ]
     },
     {
       "type": "session",
@@ -351,10 +377,10 @@
       "floor": "above",
       "fingerprint": "bugs | docs/security.md + src/application/build.rs + src/application/doctor.rs | Builder::build + Current::installed + builds_check + rebuild_remedy + top level",
       "matches": [],
-      "verdict": null,
-      "action": null,
-      "batch": null,
-      "note": null,
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 4,
+      "note": "the user's go-ahead of 2026-11-14, the remedy and the documented contract changing; a short-commit build whose commit a release tags since keeps --ref <hash> --force, which builds that release, the same commit, and leaves the old build: the remedy cannot know the tags without a fetch",
       "fixed_in": null
     },
     {
@@ -383,11 +409,11 @@
       "floor": "above",
       "fingerprint": "tests | src/domain/recipe.rs + src/infrastructure/git.rs | GitSources::checkout + LLAMA_CPP + rev_parse + tests::upstream",
       "matches": [],
-      "verdict": null,
-      "action": null,
-      "batch": null,
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 2,
       "note": null,
-      "fixed_in": null
+      "fixed_in": "d1ce179"
     },
     {
       "number": 3,
@@ -416,8 +442,8 @@
       "verdict": null,
       "action": "fix at once",
       "batch": 1,
-      "note": null,
-      "fixed_in": null
+      "note": "the default kept under a LEGACY comment naming the captures made before 2026-11-14: capturing the three pages again would move the tags their tests read",
+      "fixed_in": "8dd7f27"
     },
     {
       "number": 4,
@@ -448,11 +474,11 @@
       "floor": "above",
       "fingerprint": "the CLI's contract | README.md + docs/commands.md + src/domain/build.rs + src/domain/recipe.rs | LLAMA_CPP + standing + top level",
       "matches": [],
-      "verdict": null,
-      "action": null,
-      "batch": null,
+      "verdict": "CONFIRMED",
+      "action": "fix",
+      "batch": 3,
       "note": null,
-      "fixed_in": null
+      "fixed_in": "90701b4"
     }
   ]
 }

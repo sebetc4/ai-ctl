@@ -433,7 +433,7 @@ impl Doctor<'_> {
             Ok(Current::Unreadable { id, reason }) => {
                 return problem(
                     format!("the current build, {id}, cannot be read: {reason}"),
-                    rebuild_remedy(project, &id),
+                    rebuild_remedy(recipe, &id),
                 );
             }
             Ok(Current::None) if used == Some(true) => {
@@ -451,7 +451,7 @@ impl Doctor<'_> {
             Err(err) => return problem(format!("{err:#}"), build_remedy),
         };
         let current = &build.id;
-        let rebuild = rebuild_remedy(project, current);
+        let rebuild = rebuild_remedy(recipe, current);
         if let Some(unlike) = unlike_recipe(recipe, &build) {
             return problem(unlike, rebuild);
         }
@@ -1177,8 +1177,8 @@ mod tests {
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp --ref b11538 --force`, or `ai-ctl build llama.cpp` at the \
-                 newest release if the project withdrew b11538"
+                "`ai-ctl build llama.cpp`, at the newest release: no build of \
+                 llama.cpp is named b11538 any more"
             )
         );
     }
@@ -1340,8 +1340,8 @@ mod tests {
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp --ref b11538 --force`, or `ai-ctl build llama.cpp` at the \
-                 newest release if the project withdrew b11538"
+                "`ai-ctl build llama.cpp`, at the newest release: no build of \
+                 llama.cpp is named b11538 any more"
             )
         );
     }
@@ -1367,8 +1367,8 @@ mod tests {
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp --ref b11538 --force`, or `ai-ctl build llama.cpp` at the \
-                 newest release if the project withdrew b11538"
+                "`ai-ctl build llama.cpp`, at the newest release: no build of \
+                 llama.cpp is named b11538 any more"
             )
         );
         // Without the inventory running it, the same build only warns.
@@ -1454,8 +1454,32 @@ mod tests {
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp --ref b9 --force`, or `ai-ctl build llama.cpp` at the \
-                 newest release if the project withdrew b9"
+                "`ai-ctl build llama.cpp`, at the newest release: no build of \
+                 llama.cpp is named b9 any more"
+            )
+        );
+    }
+
+    #[test]
+    fn a_build_named_as_no_build_is_named_now_is_not_rebuilt_under_its_name() {
+        // `b12359`, a nightly tag an ai-ctl before 0.3.1 named its build
+        // after: `--ref b12359` now builds `v1.0.0`, the release of the
+        // same commit.
+        let unreadable = FakeBuilds {
+            current: Some(crate::domain::build::BuildId::parse("b12359").unwrap()),
+            unreadable: vec![crate::application::ports::Unreadable {
+                dir: "/data/builds/llama.cpp/b12359".into(),
+                reason: "no build.json".into(),
+            }],
+            ..FakeBuilds::default()
+        };
+        let check = builds_check(&unreadable, &FakePrograms::default(), installed());
+        assert_eq!(check.status, Status::Fail);
+        assert_eq!(
+            check.remedy.as_deref(),
+            Some(
+                "`ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp is \
+                 named b12359 any more"
             )
         );
     }
@@ -1463,8 +1487,8 @@ mod tests {
     #[test]
     fn failing_build_stores_fail_the_build_check_with_a_remedy() {
         let build = "ai-ctl build llama.cpp";
-        let rebuild = "`ai-ctl build llama.cpp --ref b11538 --force`, or `ai-ctl build llama.cpp` \
-                       at the newest release if the project withdrew b11538";
+        let rebuild = "`ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp \
+                       is named b11538 any more";
         let cases = [
             (
                 FakeBuilds {

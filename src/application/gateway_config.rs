@@ -120,11 +120,11 @@ impl Configurator<'_> {
                 let build = match builds.entry(project.clone()) {
                     Entry::Occupied(entry) => entry.into_mut(),
                     Entry::Vacant(entry) => {
-                        let build = current(self.builds, project)?.installed(project)?;
+                        let build = current(self.builds, project)?.installed(recipe)?;
                         if let Some(unlike) = unlike_recipe(recipe, &build) {
                             bail!(
                                 "{project} {unlike}; build it again with {}",
-                                rebuild_remedy(project, &build.id)
+                                rebuild_remedy(recipe, &build.id)
                             );
                         }
                         entry.insert(build)
@@ -472,8 +472,8 @@ mod tests {
             )),
             "backend `llama-native`, which `qwen3.8-27b` uses: llama.cpp b11538 was built \
              without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets; build it again with \
-             `ai-ctl build llama.cpp --ref b11538 --force`, or `ai-ctl build llama.cpp` \
-             at the newest release if the project withdrew b11538"
+             `ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp is named \
+             b11538 any more"
         );
     }
 
