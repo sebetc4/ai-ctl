@@ -1312,4 +1312,33 @@ diff --git a/version.txt b/version.txt
         let checkout = sources.checkout(&recipe, "v0.1.0").unwrap();
         assert_eq!(checkout.commit.as_str(), upstream.commits[0]);
     }
+
+    #[test]
+    fn an_annotated_release_is_checked_out_at_its_commit_under_each_of_its_tags() {
+        // llama.cpp's `v1.0.0` is an annotated tag, its nightly `b12359` a
+        // lightweight one on the same commit.
+        let upstream = upstream();
+        let repo = upstream.dir.path();
+        plain_git(
+            repo,
+            &[
+                "tag",
+                "-a",
+                "-m",
+                "v0.11.0",
+                "v0.11.0",
+                &upstream.commits[2],
+            ],
+        );
+        plain_git(repo, &["tag", "b12359", &upstream.commits[2]]);
+        let root = tempfile::tempdir().unwrap();
+        let sources = GitSources::new(root.path().to_owned());
+        let recipe = recipe(&upstream.url);
+        sources.fetch(&recipe).unwrap();
+        let checkout = sources.checkout(&recipe, "v0.11.0").unwrap();
+        assert_eq!(checkout.commit.as_str(), upstream.commits[2]);
+        let mut tags = checkout.tags;
+        tags.sort();
+        assert_eq!(tags, ["b12359", "v0.10.0", "v0.10.0-rc", "v0.11.0"]);
+    }
 }
