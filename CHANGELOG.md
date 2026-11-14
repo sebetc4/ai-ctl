@@ -2,7 +2,7 @@
 
 ## 0.3.1 — unreleased
 
-- llama.cpp built from its releases `vX.Y.Z` (roadmap `release-0-3-1`): `build`'s `latest`, `build outdated` and `build update` take llama.cpp's newest weekly release, its nightly tags `b<N>`, pre-releases, being no release; a commit both forms tag, such as `b12359`, is built as `v1.0.0`; a release is built with `LLAMA_BUILD_IS_DEV=OFF`, so that `llama-server --version` prints its version, `1.0.0`, where a commit no release tags still prints `1.0.0-dev`, an option no installed build is compared with; an installed `b<N>` build keeps serving and passing `doctor`, reads as built from a commit, and `build update` builds the newest release beside it, `build use` going back to it.
+- llama.cpp built from its releases `vX.Y.Z` (roadmap `release-0-3-1`): `build`'s `latest`, `build outdated` and `build update` take llama.cpp's newest weekly release, its nightly tags `b<N>`, pre-releases, being no release; a commit both forms tag, such as `b12359`, is built as `v1.0.0`; a release is built with `LLAMA_BUILD_IS_DEV=OFF`, so that `llama-server --version` prints its version, `1.0.0`, where a commit no release tags still prints `1.0.0-dev`, an option no installed build is compared with; an installed `b<N>` build keeps serving and passing `doctor`, reads as built from a commit, and `build update` builds the newest release beside it, `build use` going back to it; for such a build that cannot be read or is unlike its recipe, `doctor`, `up` and `gateway config` name `ai-ctl build llama.cpp`, since `--ref b<N>` would build another id.
 
 ## 0.3.0 — 2026-11-13
 
