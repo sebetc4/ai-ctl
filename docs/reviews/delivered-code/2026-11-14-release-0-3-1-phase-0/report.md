@@ -1,0 +1,144 @@
+# Review: 2026-11-14-release-0-3-1-phase-0
+
+**Status:** verification — the verifier of findings 1, 2 and 4 (review-verifier, medium) not started: usage.py read the five-hour window at 94 %, past 90 %, after the reviewers answered; finding 3 set to fix at once, batch 1; review-tests' reproduction of finding 2 kept as repro/review-tests/annotated-release-test.patch, for the verifier; the scope is `scripts/scope.py range 3051139 0ce63e3`
+**Scope:** roadmap `release-0-3-1`, phase 0, 3051139..0ce63e3: 182 hunks, +432 −256 lines of code
+**Go-ahead:** the user, tier `medium`
+
+## Summary
+
+| # | Title | Axis | Effect | Severity | Origin | Verdict | Action | Batch |
+|---|---|---|---|---|---|---|---|---|
+| 1 | The rebuild remedy for an installed nightly b<N> build now builds a different build, which can mean forcing a rebuild of a release that is already installed | bugs, the CLI's contract | misleading | low | older | to verify | — | — |
+| 2 | no test checks out an annotated release tag, which every llama.cpp release now is | tests | misleading | low | mixed | to verify | — | — |
+| 3 | releases_of defaults a missing prerelease to False only so the older trimmed captures still parse | dead and legacy code | maintenance | — | new | — | fix at once | 1 |
+| 4 | README still gives llama.cpp's newest release as b11538 and its build directory as builds/llama.cpp/b11538 | the CLI's contract | misleading | low | older | to verify | — | — |
+
+## Checks
+
+- `cargo fmt --check`: exit 0
+- `cargo clippy --all-targets -- -D warnings`: exit 0
+- `cargo test`: exit 0: 948 passed, 0 failed, 0 ignored; no test skipped itself
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py`: exit 0: 34 tests OK
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py`: exit 0: 14 tests OK
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py`: exit 0: 34 tests OK
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py`: exit 0: 15 tests OK
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py`: exit 0: 54 tests OK
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py`: exit 0: 37 tests OK
+- `python3 .github/scripts/test_check_release.py`: exit 0: 15 tests OK
+- `sid.py check .`: exit 0: cites 0, names 0, other 0
+- `cargo deny check`: exit 0: advisories ok, bans ok, licenses ok, sources ok; 3 warnings, the duplicates syn, thiserror and thiserror-impl through nvml-wrapper 0.13.0, held by the register
+- `cargo mutants --in-diff` on the scope's diff: 13 mutants in 69 s, 0 missed, 11 caught, 2 unviable
+
+## Agents
+
+- `review-security`, effort `medium`: answered
+- `review-correctness`, effort `medium`: answered
+- `review-tests`, effort `medium`: answered
+- `review-cleanup`, effort `medium`: answered
+- `review-structure`, effort `medium`: answered
+- `review-performance`, effort `medium`: answered
+- `review-dependencies`, effort `medium`: answered
+- `review-verifier`, effort `medium`: not started
+- `session`, effort `medium`: answered
+
+## Findings
+
+### 1. The rebuild remedy for an installed nightly b<N> build now builds a different build, which can mean forcing a rebuild of a release that is already installed
+
+```
+FINDING
+axis: bugs, the CLI's contract
+severity: low
+where: src/application/build.rs:548-553 (rebuild_remedy), src/application/doctor.rs:433-437 (builds_check), src/application/doctor.rs:454 (builds_check), src/application/build.rs:563-568 (Current::installed), src/application/build.rs:138-143 (Builder::build), src/application/build.rs:549-553 (rebuild_remedy), src/application/doctor.rs:454-456 (top level), src/application/build.rs:562-568 (Current::installed), src/application/build.rs:146-149 (Builder::build), docs/security.md:330-331 (top level)
+title: The rebuild remedy for an installed nightly b<N> build now builds a different build, which can mean forcing a rebuild of a release that is already installed
+cause: rebuild_remedy still prints `ai-ctl build <project> --ref <id> --force` for every current build. Builder::build now names a build after the newest vX.Y.Z tag at the checked-out commit, or after the short commit when no release tags it. A legacy id such as b12359 or b12227 is neither, so the remedy cannot rebuild it under its own name.
+effect: misleading
+consequence: Suppose the current llama.cpp build is one of the nightly builds this machine still holds (b12111, b12227 or b12359, made current again with `build use`), and its build.json can no longer be read or its smoke test fails. doctor and `gateway config` then tell the user to run `ai-ctl build llama.cpp --ref b12359 --force`. That command checks out b12359 and builds it as v1.0.0. If v1.0.0 is already installed, --force rebuilds that healthy build, then makes v1.0.0 current. For b12227 it builds a new id named after the short commit. In both cases the broken nightly directory stays where it was, though the remedy reads as rebuilding that build in place.
+fix: In rebuild_remedy, give `ai-ctl build <project>` (the newest release) for an id that the recipe's tags do not read as a release and that is not a short commit: that is, a legacy nightly id.
+test: doctor's builds_check, with a current b12359 that cannot be read, gives the remedy `ai-ctl build llama.cpp`, not `--ref b12359 --force`. It fails before the fix.
+evidence: read: src/application/build.rs:136-143: the id is `recipe.tags.newest(checkout.tags)`, otherwise `BuildId::from_commit`. The test a_commit_both_forms_tag_is_built_under_its_version shows `--ref b12359` building v1.0.0. reproduced: `ls ~/.local/share/ai-ctl/builds/llama.cpp` lists b12111, b12227, b12359 and v1.0.0, so these legacy nightly ids are installed on this machine.
+```
+
+Reviewers: review-correctness, review-structure. Origin: older. Floor: above. Fingerprint: `bugs | docs/security.md + src/application/build.rs + src/application/doctor.rs | Builder::build + Current::installed + builds_check + rebuild_remedy + top level`.
+
+### 2. no test checks out an annotated release tag, which every llama.cpp release now is
+
+```
+FINDING
+axis: tests
+severity: low
+where: src/infrastructure/git.rs:460-516 (tests::upstream), src/infrastructure/git.rs:436-451 (rev_parse), src/infrastructure/git.rs:158-196 (GitSources::checkout), src/domain/recipe.rs:166 (LLAMA_CPP)
+title: no test checks out an annotated release tag, which every llama.cpp release now is
+cause: the scope reworked the Upstream repository to stand for llama.cpp's vX.Y.Z releases, but its releases v0.1.0, v0.2.0 and v0.10.0 stay lightweight tags; only v0.10.0-rc is annotated, and no test checks it out. llama.cpp's v1.0.0 is an annotated tag (git cat-file -t v1.0.0 in its clone: tag; the capture llama.cpp-git-ls-remote.txt lists each release's tag object), as are whisper.cpp's v1.9.5 and audio.cpp's v0.9.4, while its nightly b12359 is lightweight. So nothing checks that rev_parse peels the tag object down to its commit
+effect: misleading
+consequence: rev_parse's revision changed from `{revision}^{commit}` to `{revision}^{object}` passes every test (908 passed). With that change, checking out llama.cpp v1.0.0 resolves to the tag object's hash. build.json, build list and each benchmark run then record that hash as the build's commit, and `git tag --points-at` on it leaves out b12359 and v1.0.0-b12359-b1b770d. The build is still named v1.0.0, so nothing fails and nothing flags the wrong commit
+fix: add a test to src/infrastructure/git.rs that tags the Upstream's third commit with an annotated v0.11.0 and a lightweight b12359, checks out v0.11.0, and asserts the checkout's commit is that commit and its tags are b12359, v0.10.0, v0.10.0-rc and v0.11.0. Or make the Upstream's release tags annotated, as llama.cpp's are
+test: an_annotated_release_is_checked_out_at_its_commit_under_each_of_its_tags; it passes on the code (1 passed) and fails under `^{object}` (left: the tag object's hash, right: the commit). Under `^{object}` it is the only test of the whole suite that fails. It runs git in a scratch repository and depends on no timing
+evidence: reproduced: in a copy at 0ce63e3, cargo test --lib an_annotated_release: ok. With `let peeled = format!("{revision}^{{object}}")`, cargo test: 908 passed, 1 failed, the new test only. Dropping the peel entirely is instead caught by an_unknown_reference_is_refused, since a 40-zero hash then verifies. read: git -C ~/.local/share/ai-ctl/sources/llama.cpp cat-file -t v1.0.0 prints tag, and -t b12359 prints commit
+```
+
+Reviewers: review-tests. Origin: mixed. Floor: above. Fingerprint: `tests | src/domain/recipe.rs + src/infrastructure/git.rs | GitSources::checkout + LLAMA_CPP + rev_parse + tests::upstream`.
+
+### 3. releases_of defaults a missing prerelease to False only so the older trimmed captures still parse
+
+```
+FINDING
+axis: dead and legacy code
+where: .claude/skills/reviewing-delivered-code/scripts/dependencies.py:383 (releases_of), tests/fixtures/README.md:288-291 (top level)
+title: releases_of defaults a missing prerelease to False only so the older trimmed captures still parse
+cause: GitHub's release object always carries prerelease, as the new capture github-releases-ggml-org-llama.cpp-v1.0.0.http shows; the three older captures (llama-swap, llama.cpp b12242, stable-diffusion.cpp) were trimmed to tag_name, created_at and body, and item.get("prerelease", False) is the shim that keeps them parsing, with no LEGACY comment naming that obligation
+effect: maintenance
+consequence: an answer from GitHub that lacks prerelease, a shape the script was not written for, is read as a page of releases instead of refused as "no release list", as a missing tag_name, created_at or body is; a nightly page would then come back as releases again with nothing said, and the next reader cannot tell the default from a rule of GitHub's API
+fix: read item["prerelease"] like the other three fields, so a missing field takes the KeyError path to DependencyError, and capture the three older pages again with prerelease among the kept fields (listed again in tests/fixtures/README.md); or, if recapturing costs more than the shim, keep the default under a comment `# LEGACY:` naming the captures made before 2026-11-14 without prerelease as its obligation
+test: in test_dependencies.py, the refused bodies of the "no release list" test gain one without prerelease, '[{"tag_name": "v271", "created_at": "2026-11-08T05:16:44Z", "body": ""}]', which fails today because the default reads it as a release
+evidence: read: dependencies.py:382-385 at 0ce63e3, the only field with a default; grep -c prerelease on tests/fixtures/github-releases-*.http gives 0 for the llama-swap, llama.cpp and stable-diffusion.cpp captures and 1 for llama.cpp-v1.0.0; tests/fixtures/README.md:288-291 says the older captures keep only tag_name, created_at and body; test_dependencies.py:491-526 builds its own pages without prerelease too
+```
+
+Reviewers: review-cleanup. Origin: new. Floor: below. Fingerprint: `dead and legacy code | .claude/skills/reviewing-delivered-code/scripts/dependencies.py + tests/fixtures/README.md | releases_of + top level`.
+Verdict: none, below the floor. Action: fix at once, batch 1.
+
+### 4. README still gives llama.cpp's newest release as b11538 and its build directory as builds/llama.cpp/b11538
+
+```
+FINDING
+axis: the CLI's contract
+severity: low
+where: README.md:90 (top level), README.md:95 (top level), README.md:150-151 (top level), src/domain/recipe.rs:170 (LLAMA_CPP), docs/commands.md:221 (top level), docs/commands.md:271 (top level), src/domain/build.rs:181 (standing)
+title: README still gives llama.cpp's newest release as b11538 and its build directory as builds/llama.cpp/b11538
+cause: the phase changed README's step 2 to `vX.Y.Z` but left the examples of "Build a backend" and of the data folder on the nightly form, which the recipe no longer takes as a release
+effect: misleading
+consequence: a reader of the README's first command block expects `ai-ctl build llama.cpp` to build a `b<N>` and to find it under builds/llama.cpp/b<N>/, where it builds and installs v1.0.0; `build use llama.cpp b11400` reads as the form of an ordinary build
+fix: `# the newest release, such as v1.0.0`, `build use llama.cpp v0.9.0` and `builds/llama.cpp/v1.0.0/`, `current -> v1.0.0` in the layout
+test: none: a document; the recipe's form is already tested by recipe.rs tests::llama_cpp_releases_are_its_versions_not_its_nightly_tags
+evidence: read: docs/README.md, "A document says what is true now"; README.md:90 "the newest release, such as b11538"; README.md:150-151 "builds/llama.cpp/b11538/", "current -> b11538"; src/domain/recipe.rs:169 tags: TagPattern::Version { prefix: "v" }
+```
+
+Reviewers: review-structure. Origin: older. Floor: above. Fingerprint: `the CLI's contract | README.md + docs/commands.md + src/domain/build.rs + src/domain/recipe.rs | LLAMA_CPP + standing + top level`.
+
+## Facts
+
+- `review-dependencies`: cargo deny check: advisories ok, bans ok, licenses ok, sources ok; exit 0; no crate yanked, no record with an update or available version within or beyond Cargo.toml's requirements
+- `review-dependencies`: duplicates: syn 2.0.119 (Cargo.lock:422) beside 3.0.10 (Cargo.lock:433), thiserror 1.0.69 (Cargo.lock:457) beside 2.0.21 (Cargo.lock:466), thiserror-impl 1.0.69 (Cargo.lock:475) beside 2.0.21 (Cargo.lock:486); the older line each time pulled by nvml-wrapper 0.13.0, the newest release, through darling 0.20 and wrapcenum-derive 0.4.1; build-time only, nothing to change in ai-ctl
+- `review-dependencies`: newest above the lock, beyond nvml-wrapper's requirements: darling 0.20.11 (newest 0.24.1, Cargo.lock:144), libloading 0.8.9 (0.9.1, Cargo.lock:264), r-efi 6.0.0 (7.2.0, Cargo.lock:339), windows-link 0.2.1 (0.100.0, Cargo.lock:548); no advisory, not yanked
+- `review-dependencies`: maintenance: wrapcenum-derive 0.4.1 (Cargo.lock:569) last released 2024-02-10, its repository last pushed 2024-02-10, not archived, one dependent (nvml-wrapper); fnv 1.0.7 (2020), ident_case 1.0.1 (2019), static_assertions 1.1.0 (2019) without a release for years, none archived and no RustSec warning
+- `review-dependencies`: unsafe counts that stand out: windows-sys 12530 (not built on Linux), linux-raw-sys 6930, rustix 1610, libc 800, nvml-wrapper-sys 794, nvml-wrapper 317; FFI and system-call crates, expected
+- `review-dependencies`: llama-swap: pinned v271, newest v272 (2026-11-10); read against src/ and docs/: #1319 (1xx through the recorders) needs a client sending Expect: 100-continue, and ai-ctl's client sends HTTP/1.0 with Content-Length and no Expect (src/infrastructure/http.rs:107), its curl only downloading releases; #1326 (metadata alongside capabilities) concerns user metadata, and ai-ctl writes capabilities with no metadata (src/domain/gateway_config.rs:680); #1327 (/props?autoload=false) concerns /props at the gateway's root, and ai-ctl reads /upstream/<model>/props during bench, where loading the model is intended (src/application/bench.rs:180); #1318 (decision capability) and #1315, 1249e7c (UI, changelog) touch nothing ai-ctl declares or works around; no finding, the lag of one release a fact
+- `review-dependencies`: audio.cpp: builds v0.9.4, the newest; no lag
+- `review-dependencies`: llama.cpp: builds v1.0.0, the newest; no lag
+- `review-dependencies`: stable-diffusion.cpp: builds master-1098-b521db4, the newest; no lag
+- `review-dependencies`: whisper.cpp: builds v1.9.5, the newest; no lag
+
+## Coverage
+
+- `review-security`: in full: scope.txt; in part: src/domain/recipe.rs (lines 1-200), src/domain/build.rs (lines 20-40, 160-290), src/application/build.rs (lines 100-240, 420-500), src/application/toolchain.rs (lines 445-460, 815-878), src/infrastructure/git.rs (lines 95-200, 380-395, 525-590), docs/security.md (lines 1-80, 284-420), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (the hunks at lines 45-50, 376-390, 451-476), ~/.local/share/ai-ctl/sources/llama.cpp at v1.0.0: CMakeLists.txt (lines 1-60), common/build-info.cpp.in, src/llama.cpp (lines 115-120), common/arg.cpp (line 1425), tools/server (searched for LLAMA_VERSION and llama_version: no use); left out: tests, captures and the test hunks of src/application/build.rs, src/application/doctor.rs, src/infrastructure/git.rs and tests/cli.rs: test code, no sink reachable by an attacker; llama-swap's open routes (method step 5): the scope touches neither the gateway, nor llama-swap's pin, nor docs/security.md section 2; its one change to docs/security.md is in section 7; Cargo.toml, Cargo.lock: the dependency axis's
+- `review-correctness`: in full: scope.txt; in part: src/application/build.rs (lines 60-345, 380-600, 686-730, 955-1060, 1400-1470, 3040-3060, 3434-3465), src/domain/build.rs (lines 26-80, 168-281, 400-590), src/domain/recipe.rs (lines 9-197, 199-314, 340-361), src/infrastructure/git.rs (lines 1-452), src/infrastructure/cmake.rs (lines 1-130), src/application/doctor.rs (lines 410-470, 1270-1317), src/application/gateway_config.rs (lines 110-135), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 395-500), tests/fixtures/github-releases-ggml-org-llama.cpp-v1.0.0.http, tests/fixtures/llama.cpp-git-ls-remote.txt, tests/fixtures/README.md (lines 39, 91-96, 281-290), docs/commands.md (diff), docs/security.md (diff), README.md (diff), CHANGELOG.md (diff), ~/.local/share/ai-ctl/sources/llama.cpp CMakeLists.txt (lines 1-80, at v1.0.0), ~/.local/share/ai-ctl/builds/llama.cpp/v1.0.0/build.json; left out: src/application/build.rs tests outside the hunks: their assertions were not re-checked one by one; cargo test --lib build passed in a copy of the end (201 tests).; CMakeLists.txt of llama.cpp releases older than v1.0.0: not read, because the partial clone would fetch their blobs from the remote. An unknown -DLLAMA_BUILD_IS_DEV there only gives CMake's unused-variable warning (CMAKE_WARN_UNUSED_CLI).; interruption and concurrency: the scope adds no write, link or process. cmake_flags only adds options, to a build tree that is configured fresh for each build (src/infrastructure/cmake.rs:58-60).
+- `review-tests`: in full: scope.txt; in part: src/application/build.rs (lines 90-240, 430-500, scope diff of tests 950-3590, 2755-2766), src/domain/build.rs (lines 160-300, scope diff of tests 400-590), src/domain/recipe.rs (lines 60-200, scope diff of tests 325-640), src/infrastructure/git.rs (lines 1-200, 436-766, 1240-1316), src/application/doctor.rs (lines 430-475, 1270-1320), src/application/fakes.rs (lines 349-365), src/application/toolchain.rs (scope diff 451-878), tests/cli.rs (scope diff 229-286), tests/fixtures/README.md (scope diff), tests/fixtures/llama.cpp-git-ls-remote.txt, tests/fixtures/github-releases-ggml-org-llama.cpp-v1.0.0.http (tag_name, prerelease, created_at of each release), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 375-500), .claude/skills/reviewing-delivered-code/evals/test_dependencies.py (scope diff 434-527), llama.cpp v1.0.0 CMakeLists.txt (lines 10-25); left out: .claude/skills/reviewing-delivered-code/scripts/dependencies.py: in release_notes, searching the anchor among `listed` instead of `page` was not raised. No test has the current build be a pre-release on the page, but on the captured page b12359's created_at (2026-11-13T09:09:55Z) equals its commit's date, the fallback, so that input cannot tell the two apart; documentation, Cargo.toml, Cargo.lock, CHANGELOG.md: outside the tests axis
+- `review-cleanup`: in full: scope.txt; in part: src/application/build.rs (lines 100-235, 452-494, hunks of the diff), src/domain/build.rs (diff hunks, lines 168-188, 242-281, 400-590), src/domain/recipe.rs (diff hunks, lines 9-41, 69-118, 160-330), src/application/toolchain.rs (diff hunks), src/application/doctor.rs (lines 1275-1320), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 40-55, 362-500), .claude/skills/reviewing-delivered-code/evals/test_dependencies.py (lines 430-530), tests/fixtures/README.md (lines 285-293), tests/fixtures/github-releases-*.http (headers and first record), check-cargo_clippy___all_targets_______warnings_.out (tail), check-python3__claude_skills_reviewing_delivered_code_evals_test_d.out (tail); left out: src/infrastructure/git.rs, tests/cli.rs: their hunks are test fixtures renamed from b<N> to vX.Y.Z tags, no production code; read in the diff only; documentation and CHANGELOG.md: outside these two axes, read only to look for code kept for the nightly builds (none found: no LEGACY comment added; the removed TagPattern::Numbered, its LLAMA_TAGS test constant and the from_commit guard in standing leave no caller behind, the guard now unreachable since no hex short hash starts with v or master-)
+- `review-structure`: in full: scope.txt; in part: src/domain/build.rs (lines 20-60, 168-281, 400-590), src/domain/recipe.rs (lines 20-120, 155-330, 340-365, 515-545), src/application/build.rs (lines 100-230, 440-575, 705-760, 950-1050, 2430-2450), src/application/toolchain.rs (diff), src/application/doctor.rs (lines 15-30, 440-470, 1281-1317), src/infrastructure/git.rs (lines 455-585), src/presentation/cli.rs (grep of help texts on releases), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 30-70 and the diff), README.md (lines 80-155), docs/commands.md (lines 170-340), docs/security.md (lines 320-350), docs/stack.md (diff and headings), docs/toolchain.md (diff), docs/README.md (lines 1-60), docs/architecture.md (lines 1-120), tests/fixtures/README.md (diff), CHANGELOG.md (diff), CLAUDE.md (diff); left out: src/presentation/build.rs: its tests still render llama.cpp ids b12111/b12177 as releases; formatting tests only, not reported; llama.cpp source: read only CMakeLists.txt's LLAMA_BUILD_IS_DEV at v1.0.0 (the clone's describe); llama-server --version not run, since it would open a CUDA context; on-disk formats: build.json gains only a key in cmake_flags, read by maps that ignore unknown keys; 0.3.0 reading a v1.0.0 build reads it as built from a commit, and 0.3.1 reading a b<N> build likewise; dependencies.json's fields are unchanged; no finding
+- `review-performance`: in full: scope.txt; in part: src/application/build.rs (lines 100-230, 445-500), src/domain/build.rs (diff hunks 26-32, 168-188, 239-281, 399-590), src/domain/recipe.rs (diff hunks 25-32, 64-118, 157-197, 214-314, 316-361, 494-545, 622-636), src/application/toolchain.rs (diff hunks 451-454, 821-875), src/infrastructure/git.rs (lines 55-200, 384-390, 527-583), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 40-50, 101, 375-390, 429-500), tests/fixtures/llama.cpp-git-ls-remote.txt, llama.cpp v1.0.0 CMakeLists.txt (lines 10-30, 138) in ~/.local/share/ai-ctl/sources/llama.cpp, whose git describe --tags names v1.0.0, the build ai-ctl build list marks current; left out: src/application/build.rs, src/domain/build.rs, src/domain/recipe.rs, src/infrastructure/git.rs, tests/cli.rs, src/application/doctor.rs test items: tests only, no cost to the user; read only where production paths were followed; documentation:, captures: and dependencies: paths: outside the performance axis
+- `review-dependencies`: in full: cargo-deny.txt, docs/reviews/delivered-code/2026-11-14-release-0-3-1-phase-0/dependencies.json; in part: src/domain/gateway_config.rs (lines 640-700), src/infrastructure/http.rs (lines 1-10, 100-110, 210-260, 545-555), src/infrastructure/server_api.rs (lines 60-106), src/application/bench.rs (line 180), Cargo.lock (crate headers at lines 144-569), docs/gpu/llama-swap.md (lines 135, 196); left out: none: dependencies.json was gathered at 0ce63e3 with no left_out entry, and no project's github field reports a failure
+- `session`: in full: the checks' outputs and the mutants' outcomes; in part: none; left out: none: every check green, 13 mutants with none missed; cargo deny check's three duplicate warnings held by the register
+
+## Fix Plan
+
+- Batch 1: findings 3
