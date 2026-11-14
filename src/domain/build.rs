@@ -26,7 +26,7 @@ const MAX_ID_LEN: usize = 64;
 pub const CURRENT: &str = "current";
 
 /// A build's name, unique within its project: the release tag it was built
-/// from, such as `b6512`, or the short commit otherwise. It names the
+/// from, such as `v1.0.0`, or the short commit otherwise. It names the
 /// build's directory, so it is a safe file name.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BuildId(String);
@@ -178,11 +178,7 @@ pub fn standing(
     let Some(build) = build else {
         return Standing::NotBuilt;
     };
-    // A short hash can read as a release, as `b123456789` does for llama.cpp.
-    let release = (build.id != BuildId::from_commit(&build.commit))
-        .then(|| tags.release(build.id.as_str()))
-        .flatten();
-    let Some(release) = release else {
+    let Some(release) = tags.release(build.id.as_str()) else {
         return Standing::FromCommit;
     };
     if tags.release(newest).is_some_and(|newest| release < newest) {
@@ -476,7 +472,7 @@ mod tests {
     #[test]
     fn a_build_at_its_newest_release_is_current_in_each_form() {
         for (tags, release) in [
-            (LLAMA_CPP.tags, "b12177"),
+            (LLAMA_CPP.tags, "v1.0.0"),
             (WHISPER_CPP.tags, "v1.9.5"),
             (STABLE_DIFFUSION_CPP.tags, "master-1043-0a1b2c3"),
         ] {
@@ -491,8 +487,7 @@ mod tests {
     #[test]
     fn an_older_release_is_behind_by_its_numbers_in_each_form() {
         for (tags, id, newest) in [
-            (LLAMA_CPP.tags, "b12111", "b12177"),
-            (LLAMA_CPP.tags, "b9999", "b10000"),
+            (LLAMA_CPP.tags, "v0.9.0", "v1.0.0"),
             (WHISPER_CPP.tags, "v1.9.5", "v1.10.0"),
             (WHISPER_CPP.tags, "v0.9.3", "v0.9.4"),
             (
@@ -509,7 +504,7 @@ mod tests {
     fn a_build_past_the_newest_release_is_never_sent_back() {
         // The project withdrew the release this build was made from.
         assert_eq!(
-            standing_of(LLAMA_CPP.tags, "b12200", "b12177"),
+            standing_of(LLAMA_CPP.tags, "v1.0.1", "v1.0.0"),
             Standing::Current
         );
         assert_eq!(
@@ -521,7 +516,13 @@ mod tests {
     #[test]
     fn a_build_made_from_a_commit_is_not_a_release() {
         assert_eq!(
-            standing_of(LLAMA_CPP.tags, "79e2e74eb1", "b12177"),
+            standing_of(LLAMA_CPP.tags, "79e2e74eb1", "v1.0.0"),
+            Standing::FromCommit
+        );
+        // llama.cpp's nightly tags, which ai-ctl built until it took its
+        // releases `vX.Y.Z`.
+        assert_eq!(
+            standing_of(LLAMA_CPP.tags, "b12359", "v1.0.0"),
             Standing::FromCommit
         );
         // An id that is no release of the project, whatever made it.
@@ -532,37 +533,27 @@ mod tests {
     }
 
     #[test]
-    fn a_commit_whose_hash_reads_as_a_release_is_still_a_commit() {
-        let mut build = built("b123456789", 10);
-        build.commit = CommitId::parse("b123456789abcdef0123456789abcdef01234567").unwrap();
-        assert_eq!(
-            standing(LLAMA_CPP.tags, Some(&build), "b12177", None),
-            Standing::FromCommit
-        );
-    }
-
-    #[test]
     fn a_project_with_no_build_is_not_built() {
         assert_eq!(
-            standing(LLAMA_CPP.tags, None, "b12177", None),
+            standing(LLAMA_CPP.tags, None, "v1.0.0", None),
             Standing::NotBuilt
         );
     }
 
     #[test]
     fn only_the_newest_release_can_be_off_its_recipe() {
-        let unlike = || Some("b12177 was built without a patch".to_owned());
-        let at = |id: &str| standing(LLAMA_CPP.tags, Some(&built(id, 10)), "b12177", unlike());
+        let unlike = || Some("v1.0.0 was built without a patch".to_owned());
+        let at = |id: &str| standing(LLAMA_CPP.tags, Some(&built(id, 10)), "v1.0.0", unlike());
         assert_eq!(
-            at("b12177"),
-            Standing::OffRecipe("b12177 was built without a patch".to_owned())
+            at("v1.0.0"),
+            Standing::OffRecipe("v1.0.0 was built without a patch".to_owned())
         );
         assert_eq!(
-            at("b12200"),
-            Standing::OffRecipe("b12177 was built without a patch".to_owned())
+            at("v1.0.1"),
+            Standing::OffRecipe("v1.0.0 was built without a patch".to_owned())
         );
         // A new build follows the recipe: being behind says all there is.
-        assert_eq!(at("b12111"), Standing::Behind);
+        assert_eq!(at("v0.9.0"), Standing::Behind);
         assert_eq!(at("79e2e74eb1"), Standing::FromCommit);
     }
 

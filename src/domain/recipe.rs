@@ -64,13 +64,12 @@ pub struct PatchRefused(pub String);
 /// How a project names its release tags.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TagPattern {
-    /// A prefix and a release number, such as llama.cpp's `b6512`.
-    Numbered { prefix: &'static str },
     /// A prefix, a release number and the short hash of its commit, such as
     /// stable-diffusion.cpp's `master-975-95b3090`.
     NumberedWithCommit { prefix: &'static str },
     /// A prefix and a version `X.Y.Z`, such as whisper.cpp's `v1.9.5`;
-    /// nothing may follow it, so `v1.7.4-pre-1` is not a release.
+    /// nothing may follow it, so neither `v1.7.4-pre-1` nor llama.cpp's
+    /// `v1.0.0-b12359-b1b770d` is a release.
     Version { prefix: &'static str },
 }
 
@@ -79,7 +78,6 @@ impl TagPattern {
     /// is not a release.
     pub fn release(&self, tag: &str) -> Option<Vec<u64>> {
         match self {
-            TagPattern::Numbered { prefix } => Some(vec![number(tag.strip_prefix(prefix)?)?]),
             TagPattern::NumberedWithCommit { prefix } => {
                 let (release, hash) = tag.strip_prefix(prefix)?.split_once('-')?;
                 let release = number(release)?;
@@ -104,13 +102,13 @@ impl TagPattern {
     }
 
     /// The glob `git tag --list` narrows the tags with. It lets through
-    /// tags that are not releases, such as `b10964-b10964-b29c606`:
+    /// tags that are not releases, such as `v1.0.0-b12359-b1b770d`:
     /// [`TagPattern::release`] has the last word.
     pub fn glob(&self) -> String {
         match self {
-            TagPattern::Numbered { prefix }
-            | TagPattern::NumberedWithCommit { prefix }
-            | TagPattern::Version { prefix } => format!("{prefix}[0-9]*"),
+            TagPattern::NumberedWithCommit { prefix } | TagPattern::Version { prefix } => {
+                format!("{prefix}[0-9]*")
+            }
         }
     }
 }
@@ -157,13 +155,13 @@ pub fn cuda_devices(listing: &str) -> Vec<&str> {
         .collect()
 }
 
-/// llama.cpp: releases are tagged `b<number>` several times a day; the
-/// server is the `llama-server` target, in `tools/server`, built without
-/// its web UI.
+/// llama.cpp: releases are tagged `vX.Y.Z` each week, beside the nightly
+/// `b<number>` tags, which are not releases; the server is the
+/// `llama-server` target, in `tools/server`, built without its web UI.
 pub const LLAMA_CPP: Recipe = Recipe {
     project: "llama.cpp",
     repository: "https://github.com/ggml-org/llama.cpp.git",
-    tags: TagPattern::Numbered { prefix: "b" },
+    tags: TagPattern::Version { prefix: "v" },
     submodules: &[],
     patches: &[],
     cmake_flags: &[
@@ -316,7 +314,6 @@ pub fn recipe(project: &str) -> Option<&'static Recipe> {
 mod tests {
     use super::*;
 
-    const LLAMA_TAGS: TagPattern = TagPattern::Numbered { prefix: "b" };
     const SD_CPP_TAGS: TagPattern = TagPattern::NumberedWithCommit { prefix: "master-" };
     const VERSION_TAGS: TagPattern = TagPattern::Version { prefix: "v" };
 
@@ -334,6 +331,21 @@ mod tests {
                 .cmake_flags
                 .contains(&("LLAMA_USE_PREBUILT_UI", "OFF"))
         );
+    }
+
+    #[test]
+    fn llama_cpp_releases_are_its_versions_not_its_nightly_tags() {
+        let tags = recipe("llama.cpp").unwrap().tags;
+        assert_eq!(tags.release("v1.0.0"), Some(vec![1, 0, 0]));
+        // A nightly tag, and the one that names a release's nightly.
+        for tag in ["b12359", "v1.0.0-b12359-b1b770d"] {
+            assert_eq!(tags.release(tag), None, "{tag}");
+        }
+        assert_eq!(
+            tags.newest(["b12359", "v0.9.0", "v1.0.0-b12359-b1b770d", "v1.0.0"]),
+            Some("v1.0.0")
+        );
+        assert_eq!(tags.glob(), "v[0-9]*");
     }
 
     #[test]
@@ -505,34 +517,20 @@ mod tests {
     }
 
     #[test]
-    fn llama_cpp_release_tags_are_numbered() {
-        assert_eq!(LLAMA_TAGS.release("b11538"), Some(vec![11538]));
-        assert_eq!(LLAMA_TAGS.release("b1"), Some(vec![1]));
-        for tag in [
-            "b",
-            "b10964-b10964-b29c606",
-            "backup/allozaur-ui",
-            "11538",
-            "B11538",
-            "b+1",
-        ] {
-            assert_eq!(LLAMA_TAGS.release(tag), None, "{tag}");
-        }
-    }
-
-    #[test]
     fn the_newest_release_is_compared_numerically() {
         let tags = [
-            "b9999",
-            "b10964-b10964-b29c606",
-            "b11538",
-            "b10000",
+            "master-999-77b72a2",
+            "master-1043-0a1b2c3",
+            "master-1000-0a1b2c3",
             "gguf-v0.17.1",
         ];
-        assert_eq!(LLAMA_TAGS.newest(tags), Some("b11538"));
-        assert_eq!(LLAMA_TAGS.newest(["b9", "b10"]), Some("b10"));
-        assert_eq!(LLAMA_TAGS.newest(["master"]), None);
-        assert_eq!(LLAMA_TAGS.newest([]), None);
+        assert_eq!(SD_CPP_TAGS.newest(tags), Some("master-1043-0a1b2c3"));
+        assert_eq!(
+            SD_CPP_TAGS.newest(["master-9-a", "master-10-b"]),
+            Some("master-10-b")
+        );
+        assert_eq!(SD_CPP_TAGS.newest(["master"]), None);
+        assert_eq!(SD_CPP_TAGS.newest([]), None);
     }
 
     #[test]
@@ -622,7 +620,6 @@ mod tests {
 
     #[test]
     fn ls_remote_narrows_to_tags_starting_like_releases() {
-        assert_eq!(LLAMA_TAGS.glob(), "b[0-9]*");
         assert_eq!(SD_CPP_TAGS.glob(), "master-[0-9]*");
         assert_eq!(VERSION_TAGS.glob(), "v[0-9]*");
     }

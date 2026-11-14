@@ -955,7 +955,9 @@ mod tests {
         AUDIO_CPP, LLAMA_CPP, Patch, STABLE_DIFFUSION_CPP, SmokeTest, WHISPER_CPP,
     };
 
-    const B11538: &str = "79e2e74eb11022c1ba2e438df7f0ca2d4c10f8b6";
+    /// llama.cpp's `v1.0.0`, which its nightly `b12359` and
+    /// `v1.0.0-b12359-b1b770d` tag too.
+    const V1_0_0: &str = "b1b770d90d94cad9e9ea5b993bdbc383a522fb28";
     const FEATURE: &str = "0123456789abcdef0123456789abcdef01234567";
     /// whisper.cpp's `v1.9.5`.
     const V1_9_5: &str = "d1be6fde0123456789abcdef0123456789abcdef";
@@ -978,10 +980,10 @@ mod tests {
     }
 
     impl FakeSources {
-        /// Release tags `b11537` and `b11538`, and a tag that is not one.
+        /// Release tags `v0.9.0` and `v1.0.0`, and a tag that is not one.
         fn new() -> Self {
             Self {
-                tags: vec!["b11537", "b10964-b10964-b29c606", "b11538"],
+                tags: vec!["v0.9.0", "v1.0.0-b12359-b1b770d", "v1.0.0"],
                 project_tags: BTreeMap::new(),
                 remote_fails: None,
                 calls: RefCell::new(vec![]),
@@ -1022,7 +1024,13 @@ mod tests {
                 .borrow_mut()
                 .push(format!("checkout {reference}"));
             let (commit, tags) = match reference {
-                "b11538" | "79e2e74" | "79e2e74eb1" => (B11538, vec!["b11538".to_owned()]),
+                // As `git tag --points-at` lists them, by name.
+                "v1.0.0" | "b12359" | "b1b770d" | "b1b770d90d" => (
+                    V1_0_0,
+                    ["b12359", "v1.0.0", "v1.0.0-b12359-b1b770d"]
+                        .map(str::to_owned)
+                        .to_vec(),
+                ),
                 "v1.9.5" => (V1_9_5, vec!["v1.9.5".to_owned()]),
                 "feature" => (FEATURE, vec![]),
                 tag if self
@@ -1277,7 +1285,7 @@ mod tests {
         }
 
         /// Applies the patches of `recipe` to the world's checkout of
-        /// b11538.
+        /// v1.0.0.
         fn apply_patches(&self, recipe: &Recipe, events: &mut Vec<Event>) -> Result<()> {
             let clock = || Timestamp::from_unix(NOW).unwrap();
             let builder = Builder {
@@ -1290,8 +1298,8 @@ mod tests {
                 programs: &self.programs,
                 clock: &clock,
             };
-            let checkout = self.sources.checkout(recipe, "b11538")?;
-            builder.apply_patches(recipe, &checkout, &id("b11538"), &mut |event| {
+            let checkout = self.sources.checkout(recipe, "v1.0.0")?;
+            builder.apply_patches(recipe, &checkout, &id("v1.0.0"), &mut |event| {
                 events.push(event)
             })
         }
@@ -1317,7 +1325,7 @@ mod tests {
         Build {
             project: "llama.cpp".into(),
             id: BuildId::parse(id).unwrap(),
-            commit: CommitId::parse(B11538).unwrap(),
+            commit: CommitId::parse(V1_0_0).unwrap(),
             toolkit: Version::new(13, 4, 92),
             host_compiler: crate::application::fakes::gxx("g++", Version::new(16, 2, 1)),
             cmake_flags: crate::application::fakes::recipe_flags(&LLAMA_CPP),
@@ -1346,20 +1354,20 @@ mod tests {
 
         assert_eq!(
             *world.sources.calls.borrow(),
-            ["fetch", "release_tags", "checkout b11538"]
+            ["fetch", "release_tags", "checkout v1.0.0"]
         );
-        assert_eq!(built.build.id, id("b11538"));
-        assert_eq!(built.build.commit.as_str(), B11538);
+        assert_eq!(built.build.id, id("v1.0.0"));
+        assert_eq!(built.build.commit.as_str(), V1_0_0);
         assert_eq!(built.build.toolkit, Version::new(13, 4, 92));
         assert_eq!(built.build.host_compiler.command, "g++-15");
         assert_eq!(built.build.built_at, Timestamp::from_unix(NOW).unwrap());
         assert_eq!(built.build.cmake_flags[CUDA_ARCHITECTURES], "120a-real");
         assert_eq!(
             built.binary,
-            Path::new("/data/builds/llama.cpp/b11538/llama-server")
+            Path::new("/data/builds/llama.cpp/v1.0.0/llama-server")
         );
         assert_eq!(built.previous, Some(id("b11400")));
-        assert_eq!(*world.store.current.borrow(), Some(id("b11538")));
+        assert_eq!(*world.store.current.borrow(), Some(id("v1.0.0")));
         assert!(!world.store.replaced.get(), "no build to replace");
         assert!(world.compiler.cleaned.get());
         assert_eq!(
@@ -1372,9 +1380,9 @@ mod tests {
             [
                 Event::Fetching,
                 Event::CheckedOut {
-                    reference: "b11538".into(),
-                    id: id("b11538"),
-                    commit: CommitId::parse(B11538).unwrap()
+                    reference: "v1.0.0".into(),
+                    id: id("v1.0.0"),
+                    commit: CommitId::parse(V1_0_0).unwrap()
                 },
                 Event::Compile(Progress::Configuring),
                 Event::Compile(Progress::Building { done: 1, total: 2 }),
@@ -1398,26 +1406,41 @@ mod tests {
         world.build(Some(LATEST), false).0.unwrap();
         assert_eq!(
             *world.sources.calls.borrow(),
-            ["fetch", "release_tags", "checkout b11538"]
+            ["fetch", "release_tags", "checkout v1.0.0"]
         );
     }
 
     #[test]
     fn a_clone_without_a_release_tag_fails_with_the_pattern() {
         let mut world = World::new();
-        world.sources.tags = vec!["b10964-b10964-b29c606", "master-old"];
+        world.sources.tags = vec!["v1.0.0-b12359-b1b770d", "master-old"];
         let text = message(world.build(None, false).0);
         assert_eq!(
             text,
-            "no release tag of https://github.com/ggml-org/llama.cpp.git matches b[0-9]*"
+            "no release tag of https://github.com/ggml-org/llama.cpp.git matches v[0-9]*"
         );
     }
 
     #[test]
     fn a_commit_of_a_release_is_named_after_the_release() {
         let world = World::new();
-        let built = world.build(Some("79e2e74"), false).0.unwrap();
-        assert_eq!(built.build.id, id("b11538"));
+        let built = world.build(Some("b1b770d"), false).0.unwrap();
+        assert_eq!(built.build.id, id("v1.0.0"));
+    }
+
+    #[test]
+    fn a_commit_both_forms_tag_is_built_under_its_version() {
+        for reference in ["v1.0.0", "b12359"] {
+            let world = World::new();
+            let built = world.build(Some(reference), false).0.unwrap();
+            assert_eq!(built.build.id, id("v1.0.0"), "{reference}");
+            assert_eq!(built.build.commit.as_str(), V1_0_0, "{reference}");
+            assert_eq!(
+                *world.store.current.borrow(),
+                Some(id("v1.0.0")),
+                "{reference}"
+            );
+        }
     }
 
     #[test]
@@ -1500,17 +1523,17 @@ mod tests {
     #[test]
     fn an_installed_build_is_not_rebuilt_without_force() {
         let world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
         let text = message(world.build(None, false).0);
         assert!(text.contains("already built"), "{text}");
-        assert!(text.contains("ai-ctl build use llama.cpp b11538"), "{text}");
+        assert!(text.contains("ai-ctl build use llama.cpp v1.0.0"), "{text}");
         assert!(world.compiler.flags.borrow().is_none(), "nothing compiled");
 
-        *world.store.current.borrow_mut() = Some(id("b11538"));
+        *world.store.current.borrow_mut() = Some(id("v1.0.0"));
         let text = message(world.build(None, false).0);
         assert!(
             text.contains(
-                "is already built and current; `ai-ctl build llama.cpp --ref b11538 --force`"
+                "is already built and current; `ai-ctl build llama.cpp --ref v1.0.0 --force`"
             ),
             "{text}"
         );
@@ -1522,8 +1545,8 @@ mod tests {
         assert_eq!(world.store.builds.borrow().len(), 1);
     }
 
-    /// The refusal of `--force` while the running gateway serves b11538.
-    const SERVED: &str = "the running gateway serves llama.cpp b11538, which `build --force` \
+    /// The refusal of `--force` while the running gateway serves v1.0.0.
+    const SERVED: &str = "the running gateway serves llama.cpp v1.0.0, which `build --force` \
                           would replace; nothing is installed. `ai-ctl down` stops the \
                           gateway; build again, then `ai-ctl up` starts it on the new build";
 
@@ -1543,12 +1566,12 @@ mod tests {
     #[test]
     fn force_refuses_to_replace_the_build_the_running_gateway_serves() {
         let mut world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
-        *world.store.current.borrow_mut() = Some(id("b11538"));
-        world.gateway = gateway_on(&world.store, "b11538");
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
+        *world.store.current.borrow_mut() = Some(id("v1.0.0"));
+        world.gateway = gateway_on(&world.store, "v1.0.0");
         assert_eq!(message(world.build(None, true).0), SERVED);
         assert!(world.compiler.flags.borrow().is_none(), "nothing compiled");
-        assert_eq!(built_at(&world), [("b11538".to_owned(), at(1))]);
+        assert_eq!(built_at(&world), [("v1.0.0".to_owned(), at(1))]);
 
         *world.gateway.config.borrow_mut() = None;
         assert_eq!(
@@ -1567,14 +1590,14 @@ mod tests {
             .store
             .builds
             .borrow_mut()
-            .extend([installed("b11400", 1), installed("b11538", 2)]);
-        *world.store.current.borrow_mut() = Some(id("b11538"));
+            .extend([installed("b11400", 1), installed("v1.0.0", 2)]);
+        *world.store.current.borrow_mut() = Some(id("v1.0.0"));
         world.gateway = gateway_on(&world.store, "b11400");
         world.build(None, true).0.unwrap();
         assert!(world.store.replaced.get());
         assert_eq!(
             built_at(&world),
-            [("b11400".to_owned(), at(1)), ("b11538".to_owned(), at(NOW))]
+            [("b11400".to_owned(), at(1)), ("v1.0.0".to_owned(), at(NOW))]
         );
     }
 
@@ -1604,12 +1627,12 @@ mod tests {
     #[test]
     fn force_refuses_to_install_over_a_gateway_started_during_the_compile() {
         let world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
-        *world.store.current.borrow_mut() = Some(id("b11538"));
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
+        *world.store.current.borrow_mut() = Some(id("v1.0.0"));
         let compiler = StartsGateway {
             compiler: &world.compiler,
             gateway: &world.gateway,
-            config: gateway_on(&world.store, "b11538")
+            config: gateway_on(&world.store, "v1.0.0")
                 .config
                 .into_inner()
                 .unwrap(),
@@ -1617,7 +1640,7 @@ mod tests {
         assert_eq!(message(world.build_with(&compiler, None, true).0), SERVED);
         assert_eq!(world.store.discarded.get(), 1);
         assert!(!world.store.replaced.get());
-        assert_eq!(built_at(&world), [("b11538".to_owned(), at(1))]);
+        assert_eq!(built_at(&world), [("v1.0.0".to_owned(), at(1))]);
     }
 
     #[test]
@@ -1631,36 +1654,36 @@ mod tests {
             "another ai-ctl is stopping the gateway"
         );
         assert_eq!(world.store.discarded.get(), 1);
-        assert_eq!(built_at(&world), [("b11538".to_owned(), at(NOW))]);
+        assert_eq!(built_at(&world), [("v1.0.0".to_owned(), at(NOW))]);
     }
 
     #[test]
     fn an_installed_release_named_is_refused_before_the_gate_and_the_fetch() {
         let mut world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
         world.gpu = FakeGpu(Probed::Missing);
-        let (result, events) = world.build(Some("b11538"), false);
+        let (result, events) = world.build(Some("v1.0.0"), false);
         assert_eq!(
             message(result),
-            "llama.cpp b11538 is already built; `ai-ctl build use llama.cpp b11538` makes it \
-             current, `ai-ctl build llama.cpp --ref b11538 --force` builds it again"
+            "llama.cpp v1.0.0 is already built; `ai-ctl build use llama.cpp v1.0.0` makes it \
+             current, `ai-ctl build llama.cpp --ref v1.0.0 --force` builds it again"
         );
         assert!(events.is_empty(), "{events:?}");
         assert!(world.sources.calls.borrow().is_empty());
-        assert!(message(world.build(Some("b11538"), true).0).starts_with(REFUSED));
+        assert!(message(world.build(Some("v1.0.0"), true).0).starts_with(REFUSED));
     }
 
     #[test]
     fn a_commit_names_its_build_only_once_checked_out() {
         let world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
-        let text = message(world.build(Some("79e2e74"), false).0);
-        assert!(text.contains("llama.cpp b11538 is already built"), "{text}");
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
+        let text = message(world.build(Some("b1b770d"), false).0);
+        assert!(text.contains("llama.cpp v1.0.0 is already built"), "{text}");
         assert_eq!(
             world.sources.calls.borrow().as_slice(),
-            ["fetch", "checkout 79e2e74"]
+            ["fetch", "checkout b1b770d"]
         );
-        world.build(Some("b11538"), true).0.unwrap();
+        world.build(Some("v1.0.0"), true).0.unwrap();
         assert!(world.store.replaced.get());
     }
 
@@ -1671,19 +1694,19 @@ mod tests {
             .store
             .builds
             .borrow_mut()
-            .push(installed("79e2e74eb1", 1));
-        let built = world.build(Some("79e2e74eb1"), false).0.unwrap();
-        assert_eq!(built.build.id, id("b11538"));
+            .push(installed("b1b770d90d", 1));
+        let built = world.build(Some("b1b770d90d"), false).0.unwrap();
+        assert_eq!(built.build.id, id("v1.0.0"));
     }
 
     #[test]
     fn an_unreadable_directory_of_a_release_named_is_in_the_way_before_the_fetch() {
         let mut world = World::new();
-        world.store.unreadable.push(not_a_build("b11538"));
+        world.store.unreadable.push(not_a_build("v1.0.0"));
         assert_eq!(
-            message(world.build(Some("b11538"), false).0),
-            "/data/builds/llama.cpp/b11538 is not a readable build: no build.json; \
-             `ai-ctl build llama.cpp --ref b11538 --force` builds it in its place"
+            message(world.build(Some("v1.0.0"), false).0),
+            "/data/builds/llama.cpp/v1.0.0 is not a readable build: no build.json; \
+             `ai-ctl build llama.cpp --ref v1.0.0 --force` builds it in its place"
         );
         assert!(world.sources.calls.borrow().is_empty());
     }
@@ -1691,11 +1714,11 @@ mod tests {
     #[test]
     fn an_unreadable_directory_of_the_same_name_is_in_the_way() {
         let mut world = World::new();
-        world.store.unreadable.push(not_a_build("b11538"));
-        let in_the_way = "/data/builds/llama.cpp/b11538 is not a readable build: no build.json; \
-                          `ai-ctl build llama.cpp --ref b11538 --force` builds it in its place";
+        world.store.unreadable.push(not_a_build("v1.0.0"));
+        let in_the_way = "/data/builds/llama.cpp/v1.0.0 is not a readable build: no build.json; \
+                          `ai-ctl build llama.cpp --ref v1.0.0 --force` builds it in its place";
         assert_eq!(message(world.build(None, false).0), in_the_way);
-        *world.store.current.borrow_mut() = Some(id("b11538"));
+        *world.store.current.borrow_mut() = Some(id("v1.0.0"));
         assert_eq!(message(world.build(None, false).0), in_the_way);
         assert!(world.compiler.flags.borrow().is_none(), "nothing compiled");
         world.build(None, true).0.unwrap();
@@ -1843,7 +1866,7 @@ mod tests {
         let mut events = vec![];
         assert_eq!(
             message(world.apply_patches(&PATCHED, &mut events)),
-            "llama.cpp b11538 cannot be built: its patch listen-failure.patch does not apply; \
+            "llama.cpp v1.0.0 cannot be built: its patch listen-failure.patch does not apply; \
              `--ref` builds a release it applies to: \
              error: patch failed: examples/server/main.cpp:157"
         );
@@ -2058,7 +2081,7 @@ mod tests {
     #[test]
     fn the_smoke_test_runs_the_staged_binary_not_the_installed_one() {
         let world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
         world.build(None, true).0.unwrap();
         let staged = PathBuf::from("/data/builds/llama.cpp/.staging/llama-server");
         assert_eq!(*world.programs.ran.borrow(), [staged.clone(), staged]);
@@ -2067,7 +2090,7 @@ mod tests {
     #[test]
     fn a_build_whose_device_listing_fails_is_discarded() {
         let mut world = World::new();
-        // The listing b11538 prints, then a crash.
+        // The listing v1.0.0 prints, then a crash.
         world.programs.devices.success = false;
         let text = message(world.build(None, false).0);
         assert_eq!(
@@ -2088,7 +2111,7 @@ mod tests {
         let (result, events) = world.build(None, false);
         assert_eq!(
             message(result),
-            "cannot install /data/builds/llama.cpp/b11538: Permission denied (os error 13)"
+            "cannot install /data/builds/llama.cpp/v1.0.0: Permission denied (os error 13)"
         );
         assert_eq!(
             events.last(),
@@ -2107,8 +2130,8 @@ mod tests {
         let mut world = World::new();
         world.compiler.clean_fails = true;
         let (result, events) = world.build(None, false);
-        assert_eq!(result.unwrap().build.id, id("b11538"));
-        assert_eq!(*world.store.current.borrow(), Some(id("b11538")));
+        assert_eq!(result.unwrap().build.id, id("v1.0.0"));
+        assert_eq!(*world.store.current.borrow(), Some(id("v1.0.0")));
         assert_eq!(
             events.last(),
             Some(&Event::Warning(
@@ -2124,10 +2147,10 @@ mod tests {
         world.store.set_current_fails = true;
         assert_eq!(
             message(world.build(None, false).0),
-            "llama.cpp b11538 is installed but not current: cannot update \
+            "llama.cpp v1.0.0 is installed but not current: cannot update \
              /data/builds/llama.cpp/current: Permission denied (os error 13)"
         );
-        assert_eq!(left(&world.store), ["b11538"]);
+        assert_eq!(left(&world.store), ["v1.0.0"]);
         assert_eq!(*world.store.current.borrow(), Some(id("b11400")));
     }
 
@@ -2267,19 +2290,19 @@ mod tests {
         assert_eq!(listings[0].current, Some(id("b9")));
         // The link names a directory that is not a readable build.
         let store = FakeStore {
-            unreadable: vec![not_a_build("b11538")],
+            unreadable: vec![not_a_build("v1.0.0")],
             ..FakeStore::default()
         };
-        *store.current.borrow_mut() = Some(id("b11538"));
+        *store.current.borrow_mut() = Some(id("v1.0.0"));
         list(&store, None, &mut |warning| warnings.push(warning)).unwrap();
         assert_eq!(
             warnings,
             [
                 "the current build of llama.cpp, b9, is not installed; run `ai-ctl build \
                  llama.cpp`",
-                "the current build of llama.cpp, b11538, cannot be read: no build.json; run \
-                 `ai-ctl build llama.cpp --ref b11538 --force`, or `ai-ctl build llama.cpp` at \
-                 the newest release if the project withdrew b11538",
+                "the current build of llama.cpp, v1.0.0, cannot be read: no build.json; run \
+                 `ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at \
+                 the newest release if the project withdrew v1.0.0",
             ]
         );
 
@@ -2451,7 +2474,7 @@ mod tests {
         let (built, events) = world.build(None, false);
         let built = built.unwrap();
         assert_eq!(built.previous, None);
-        assert_eq!(*world.store.current.borrow(), Some(id("b11538")));
+        assert_eq!(*world.store.current.borrow(), Some(id("v1.0.0")));
         assert!(
             events.contains(&Event::Warning(
                 "/data/builds/llama.cpp/current points at ../llama.cpp/b11538, not at a build of its directory; the build, once installed, replaces it".into()
@@ -2538,7 +2561,7 @@ mod tests {
     #[test]
     fn a_build_again_holds_the_gateways_lock_saying_it_replaces_one() {
         let world = World::new();
-        world.store.builds.borrow_mut().push(installed("b11538", 1));
+        world.store.builds.borrow_mut().push(installed("v1.0.0", 1));
         world.build(None, true).0.unwrap();
         assert_eq!(
             *world.gateway.locks.borrow(),
@@ -2752,7 +2775,7 @@ mod tests {
             sources.project_tags = BTreeMap::from([
                 (
                     "llama.cpp",
-                    vec!["b12111", "b12177", "b10964-b10964-b29c606"],
+                    vec!["v0.8.0", "v0.9.0", "v1.0.0-b12359-b1b770d"],
                 ),
                 ("whisper.cpp", vec!["v1.9.4", "v1.9.5", "v1.7.4-pre-1"]),
                 (
@@ -2765,12 +2788,12 @@ mod tests {
                 sources,
                 builds: FakeBuilds {
                     builds: vec![
-                        faithful(&LLAMA_CPP, "b12111"),
+                        faithful(&LLAMA_CPP, "v0.8.0"),
                         faithful(&WHISPER_CPP, "v1.9.5"),
                         faithful(&STABLE_DIFFUSION_CPP, "master-1024-77b72a2"),
                         faithful(&AUDIO_CPP, "v0.9.3"),
                     ],
-                    current: Some(id("b12111")),
+                    current: Some(id("v0.8.0")),
                     other_currents: BTreeMap::from([
                         ("whisper.cpp".to_owned(), id("v1.9.5")),
                         ("stable-diffusion.cpp".to_owned(), id("master-1024-77b72a2")),
@@ -2783,12 +2806,12 @@ mod tests {
             }
         }
 
-        /// One model on llama.cpp's native build, and its build at b12177.
+        /// One model on llama.cpp's native build, and its build at v0.9.0.
         fn of_llama_cpp() -> Self {
             let mut reading = Self::of_every_project();
             reading.inventory = FakeInventory(Ok(Some(inventory("/models"))));
-            reading.builds.builds = vec![faithful(&LLAMA_CPP, "b12177")];
-            reading.builds.current = Some(id("b12177"));
+            reading.builds.builds = vec![faithful(&LLAMA_CPP, "v0.9.0")];
+            reading.builds.current = Some(id("v0.9.0"));
             reading
         }
 
@@ -2841,7 +2864,7 @@ mod tests {
         assert_eq!(
             standings(&outdated),
             [
-                ("llama.cpp", Some("b12111"), "b12177", &Standing::Behind),
+                ("llama.cpp", Some("v0.8.0"), "v0.9.0", &Standing::Behind),
                 ("whisper.cpp", Some("v1.9.5"), "v1.9.5", &Standing::Current),
                 (
                     "stable-diffusion.cpp",
@@ -2876,7 +2899,7 @@ mod tests {
         let outdated = reading.run(None).0.unwrap();
         assert_eq!(
             standings(&outdated),
-            [("llama.cpp", Some("b12177"), "b12177", &Standing::Current)]
+            [("llama.cpp", Some("v0.9.0"), "v0.9.0", &Standing::Current)]
         );
         assert_eq!(*reading.sources.calls.borrow(), ["remote_tags llama.cpp"]);
     }
@@ -2945,7 +2968,7 @@ mod tests {
         let projects = reading.run(None).0.unwrap().projects;
         assert_eq!(projects.len(), 4, "{projects:?}");
         assert_eq!(projects[0].project, "llama.cpp");
-        assert_eq!(projects[0].current, Some(id("b12111")));
+        assert_eq!(projects[0].current, Some(id("v0.8.0")));
         assert_eq!(
             projects[0].found,
             Err(
@@ -2963,11 +2986,11 @@ mod tests {
         reading
             .sources
             .project_tags
-            .insert("llama.cpp", vec!["backup/old", "b10964-b10964-b29c606"]);
+            .insert("llama.cpp", vec!["backup/old", "v1.0.0-b12359-b1b770d"]);
         assert_eq!(
             reading.the_project().found,
             Err(
-                "no release tag of https://github.com/ggml-org/llama.cpp.git matches b[0-9]*"
+                "no release tag of https://github.com/ggml-org/llama.cpp.git matches v[0-9]*"
                     .to_owned()
             )
         );
@@ -2986,25 +3009,46 @@ mod tests {
     #[test]
     fn a_build_made_from_a_commit_is_told_with_the_newest_release() {
         let mut reading = Reading::of_llama_cpp();
-        reading.builds.builds = vec![faithful(&LLAMA_CPP, "79e2e74eb1")];
-        reading.builds.current = Some(id("79e2e74eb1"));
+        reading.builds.builds = vec![faithful(&LLAMA_CPP, "b1b770d90d")];
+        reading.builds.current = Some(id("b1b770d90d"));
         let project = reading.the_project();
-        assert_eq!(project.current, Some(id("79e2e74eb1")));
+        assert_eq!(project.current, Some(id("b1b770d90d")));
         let found = project.found.unwrap();
-        assert_eq!(found.newest, "b12177");
+        assert_eq!(found.newest, "v0.9.0");
         assert_eq!(found.standing, Standing::FromCommit);
     }
 
     #[test]
+    fn a_nightly_build_of_llama_cpp_reads_as_built_from_a_commit() {
+        // As ai-ctl built llama.cpp before it took its releases `vX.Y.Z`.
+        let mut reading = Reading::of_llama_cpp();
+        reading.sources.project_tags.insert(
+            "llama.cpp",
+            vec!["v0.9.0", "v1.0.0", "v1.0.0-b12359-b1b770d"],
+        );
+        reading.builds.builds = vec![faithful(&LLAMA_CPP, "b12359")];
+        reading.builds.current = Some(id("b12359"));
+        let project = reading.the_project();
+        assert_eq!(project.current, Some(id("b12359")));
+        assert_eq!(
+            project.found,
+            Ok(Found {
+                newest: "v1.0.0".into(),
+                standing: Standing::FromCommit,
+            })
+        );
+    }
+
+    #[test]
     fn a_build_at_the_newest_release_its_recipe_no_longer_matches_is_named() {
-        let mut build = faithful(&LLAMA_CPP, "b12177");
+        let mut build = faithful(&LLAMA_CPP, "v0.9.0");
         build.cmake_flags.remove("LLAMA_USE_PREBUILT_UI");
         let mut reading = Reading::of_llama_cpp();
         reading.builds.builds = vec![build];
         assert_eq!(
             reading.the_project().found.unwrap().standing,
             Standing::OffRecipe(
-                "b12177 was built without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets"
+                "v0.9.0 was built without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets"
                     .to_owned()
             )
         );
@@ -3014,7 +3058,7 @@ mod tests {
     fn a_current_build_that_cannot_be_read_warns_and_counts_as_not_built() {
         let unreadable = |reading: &mut Reading| {
             reading.builds.unreadable = vec![Unreadable {
-                dir: "/data/builds/llama.cpp/b12177".into(),
+                dir: "/data/builds/llama.cpp/v0.9.0".into(),
                 reason: "cannot read build.json".into(),
             }];
             reading.builds.builds.clear();
@@ -3026,14 +3070,14 @@ mod tests {
         let cases: [(Arrange, &str); 4] = [
             (
                 &missing,
-                "the current build of llama.cpp, b12177, is not installed; run \
+                "the current build of llama.cpp, v0.9.0, is not installed; run \
                  `ai-ctl build llama.cpp`",
             ),
             (
                 &unreadable,
-                "the current build of llama.cpp, b12177, cannot be read: cannot read build.json; \
-                 run `ai-ctl build llama.cpp --ref b12177 --force`, or `ai-ctl build llama.cpp` \
-                 at the newest release if the project withdrew b12177",
+                "the current build of llama.cpp, v0.9.0, cannot be read: cannot read build.json; \
+                 run `ai-ctl build llama.cpp --ref v0.9.0 --force`, or `ai-ctl build llama.cpp` \
+                 at the newest release if the project withdrew v0.9.0",
             ),
             (
                 &link_fails,
@@ -3101,12 +3145,12 @@ mod tests {
                 "",
             );
             world.store.builds.borrow_mut().extend([
-                faithful(&LLAMA_CPP, "b12111"),
+                faithful(&LLAMA_CPP, "v0.8.0"),
                 faithful(&WHISPER_CPP, "v1.9.5"),
                 faithful(&STABLE_DIFFUSION_CPP, "master-1024-77b72a2"),
                 faithful(&AUDIO_CPP, "v0.9.3"),
             ]);
-            *world.store.current.borrow_mut() = Some(id("b12111"));
+            *world.store.current.borrow_mut() = Some(id("v0.8.0"));
             world.store.other_currents.borrow_mut().extend([
                 ("whisper.cpp".to_owned(), id("v1.9.5")),
                 ("stable-diffusion.cpp".to_owned(), id("master-1024-77b72a2")),
@@ -3181,7 +3225,7 @@ mod tests {
     /// [`World::updating`].
     fn four_projects() -> Vec<ProjectStanding> {
         vec![
-            standing_of("llama.cpp", Some("b12111"), "b12177", Standing::Behind),
+            standing_of("llama.cpp", Some("v0.8.0"), "v0.9.0", Standing::Behind),
             standing_of("whisper.cpp", Some("v1.9.5"), "v1.9.5", Standing::Current),
             standing_of(
                 "stable-diffusion.cpp",
@@ -3210,7 +3254,7 @@ mod tests {
         assert_eq!(
             updated.projects,
             [
-                built_update("llama.cpp", "b12177", Some("b12111")),
+                built_update("llama.cpp", "v0.9.0", Some("v0.8.0")),
                 ProjectUpdate {
                     project: "whisper.cpp".into(),
                     outcome: UpdateOutcome::AlreadyCurrent,
@@ -3225,7 +3269,7 @@ mod tests {
         );
         assert_eq!(
             world.checkouts(),
-            ["b12177", "master-1043-0a1b2c3", "v0.9.4"]
+            ["v0.9.0", "master-1043-0a1b2c3", "v0.9.4"]
         );
     }
 
@@ -3233,8 +3277,8 @@ mod tests {
     fn update_makes_each_new_build_current_and_removes_none() {
         let world = World::updating();
         world.update(&four_projects(), None);
-        assert_eq!(world.builds_of("llama.cpp"), ["b12111", "b12177"]);
-        assert_eq!(world.current_of("llama.cpp").unwrap(), "b12177");
+        assert_eq!(world.builds_of("llama.cpp"), ["v0.8.0", "v0.9.0"]);
+        assert_eq!(world.current_of("llama.cpp").unwrap(), "v0.9.0");
         assert_eq!(world.builds_of("whisper.cpp"), ["v1.9.5"]);
         assert_eq!(world.current_of("whisper.cpp").unwrap(), "v1.9.5");
         assert_eq!(world.builds_of("audio.cpp"), ["v0.9.3", "v0.9.4"]);
@@ -3269,7 +3313,7 @@ mod tests {
         let (updated, _) = world.update(&four_projects(), None);
         assert_eq!(
             updated.projects[0],
-            built_update("llama.cpp", "b12177", Some("b12111"))
+            built_update("llama.cpp", "v0.9.0", Some("v0.8.0"))
         );
         assert_eq!(
             updated.projects[2],
@@ -3303,7 +3347,7 @@ mod tests {
         let world = World::updating();
         let unread = ProjectStanding {
             project: "llama.cpp".into(),
-            current: Some(id("b12111")),
+            current: Some(id("v0.8.0")),
             found: Err("cannot read the tags: no route".into()),
         };
         let (updated, events) = world.update(&[unread], None);
@@ -3325,47 +3369,79 @@ mod tests {
         let world = World::updating();
         *world.store.current.borrow_mut() = None;
         let (updated, _) = world.update(
-            &[standing_of("llama.cpp", None, "b12177", Standing::NotBuilt)],
+            &[standing_of("llama.cpp", None, "v0.9.0", Standing::NotBuilt)],
             None,
         );
         assert_eq!(
             updated.projects,
-            [built_update("llama.cpp", "b12177", None)]
+            [built_update("llama.cpp", "v0.9.0", None)]
         );
 
         let world = World::updating();
-        *world.store.current.borrow_mut() = Some(id("79e2e74eb1"));
+        *world.store.current.borrow_mut() = Some(id("b1b770d90d"));
         world
             .store
             .builds
             .borrow_mut()
-            .push(faithful(&LLAMA_CPP, "79e2e74eb1"));
+            .push(faithful(&LLAMA_CPP, "b1b770d90d"));
         let (updated, _) = world.update(
             &[standing_of(
                 "llama.cpp",
-                Some("79e2e74eb1"),
-                "b12177",
+                Some("b1b770d90d"),
+                "v0.9.0",
                 Standing::FromCommit,
             )],
             None,
         );
         assert_eq!(
             updated.projects,
-            [built_update("llama.cpp", "b12177", Some("79e2e74eb1"))]
+            [built_update("llama.cpp", "v0.9.0", Some("b1b770d90d"))]
         );
         assert_eq!(
             world.builds_of("llama.cpp"),
-            ["79e2e74eb1", "b12111", "b12177"]
+            ["b1b770d90d", "v0.8.0", "v0.9.0"]
         );
     }
 
     fn off_recipe() -> ProjectStanding {
         standing_of(
             "llama.cpp",
-            Some("b12177"),
-            "b12177",
-            Standing::OffRecipe("b12177 was built without a flag".into()),
+            Some("v0.9.0"),
+            "v0.9.0",
+            Standing::OffRecipe("v0.9.0 was built without a flag".into()),
         )
+    }
+
+    #[test]
+    fn update_builds_the_newest_version_beside_a_nightly_build_which_use_brings_back() {
+        let mut world = World::updating();
+        world.sources.project_tags.insert(
+            "llama.cpp",
+            vec!["v0.9.0", "v1.0.0", "v1.0.0-b12359-b1b770d"],
+        );
+        world
+            .store
+            .builds
+            .borrow_mut()
+            .push(faithful(&LLAMA_CPP, "b12359"));
+        *world.store.current.borrow_mut() = Some(id("b12359"));
+        let (updated, _) = world.update(
+            &[standing_of(
+                "llama.cpp",
+                Some("b12359"),
+                "v1.0.0",
+                Standing::FromCommit,
+            )],
+            None,
+        );
+        assert_eq!(
+            updated.projects,
+            [built_update("llama.cpp", "v1.0.0", Some("b12359"))]
+        );
+        assert!(world.builds_of("llama.cpp").contains(&"b12359".to_owned()));
+        let previous = use_build(&world.store, "llama.cpp", "b12359", &mut |_| {}).unwrap();
+        assert_eq!(previous, Some(id("v1.0.0")));
+        assert_eq!(world.current_of("llama.cpp").unwrap(), "b12359");
     }
 
     #[test]
@@ -3375,40 +3451,40 @@ mod tests {
             .store
             .builds
             .borrow_mut()
-            .push(faithful(&LLAMA_CPP, "b12177"));
-        *world.store.current.borrow_mut() = Some(id("b12177"));
+            .push(faithful(&LLAMA_CPP, "v0.9.0"));
+        *world.store.current.borrow_mut() = Some(id("v0.9.0"));
         let (updated, _) = world.update(&[off_recipe()], None);
         assert_eq!(
             updated.projects,
-            [built_update("llama.cpp", "b12177", None)]
+            [built_update("llama.cpp", "v0.9.0", None)]
         );
-        assert_eq!(world.checkouts(), ["b12177"]);
+        assert_eq!(world.checkouts(), ["v0.9.0"]);
         assert!(world.store.replaced.get());
-        assert_eq!(world.builds_of("llama.cpp"), ["b12111", "b12177"]);
+        assert_eq!(world.builds_of("llama.cpp"), ["v0.8.0", "v0.9.0"]);
     }
 
-    /// llama.cpp's current build, `b12200`, off its recipe and past the
-    /// newest release the remote shows, `b12177`.
+    /// llama.cpp's current build, `v0.9.1`, off its recipe and past the
+    /// newest release the remote shows, `v0.9.0`.
     fn past_the_newest() -> (World, ProjectStanding) {
         let world = World::updating();
         world
             .store
             .builds
             .borrow_mut()
-            .push(faithful(&LLAMA_CPP, "b12200"));
-        *world.store.current.borrow_mut() = Some(id("b12200"));
+            .push(faithful(&LLAMA_CPP, "v0.9.1"));
+        *world.store.current.borrow_mut() = Some(id("v0.9.1"));
         let project = standing_of(
             "llama.cpp",
-            Some("b12200"),
-            "b12177",
-            Standing::OffRecipe("b12200 was built without a flag".into()),
+            Some("v0.9.1"),
+            "v0.9.0",
+            Standing::OffRecipe("v0.9.1 was built without a flag".into()),
         );
         (world, project)
     }
 
     #[test]
     fn a_build_off_its_recipe_is_never_sent_back_to_an_older_release() {
-        // A clone made since the project withdrew b12200 holds only b12177.
+        // A clone made since the project withdrew v0.9.1 holds only v0.9.0.
         let (world, project) = past_the_newest();
         let (updated, _) = world.update(&[project], None);
         assert!(
@@ -3416,14 +3492,14 @@ mod tests {
             "{:?}",
             updated.projects[0]
         );
-        assert_eq!(world.current_of("llama.cpp").unwrap(), "b12200");
-        assert_eq!(world.builds_of("llama.cpp"), ["b12111", "b12200"]);
+        assert_eq!(world.current_of("llama.cpp").unwrap(), "v0.9.1");
+        assert_eq!(world.builds_of("llama.cpp"), ["v0.8.0", "v0.9.1"]);
     }
 
     #[test]
     fn a_build_off_its_recipe_whose_release_was_withdrawn_is_told_how_to_go_on() {
         // The fetch before the checkout drops the withdrawn tag: nothing
-        // builds b12200 again, and `ai-ctl build llama.cpp` builds b12177.
+        // builds v0.9.1 again, and `ai-ctl build llama.cpp` builds v0.9.0.
         let (world, project) = past_the_newest();
         let (updated, _) = world.update(&[project], None);
         let UpdateOutcome::Failed(cause) = &updated.projects[0].outcome else {
@@ -3432,7 +3508,7 @@ mod tests {
         assert!(cause.contains("withdrawn"), "{cause}");
         assert!(cause.contains("`ai-ctl build llama.cpp`"), "{cause}");
         assert!(world.checkouts().is_empty());
-        assert_eq!(world.current_of("llama.cpp").unwrap(), "b12200");
+        assert_eq!(world.current_of("llama.cpp").unwrap(), "v0.9.1");
     }
 
     #[test]
@@ -3442,9 +3518,9 @@ mod tests {
             .store
             .builds
             .borrow_mut()
-            .push(faithful(&LLAMA_CPP, "b12177"));
-        *world.store.current.borrow_mut() = Some(id("b12177"));
-        world.gateway = gateway_on(&world.store, "b12177");
+            .push(faithful(&LLAMA_CPP, "v0.9.0"));
+        *world.store.current.borrow_mut() = Some(id("v0.9.0"));
+        world.gateway = gateway_on(&world.store, "v0.9.0");
         let (updated, _) = world.update(&[off_recipe()], None);
         let UpdateOutcome::Failed(cause) = &updated.projects[0].outcome else {
             panic!("{:?}", updated.projects[0]);
@@ -3455,18 +3531,18 @@ mod tests {
 
     #[test]
     fn a_project_behind_is_not_built_again_over_its_newest_build() {
-        // `build use` went back to b12111: going forward is the user's word.
+        // `build use` went back to v0.8.0: going forward is the user's word.
         let world = World::updating();
         world
             .store
             .builds
             .borrow_mut()
-            .push(faithful(&LLAMA_CPP, "b12177"));
+            .push(faithful(&LLAMA_CPP, "v0.9.0"));
         let (updated, _) = world.update(
             &[standing_of(
                 "llama.cpp",
-                Some("b12111"),
-                "b12177",
+                Some("v0.8.0"),
+                "v0.9.0",
                 Standing::Behind,
             )],
             None,
@@ -3476,15 +3552,15 @@ mod tests {
             [ProjectUpdate {
                 project: "llama.cpp".into(),
                 outcome: UpdateOutcome::Failed(
-                    "llama.cpp b12177 is already built; `ai-ctl build use llama.cpp b12177` \
-                     makes it current, `ai-ctl build llama.cpp --ref b12177 --force` builds \
+                    "llama.cpp v0.9.0 is already built; `ai-ctl build use llama.cpp v0.9.0` \
+                     makes it current, `ai-ctl build llama.cpp --ref v0.9.0 --force` builds \
                      it again"
                         .into()
                 ),
             }]
         );
         assert!(!world.store.replaced.get());
-        assert_eq!(world.current_of("llama.cpp").unwrap(), "b12111");
+        assert_eq!(world.current_of("llama.cpp").unwrap(), "v0.8.0");
     }
 
     #[test]

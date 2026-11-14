@@ -232,7 +232,7 @@ fn build_outdated_exits_4_for_a_project_that_was_never_built() {
     let output = outdated_with_git(
         root.path(),
         &["llama.cpp"],
-        "aaa\\trefs/tags/b12177\\nbbb\\trefs/tags/b12111\\n",
+        "aaa\\trefs/tags/v1.0.0\\nbbb\\trefs/tags/v0.9.0\\n",
     );
     assert_eq!(
         output.status.code(),
@@ -243,7 +243,7 @@ fn build_outdated_exits_4_for_a_project_that_was_never_built() {
     assert_eq!(
         String::from_utf8_lossy(&output.stdout),
         format!(
-            "llama.cpp   -  newest b12177  not built\n\
+            "llama.cpp   -  newest v1.0.0  not built\n\
              llama-swap  -  pinned {}    not installed; ai-ctl gateway install\n",
             PINNED.release
         )
@@ -263,7 +263,7 @@ fn build_outdated_reads_the_tags_outside_the_repository_it_stands_in() {
         "#!/bin/sh\n\
          [ \"$1\" = -C ] && cd \"$2\"\n\
          [ -e .git ] && { echo 'fatal: bad config line 6' >&2; exit 128; }\n\
-         printf 'aaa\\trefs/tags/b12177\\n'\n",
+         printf 'aaa\\trefs/tags/v1.0.0\\n'\n",
     )
     .unwrap();
     fs::set_permissions(&git, fs::Permissions::from_mode(0o755)).unwrap();

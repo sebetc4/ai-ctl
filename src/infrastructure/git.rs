@@ -457,8 +457,8 @@ mod tests {
         AUDIO_CPP, LLAMA_CPP, STABLE_DIFFUSION_CPP, TagPattern, WHISPER_CPP,
     };
 
-    /// A repository standing for the project's remote, with releases `b1`,
-    /// `b2` and `b10` on `master`, tags that are not releases, and a
+    /// A repository standing for the project's remote, with releases `v0.1.0`,
+    /// `v0.2.0` and `v0.10.0` on `master`, tags that are not releases, and a
     /// `feature` branch one commit ahead.
     struct Upstream {
         dir: tempfile::TempDir,
@@ -493,14 +493,14 @@ mod tests {
         plain_git(repo, &["config", "uploadpack.allowFilter", "true"]);
         plain_git(repo, &["config", "uploadpack.allowAnySHA1InWant", "true"]);
         let mut commits = Vec::new();
-        for (i, tag) in ["b1", "b2", "b10"].into_iter().enumerate() {
+        for (i, tag) in ["v0.1.0", "v0.2.0", "v0.10.0"].into_iter().enumerate() {
             fs::write(repo.join("version.txt"), format!("{i}\n")).unwrap();
             plain_git(repo, &["add", "version.txt"]);
             plain_git(repo, &["commit", "--quiet", "-m", tag]);
             plain_git(repo, &["tag", tag]);
             commits.push(plain_git(repo, &["rev-parse", "HEAD"]));
         }
-        plain_git(repo, &["tag", "-a", "-m", "not a release", "b10-rc"]);
+        plain_git(repo, &["tag", "-a", "-m", "not a release", "v0.10.0-rc"]);
         plain_git(repo, &["tag", "backup/old", &commits[0]]);
         plain_git(repo, &["checkout", "--quiet", "-b", "feature"]);
         fs::write(repo.join("feature.txt"), "new\n").unwrap();
@@ -519,21 +519,22 @@ mod tests {
         Recipe {
             project: "demo",
             repository: Box::leak(url.to_owned().into_boxed_str()),
-            tags: TagPattern::Numbered { prefix: "b" },
+            tags: TagPattern::Version { prefix: "v" },
             ..LLAMA_CPP
         }
     }
 
     #[test]
     fn each_captured_listing_of_the_remote_gives_its_tags_and_newest_release() {
-        // `git ls-remote --tags --refs` of each repository, on 2026-11-09.
+        // `git ls-remote --tags --refs` of each repository, on 2026-11-09,
+        // llama.cpp's on 2026-11-14.
         let listings = [
             (
                 LLAMA_CPP,
-                include_str!("../../tests/fixtures/llama.cpp-git-ls-remote-excerpt.txt"),
-                58,
-                57,
-                "b12226",
+                include_str!("../../tests/fixtures/llama.cpp-git-ls-remote.txt"),
+                14,
+                13,
+                "v1.0.0",
             ),
             (
                 WHISPER_CPP,
@@ -571,6 +572,16 @@ mod tests {
     }
 
     #[test]
+    fn llama_cpp_nightly_tags_are_no_release() {
+        // `git ls-remote --tags --refs` of llama.cpp's `b[0-9]*`, on
+        // 2026-11-09.
+        let listing = include_str!("../../tests/fixtures/llama.cpp-git-ls-remote-excerpt.txt");
+        let tags = remote_tag_names(listing);
+        assert_eq!(tags.len(), 58);
+        assert_eq!(LLAMA_CPP.tags.newest(tags.iter().map(String::as_str)), None);
+    }
+
+    #[test]
     fn a_listing_gives_tags_alone() {
         assert_eq!(
             remote_tag_names(
@@ -591,7 +602,7 @@ mod tests {
         tags.sort();
         // The annotated tag once, with no peeled line; no tag of another
         // form, and no branch.
-        assert_eq!(tags, ["b1", "b10", "b10-rc", "b2"]);
+        assert_eq!(tags, ["v0.1.0", "v0.10.0", "v0.10.0-rc", "v0.2.0"]);
         assert!(!root.path().join("sources").exists());
     }
 
@@ -622,10 +633,10 @@ mod tests {
         drop(upstream);
         let mut tags = sources.release_tags(&recipe).unwrap();
         tags.sort();
-        assert_eq!(tags, ["b1", "b10", "b10-rc", "b2"]);
+        assert_eq!(tags, ["v0.1.0", "v0.10.0", "v0.10.0-rc", "v0.2.0"]);
         assert_eq!(
             recipe.tags.newest(tags.iter().map(String::as_str)),
-            Some("b10")
+            Some("v0.10.0")
         );
     }
 
@@ -637,10 +648,10 @@ mod tests {
         let recipe = recipe(&upstream.url);
 
         sources.fetch(&recipe).unwrap();
-        let first = sources.checkout(&recipe, "b2").unwrap();
+        let first = sources.checkout(&recipe, "v0.2.0").unwrap();
         assert_eq!(first.dir, root.path().join("sources/demo"));
         assert_eq!(first.commit.as_str(), upstream.commits[1]);
-        assert_eq!(first.tags, ["b2"]);
+        assert_eq!(first.tags, ["v0.2.0"]);
         assert_eq!(
             fs::read_to_string(first.dir.join("version.txt")).unwrap(),
             "1\n"
@@ -657,14 +668,14 @@ mod tests {
         assert!(feature.dir.join("feature.txt").is_file());
 
         let by_hash = sources.checkout(&recipe, &upstream.commits[0]).unwrap();
-        assert_eq!(by_hash.tags, ["b1", "backup/old"]);
+        assert_eq!(by_hash.tags, ["backup/old", "v0.1.0"]);
         let short = sources
             .checkout(&recipe, &upstream.commits[2][..8])
             .unwrap();
         assert_eq!(short.commit.as_str(), upstream.commits[2]);
         let mut tags = short.tags;
         tags.sort();
-        assert_eq!(tags, ["b10", "b10-rc"]);
+        assert_eq!(tags, ["v0.10.0", "v0.10.0-rc"]);
     }
 
     #[test]
@@ -677,16 +688,16 @@ mod tests {
         sources.fetch(&recipe).unwrap();
 
         // The newest release withdrawn, a tag that is not a release too.
-        plain_git(repo, &["tag", "-d", "b10"]);
+        plain_git(repo, &["tag", "-d", "v0.10.0"]);
         plain_git(repo, &["tag", "-d", "backup/old"]);
         sources.fetch(&recipe).unwrap();
 
         let mut tags = sources.release_tags(&recipe).unwrap();
         tags.sort();
-        assert_eq!(tags, ["b1", "b10-rc", "b2"]);
+        assert_eq!(tags, ["v0.1.0", "v0.10.0-rc", "v0.2.0"]);
         assert_eq!(
             recipe.tags.newest(tags.iter().map(String::as_str)),
-            Some("b2")
+            Some("v0.2.0")
         );
         let message = format!("{:#}", sources.checkout(&recipe, "backup/old").unwrap_err());
         assert!(message.contains("`backup/old` is not a tag"), "{message}");
@@ -720,7 +731,9 @@ mod tests {
         let sources = GitSources::new(root.path().to_owned());
         let message = format!(
             "{:#}",
-            sources.checkout(&recipe(&upstream.url), "b1").unwrap_err()
+            sources
+                .checkout(&recipe(&upstream.url), "v0.1.0")
+                .unwrap_err()
         );
         assert_eq!(
             message,
@@ -739,7 +752,7 @@ mod tests {
         let sources = GitSources::new(root.path().to_owned());
         let recipe = recipe(&upstream.url);
         sources.fetch(&recipe).unwrap();
-        for reference in ["b99", "no-such-branch", &"0".repeat(40)] {
+        for reference in ["v0.99.0", "no-such-branch", &"0".repeat(40)] {
             let message = format!("{:#}", sources.checkout(&recipe, reference).unwrap_err());
             assert!(
                 message.contains("is not a tag, a branch or a commit"),
@@ -1232,7 +1245,7 @@ mod tests {
     }
 
     /// Adds `added.txt`, then changes `version.txt` from `1` to `patched`:
-    /// it applies to `b2` alone.
+    /// it applies to `v0.2.0` alone.
     const PATCH: Patch = Patch {
         name: "demo.patch",
         diff: "diff --git a/added.txt b/added.txt
@@ -1258,7 +1271,7 @@ diff --git a/version.txt b/version.txt
         let recipe = recipe(&upstream.url);
         sources.fetch(&recipe).unwrap();
 
-        let checkout = sources.checkout(&recipe, "b2").unwrap();
+        let checkout = sources.checkout(&recipe, "v0.2.0").unwrap();
         sources.apply(&checkout, &PATCH).unwrap();
         assert_eq!(version(&checkout.dir).as_deref(), Some("patched\n"));
         assert!(checkout.dir.join("added.txt").is_file());
@@ -1274,12 +1287,12 @@ diff --git a/version.txt b/version.txt
                         .contains("demo.patch")
                 })
         );
-        sources.checkout(&recipe, "b2").unwrap();
+        sources.checkout(&recipe, "v0.2.0").unwrap();
         assert_eq!(version(&checkout.dir).as_deref(), Some("1\n"));
         assert!(!checkout.dir.join("added.txt").exists());
 
-        // `version.txt` holds `2` at `b10`: nothing of the patch applies.
-        let checkout = sources.checkout(&recipe, "b10").unwrap();
+        // `version.txt` holds `2` at `v0.10.0`: nothing of the patch applies.
+        let checkout = sources.checkout(&recipe, "v0.10.0").unwrap();
         let error = sources.apply(&checkout, &PATCH).unwrap_err();
         let message = format!("{error:#}");
         assert!(message.contains("patch failed: version.txt:1"), "{message}");
@@ -1291,12 +1304,12 @@ diff --git a/version.txt b/version.txt
     #[test]
     fn a_tag_wins_over_a_branch_of_the_same_name() {
         let upstream = upstream();
-        plain_git(upstream.dir.path(), &["branch", "b1", "feature"]);
+        plain_git(upstream.dir.path(), &["branch", "v0.1.0", "feature"]);
         let root = tempfile::tempdir().unwrap();
         let sources = GitSources::new(root.path().to_owned());
         let recipe = recipe(&upstream.url);
         sources.fetch(&recipe).unwrap();
-        let checkout = sources.checkout(&recipe, "b1").unwrap();
+        let checkout = sources.checkout(&recipe, "v0.1.0").unwrap();
         assert_eq!(checkout.commit.as_str(), upstream.commits[0]);
     }
 }
