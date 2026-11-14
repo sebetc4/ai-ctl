@@ -451,7 +451,7 @@ mod tests {
 
     use super::*;
     use crate::application::fakes::{FakeToolchain, gpu, gxx, toolkit};
-    use crate::domain::build::cmake_flags;
+    use crate::domain::build::{BuildId, cmake_flags};
     use crate::domain::machine::CudaRepository;
     use crate::domain::recipe::LLAMA_CPP;
 
@@ -821,7 +821,7 @@ mod tests {
             inspection.checks
         );
         let toolchain = inspection.toolchain.unwrap();
-        let flags = cmake_flags(&LLAMA_CPP, &toolchain);
+        let flags = cmake_flags(&LLAMA_CPP, &toolchain, &BuildId::parse("v1.0.0").unwrap());
         assert_eq!(
             flags["CMAKE_CUDA_COMPILER"],
             "/usr/local/cuda-13.4/bin/nvcc"
@@ -872,7 +872,7 @@ mod tests {
         let toolchain = inspection.toolchain.unwrap();
         assert_eq!(toolchain.compiler().command, "g++");
         assert_eq!(
-            cmake_flags(&LLAMA_CPP, &toolchain)["CMAKE_C_COMPILER"],
+            cmake_flags(&LLAMA_CPP, &toolchain, &BuildId::parse("v1.0.0").unwrap())["CMAKE_C_COMPILER"],
             "/usr/bin/gcc"
         );
     }

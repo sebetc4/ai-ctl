@@ -25,6 +25,11 @@ pub struct Recipe {
     /// The project's own CMake options; the builder adds the CUDA and
     /// toolchain ones.
     pub cmake_flags: &'static [(&'static str, &'static str)],
+    /// CMake options set only for a build of a release tag, as the project
+    /// sets them for its own release binaries. They change what the binary
+    /// says of itself, not what it does: a build is never compared with
+    /// them.
+    pub release_flags: &'static [(&'static str, &'static str)],
     /// The CMake target to build, and nothing else.
     pub target: &'static str,
     /// Where the target's binary lands, relative to the CMake build tree.
@@ -177,6 +182,9 @@ pub const LLAMA_CPP: Recipe = Recipe {
         // and compile its file names into the server's code.
         ("LLAMA_USE_PREBUILT_UI", "OFF"),
     ],
+    // `--version` prints the release's version, `1.0.0`, as llama.cpp's own
+    // release binaries do, where a development build prints `1.0.0-dev`.
+    release_flags: &[("LLAMA_BUILD_IS_DEV", "OFF")],
     target: "llama-server",
     artifact: "bin/llama-server",
     smoke_test: SmokeTest {
@@ -212,6 +220,7 @@ pub const WHISPER_CPP: Recipe = Recipe {
         ("WHISPER_BUILD_TESTS", "OFF"),
         ("WHISPER_BUILD_EXAMPLES", "ON"),
     ],
+    release_flags: &[],
     target: "whisper-server",
     artifact: "bin/whisper-server",
     smoke_test: SmokeTest {
@@ -260,6 +269,7 @@ pub const STABLE_DIFFUSION_CPP: Recipe = Recipe {
         ("SD_WEBP", "OFF"),
         ("SD_WEBM", "OFF"),
     ],
+    release_flags: &[],
     target: "sd-server",
     artifact: "bin/sd-server",
     smoke_test: SmokeTest {
@@ -291,6 +301,7 @@ pub const AUDIO_CPP: Recipe = Recipe {
         ("ENGINE_ENABLE_NATIVE_CPU", "ON"),
         ("AUDIOCPP_DEPLOYMENT_BUILD", "ON"),
     ],
+    release_flags: &[],
     target: "audiocpp_server",
     artifact: "bin/audiocpp_server",
     smoke_test: SmokeTest {
@@ -506,7 +517,7 @@ mod tests {
     #[test]
     fn recipes_leave_toolchain_and_cuda_options_to_the_builder() {
         for recipe in RECIPES {
-            for (name, _) in recipe.cmake_flags {
+            for (name, _) in recipe.cmake_flags.iter().chain(recipe.release_flags) {
                 assert!(
                     !name.starts_with("CMAKE_") && !name.starts_with("GGML_CUDA"),
                     "{}: {name}",

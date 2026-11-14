@@ -166,7 +166,7 @@ impl Builder<'_> {
         }
 
         self.apply_patches(recipe, &checkout, &id, events)?;
-        let flags = cmake_flags(recipe, &toolchain);
+        let flags = cmake_flags(recipe, &toolchain, &id);
         let job = CompileJob {
             project: recipe.project,
             source: &checkout.dir,
@@ -455,9 +455,10 @@ fn newest_release(recipe: &Recipe, tags: &[String]) -> Result<String> {
 /// `None` when it was built with each of its patches and each of its CMake
 /// options at its value: a patch or an option a later ai-ctl adds reaches
 /// only the builds made after it. The options the builder sets for every
-/// project are not compared, nor an option the recipe no longer sets; a
-/// patch is matched by name: one rebased under the same name adds the same
-/// lines to a newer release, and one whose change differs takes a new name.
+/// project are not compared, nor the recipe's release options, nor an option
+/// the recipe no longer sets; a patch is matched by name: one rebased under
+/// the same name adds the same lines to a newer release, and one whose
+/// change differs takes a new name.
 pub(super) fn unlike_recipe(recipe: &Recipe, build: &Build) -> Option<String> {
     let mut differences = Vec::new();
     let missing: Vec<&str> = recipe
@@ -1441,6 +1442,24 @@ mod tests {
                 "{reference}"
             );
         }
+    }
+
+    #[test]
+    fn a_release_of_llama_cpp_is_built_to_print_its_version_and_a_commit_is_not() {
+        let world = World::new();
+        let built = world.build(Some("b12359"), false).0.unwrap();
+        let flags = world.compiler.flags.borrow().clone().unwrap();
+        assert_eq!(
+            flags.get("LLAMA_BUILD_IS_DEV").map(String::as_str),
+            Some("OFF")
+        );
+        assert_eq!(built.build.cmake_flags, flags);
+        // A commit no release tags is a development build, as llama.cpp's
+        // own nightlies are.
+        let world = World::new();
+        world.build(Some("feature"), false).0.unwrap();
+        let flags = world.compiler.flags.borrow().clone().unwrap();
+        assert_eq!(flags.get("LLAMA_BUILD_IS_DEV"), None);
     }
 
     #[test]

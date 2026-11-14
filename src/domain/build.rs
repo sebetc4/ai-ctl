@@ -239,17 +239,25 @@ pub fn c_compiler_beside(cxx: &Path) -> Option<PathBuf> {
     Some(cxx.with_file_name(format!("gcc{suffix}")))
 }
 
-/// Every `-D` option of a build: the recipe's own, then the builder's, which
-/// take precedence. Every compiler is named, so CMake finds neither a
+/// Every `-D` option of the build `id`: the recipe's own, its release
+/// options when `id` is a release, then the builder's, which take
+/// precedence. Every compiler is named, so CMake finds neither a
 /// compiler cache's wrapper nor another toolkit on the `PATH`; ggml still
 /// launches the compilers through ccache when it is installed
 /// (`GGML_CCACHE`, on by default), which only speeds up a rebuild.
-pub fn cmake_flags(recipe: &Recipe, toolchain: &Toolchain) -> BTreeMap<String, String> {
+pub fn cmake_flags(
+    recipe: &Recipe,
+    toolchain: &Toolchain,
+    id: &BuildId,
+) -> BTreeMap<String, String> {
     // `Toolchain::new` refused paths that are not UTF-8.
     let path = |path: &Path| path.to_string_lossy().into_owned();
+    let release = recipe.tags.release(id.as_str()).is_some();
+    let release_flags = recipe.release_flags.iter().filter(|_| release);
     let mut flags: BTreeMap<String, String> = recipe
         .cmake_flags
         .iter()
+        .chain(release_flags)
         .map(|(name, value)| ((*name).to_owned(), (*value).to_owned()))
         .collect();
     let builder = [
@@ -395,7 +403,7 @@ mod tests {
 
     #[test]
     fn cmake_flags_name_every_compiler_and_the_blackwell_architecture() {
-        let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++-15"));
+        let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++-15"), &commit_id());
         let expected = [
             ("BUILD_SHARED_LIBS", "OFF"),
             ("CMAKE_BUILD_TYPE", "Release"),
@@ -426,7 +434,7 @@ mod tests {
             cmake_flags: &[("GGML_CUDA", "OFF"), ("WHISPER_BUILD_TESTS", "OFF")],
             ..LLAMA_CPP
         };
-        let flags = cmake_flags(&recipe, &toolchain("/usr/bin/g++"));
+        let flags = cmake_flags(&recipe, &toolchain("/usr/bin/g++"), &commit_id());
         assert_eq!(flags["GGML_CUDA"], "ON");
         assert_eq!(flags["WHISPER_BUILD_TESTS"], "OFF");
     }
@@ -436,7 +444,7 @@ mod tests {
         // A build is compared with its recipe's options: one the builder
         // overrode would leave every build unlike its recipe.
         for recipe in crate::domain::recipe::RECIPES {
-            let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"));
+            let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"), &commit_id());
             for (name, value) in recipe.cmake_flags {
                 assert_eq!(
                     flags.get(*name).map(String::as_str),
@@ -446,6 +454,30 @@ mod tests {
                 );
             }
         }
+    }
+
+    /// The id of a build made from a commit no release tags.
+    fn commit_id() -> BuildId {
+        BuildId::from_commit(&CommitId::parse(COMMIT).unwrap())
+    }
+
+    #[test]
+    fn a_release_alone_takes_its_recipes_release_options() {
+        let release = BuildId::parse("v1.0.0").unwrap();
+        let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++"), &release);
+        assert_eq!(flags["LLAMA_BUILD_IS_DEV"], "OFF");
+        assert_eq!(flags["LLAMA_USE_PREBUILT_UI"], "OFF");
+        for id in [commit_id(), BuildId::parse("b12359").unwrap()] {
+            let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++"), &id);
+            assert_eq!(flags.get("LLAMA_BUILD_IS_DEV"), None, "{id}");
+        }
+        // The builder's options win over them too.
+        let recipe = Recipe {
+            release_flags: &[("GGML_NATIVE", "OFF")],
+            ..LLAMA_CPP
+        };
+        let flags = cmake_flags(&recipe, &toolchain("/usr/bin/g++"), &release);
+        assert_eq!(flags["GGML_NATIVE"], "ON");
     }
 
     fn built(id: &str, at: i64) -> Build {

@@ -1279,6 +1279,43 @@ mod tests {
     }
 
     #[test]
+    fn a_nightly_build_of_llama_cpp_passes_as_ai_ctl_0_3_0_built_it() {
+        // `b12359`'s `build.json`, built on 2026-11-14 by ai-ctl 0.3.0, before
+        // its recipe set `LLAMA_BUILD_IS_DEV=OFF` for a release.
+        let flags = [
+            ("BUILD_SHARED_LIBS", "OFF"),
+            ("CMAKE_BUILD_TYPE", "Release"),
+            ("CMAKE_CUDA_ARCHITECTURES", "120a-real"),
+            ("CMAKE_CUDA_COMPILER", "/usr/local/cuda-13.5/bin/nvcc"),
+            ("CMAKE_CUDA_HOST_COMPILER", "/usr/bin/g++"),
+            ("CMAKE_CXX_COMPILER", "/usr/bin/g++"),
+            ("CMAKE_C_COMPILER", "/usr/bin/gcc"),
+            ("GGML_CUDA", "ON"),
+            ("GGML_NATIVE", "ON"),
+            ("LLAMA_BUILD_APP", "OFF"),
+            ("LLAMA_BUILD_EXAMPLES", "OFF"),
+            ("LLAMA_BUILD_SERVER", "ON"),
+            ("LLAMA_BUILD_TESTS", "OFF"),
+            ("LLAMA_BUILD_TOOLS", "ON"),
+            ("LLAMA_USE_PREBUILT_UI", "OFF"),
+        ];
+        let b12359 = crate::domain::build::BuildId::parse("b12359").unwrap();
+        let builds = FakeBuilds {
+            builds: vec![Build {
+                id: b12359.clone(),
+                cmake_flags: flags
+                    .map(|(name, value)| (name.to_owned(), value.to_owned()))
+                    .into(),
+                ..b11538()
+            }],
+            current: Some(b12359),
+            ..FakeBuilds::default()
+        };
+        let check = builds_check(&builds, &FakePrograms::default(), installed());
+        assert_eq!(check.status, Status::Ok, "{}", check.detail);
+    }
+
+    #[test]
     fn a_current_build_without_one_of_its_recipes_cmake_options_is_built_again() {
         // b11538 built before its recipe set LLAMA_USE_PREBUILT_UI=OFF.
         let mut flags: BTreeMap<String, String> = crate::domain::recipe::LLAMA_CPP
