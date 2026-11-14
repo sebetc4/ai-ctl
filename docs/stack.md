@@ -37,7 +37,7 @@ which `ai-ctl init` installs; that file is the source of truth for every value q
 | CPU | Intel Core Ultra 9 275HX |
 | RAM | 64 GB DDR5 |
 | OS | Fedora 44 |
-| Driver | NVIDIA 615.78.08, CUDA driver API 13.4 (2026-10-15) |
+| Driver | NVIDIA 620.70.06, CUDA driver API 13.5 (2026-11-12) |
 
 Uses, by priority:
 
@@ -547,9 +547,9 @@ connection, the empty task model and autocomplete turned off among them.
 2. **CUDA toolkit**, for native builds. **Avoid CUDA 13.2**: it is reported to produce gibberish
    with some quantizations when llama.cpp is compiled from source (llama.cpp issue #21255, user
    reports of a fix in 13.3); the evidence is thin but the cost of avoiding it is nil. The driver
-   above supports up to 13.4, installed here since 2026-10-09; `nvcc` 13.4 accepts Fedora 44's
-   GCC 16. The procedure — NVIDIA's repository with its driver packages excluded, a versioned
-   toolkit package, version and release changes — is in [toolchain.md](toolchain.md).
+   above supports up to 13.5, installed here since 2026-11-14 beside 13.4; `nvcc` 13.5 accepts
+   Fedora 44's GCC 16. The procedure — NVIDIA's repository with its driver packages excluded,
+   a versioned toolkit package, version and release changes — is in [toolchain.md](toolchain.md).
 3. **Container tooling**, only for the official-image runtime: the NVIDIA Container Toolkit, whose
    `nvidia-cdi-refresh` units (read in toolkit 1.20.1) write the CDI specification to
    `/var/run/cdi/nvidia.yaml` at boot and at each driver change:

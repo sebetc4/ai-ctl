@@ -13,7 +13,7 @@ and prints these commands as remedies.
 |---|---|---|---|
 | NVIDIA driver | Any recent driver; its CUDA version caps the toolkit | `akmod-nvidia`, `xorg-x11-drv-nvidia-cuda` (RPM Fusion) | The driver's CUDA version, shown by `doctor` and `nvidia-smi`, is the newest toolkit it can run |
 | CUDA toolkit | 12.8 or newer, not 13.2, not newer than the driver's CUDA version | `cuda-toolkit-<major>-<minor>` (NVIDIA) | 12.8 adds the `120a-real` architecture; 13.2 is reported to produce wrong output in llama.cpp builds (llama.cpp issue #21255) |
-| Host compiler | A GCC the toolkit accepts | `gcc-c++`, or `gcc<N>-c++` when the default is too new | `nvcc` refuses a GCC newer than the one its `crt/host_config.h` names; 13.2 stops at GCC 15, 13.4 at GCC 16 |
+| Host compiler | A GCC the toolkit accepts | `gcc-c++`, or `gcc<N>-c++` when the default is too new | `nvcc` refuses a GCC newer than the one its `crt/host_config.h` names; 13.2 stops at GCC 15, 13.4 and 13.5 at GCC 16 |
 | CMake | 3.18 or newer | `cmake` | ggml's CUDA backend requires it |
 | git | 2.19.2 or newer | `git` | Builds use a partial clone (`--filter=blob:none`) whose checkout fetches the files lazily: 2.19.0 made `clone` check the objects it receives, and 2.19.2 fixed the lazy fetch (git's release notes) |
 | Ninja | Optional | `ninja-build` | Builds use it when it is installed: an exact progress line, and better scheduling of the CUDA compilations than Make |
@@ -57,18 +57,18 @@ sudo dnf config-manager setopt cuda-fedora44-x86_64.exclude='nvidia-*,kmod-nvidi
 dnf repoquery --repo cuda-fedora44-x86_64 'nvidia-*'   # must print nothing
 ```
 
-**3. CUDA toolkit, by its versioned package.** Pick the driver's CUDA version (13.4 for driver
-615.78.08). Never install the `cuda-toolkit` or `cuda-toolkit-<major>` meta-packages: the first
+**3. CUDA toolkit, by its versioned package.** Pick the driver's CUDA version (13.5 for driver
+620.70.06). Never install the `cuda-toolkit` or `cuda-toolkit-<major>` meta-packages: the first
 follows NVIDIA's newest release, the second the newest of its major version, and a `dnf upgrade`
 would then install a toolkit the driver cannot run. `cuda-toolkit-<major>-<minor>` stays on its
 version. Since CUDA 13.4, no meta-package pulls in a driver.
 
 ```bash
-sudo dnf install cuda-toolkit-13-4
+sudo dnf install cuda-toolkit-13-5
 echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc   # for interactive use
 ```
 
-`/usr/local/cuda` is an `alternatives` link whose priority is the version (13.4 → 134), so it
+`/usr/local/cuda` is an `alternatives` link whose priority is the version (13.5 → 135), so it
 points at the newest toolkit installed without another step. `doctor` finds `nvcc` on the `PATH`,
 and at `/usr/local/cuda/bin/nvcc` otherwise.
 
@@ -98,15 +98,15 @@ and checked before the old one goes.
 
 ```bash
 ai-ctl doctor                      # the driver's CUDA version caps the target
-sudo dnf install cuda-toolkit-13-4 # the new toolkit; /usr/local/cuda follows it
+sudo dnf install cuda-toolkit-13-5 # the new toolkit; /usr/local/cuda follows it
 ai-ctl doctor                      # Toolchain: CUDA toolkit and host compiler ok
 ```
 
 To go back to an older toolkit still installed, pin both links, then return to automatic mode:
 
 ```bash
-sudo alternatives --set cuda /usr/local/cuda-13.3
-sudo alternatives --set cuda-13 /usr/local/cuda-13.3
+sudo alternatives --set cuda /usr/local/cuda-13.4
+sudo alternatives --set cuda-13 /usr/local/cuda-13.4
 sudo alternatives --auto cuda && sudo alternatives --auto cuda-13
 ```
 
@@ -122,9 +122,10 @@ sudo dnf remove $(rpm -qa --qf '%{name}\n' | grep -E -- '-13-2(-|$)')
 Before confirming a removal, read the transaction: it lists only packages of the old version. A
 driver package in it (`akmod-nvidia`, `xorg-x11-drv-nvidia-*`) means something is wrong: answer no.
 
-A build loads the CUDA libraries through `/usr/local/cuda` by their major version
-(`libcudart.so.13`, `libcublas.so.13`): it keeps running after a minor change, and breaks when no
-toolkit of its major version is left.
+A build loads the CUDA libraries by their major version (`libcudart.so.13`, `libcublas.so.13`),
+from the toolkit it was built with, which its `RUNPATH` names (`/usr/local/cuda-13.4/…`), and
+through `/usr/local/cuda` once that toolkit is removed (`/etc/ld.so.conf.d/000_cuda.conf`): it
+keeps running after a minor change, and breaks when no toolkit of its major version is left.
 
 ---
 
@@ -151,6 +152,51 @@ host compiler line, and section 2, step 4 applies.
 
 Newest first. Every change to the driver, the toolkit, the compilers or their repositories, and
 to the cargo tools the reviews run, is recorded here with the commands run.
+
+### 2026-11-14 — CUDA 13.5 beside 13.4
+
+Before: CUDA 13.4 toolkit (`nvcc` 13.4.92), `/usr/local/cuda` on `/usr/local/cuda-13.4`; driver
+620.70.06, whose CUDA version is 13.5. `nvcc` 13.5's `crt/host_config.h`, read from its package
+before the install, accepts GCC 16 at most, as 13.4's does.
+
+```bash
+sudo dnf install cuda-toolkit-13-5
+```
+
+`dnf history` transaction 397, 2026-11-14 10:24 UTC: 62 packages of 13.5 from `cuda-fedora44`,
+no driver package among them.
+
+After: `nvcc` 13.5.37 under `/usr/local/cuda-13.5`, which `/usr/local/cuda` and
+`/usr/local/cuda-13` now point at; `doctor` picks it with the default `g++` 16.2.1. 13.4 stays
+installed until the backends built with 13.5 are checked, to go back by §3; the builds made with
+13.4 still load its libraries, through their `RUNPATH`.
+
+### 2026-11-12 — Driver 615.78.08 → 620.70.06; NVIDIA Container Toolkit 1.20.1 → 1.20.2
+
+Before: driver and kernel module 615.78.08 from RPM Fusion (CUDA 13.4), CUDA 13.4 toolkit
+(`nvcc` 13.4.92) from `cuda-fedora44`, NVIDIA Container Toolkit 1.20.1, kernel `7.3.3-200.fc44`.
+
+```bash
+sudo dnf upgrade
+```
+
+`dnf history` holds the transactions (times in UTC):
+
+| ID | Time | What |
+|---|---|---|
+| 392 | 2026-11-12 19:45 | `dnf upgrade`: `akmod-nvidia` and `xorg-x11-drv-nvidia-cuda`, with their eight NVIDIA dependencies, 615.78.08 → 620.70.06 from `rpmfusion-nonfree-updates`; `nvidia-container-toolkit`, its base and its two libraries, 1.20.1 → 1.20.2 from `nvidia-container-toolkit` |
+| 393 | 2026-11-12 19:53 | akmods: `kmod-nvidia` 620.70.06 for kernel `7.3.3-200.fc44` |
+
+`dnf history info 392` lists the packages. Until the reboot, the loaded module stayed at
+615.78.08 under the libraries of 620.70.06: `nvidia-smi` failed with "Failed to initialize NVML:
+Driver/library version mismatch", and so did `doctor`'s GPU check, which made `build` refuse.
+
+After the reboot on 2026-11-13: driver and kernel module 620.70.06, whose CUDA version is 13.5
+(`nvidia-smi`: CUDA UMD 13.5). `nvidia-cdi-refresh` ran at boot and rewrote
+`/var/run/cdi/nvidia.yaml` for 620.70.06, no command typed. The toolkit was not touched: `nvcc`
+13.4.92; the backends built with it run on the new driver (`llama-server --list-devices` of
+b12227 lists the GPU) and `doctor` passes. The fallback kernel `7.2.15-200.fc44` keeps
+`kmod-nvidia` 615.78.08.
 
 ### 2026-11-06 — Rust 1.97.1 → 1.99.1, pinned by the repository; rustup 1.29.0 → 1.29.3
 
