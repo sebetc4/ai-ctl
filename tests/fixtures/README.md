@@ -87,11 +87,13 @@ Report: phase 0's, `phase-0-probes-and-decisions-report.md`, of the `audio-image
 Captured on 2026-11-09 by `LC_ALL=C git ls-remote --tags --refs -- <repository> <glob>`, each
 project's repository and its recipe's glob, git 2.56.0: one `<hash><TAB>refs/tags/<tag>` per tag,
 sorted by name. Read by `src/infrastructure/git.rs`. Report: roadmap
-`capabilities-status-and-updates`: `phase-4-builds-behind-their-release-report.md`.
+`capabilities-status-and-updates`: `phase-4-builds-behind-their-release-report.md`, or roadmap
+`release-0-3-1`: `phase-0-llama-cpp-releases-report.md` where marked (r), on 2026-11-14.
 
 | Fixture | Captured from |
 |---|---|
-| `llama.cpp-git-ls-remote-excerpt.txt` | `https://github.com/ggml-org/llama.cpp.git`, `b[0-9]*`: 58 of 7702 lines, in their order: the first four, the one tag that is no release, every release from `b12170` on, and the last three |
+| `llama.cpp-git-ls-remote-excerpt.txt` | `https://github.com/ggml-org/llama.cpp.git`, `b[0-9]*`: 58 of 7702 lines, in their order: the first four, the one tag of another form, every `b<N>` from `b12170` on, and the last three; the nightly tags the recipe took until 2026-11-14 (r) |
+| `llama.cpp-git-ls-remote.txt` | `https://github.com/ggml-org/llama.cpp.git`, `v[0-9]*`: 14 tags, the 13 releases `v0.1.0` to `v1.0.0`, annotated, so that each line holds its tag object's hash, and `v1.0.0-b12359-b1b770d`, which names the commit of `b12359` and `v1.0.0` (r) |
 | `whisper.cpp-git-ls-remote.txt` | `https://github.com/ggml-org/whisper.cpp.git`, `v[0-9]*`: 44 tags, 40 releases `vX.Y.Z` |
 | `stable-diffusion.cpp-git-ls-remote.txt` | `https://github.com/leejet/stable-diffusion.cpp.git`, `master-[0-9]*`: 733 tags, 603 releases `master-<N>-<hash>` beside the older `master-<hash>` |
 | `audio.cpp-git-ls-remote.txt` | `https://github.com/0xShug0/audio.cpp.git`, `v[0-9]*`: 18 tags, 13 releases `vX.Y.Z` beside suffixed ones |
