@@ -1,6 +1,6 @@
 # Review: 2026-11-14-release-0-3-1-phase-0
 
-**Status:** verification — the verifier of findings 1, 2 and 4 (review-verifier, medium) not started: usage.py read the five-hour window at 94 %, past 90 %, after the reviewers answered; finding 3 set to fix at once, batch 1; review-tests' reproduction of finding 2 kept as repro/review-tests/annotated-release-test.patch, for the verifier; the scope is `scripts/scope.py range 3051139 0ce63e3`
+**Status:** complete — every finding fixed in the phase: 3 in 8dd7f27, 2 in d1ce179, 4 in 90701b4, 1 in a836158 on the user's go-ahead of 2026-11-14; the recorded mutants at a836158: 94 caught, none missed or gone
 **Scope:** roadmap `release-0-3-1`, phase 0, 3051139..0ce63e3: 182 hunks, +432 −256 lines of code
 **Go-ahead:** the user, tier `medium`
 
@@ -61,6 +61,7 @@ evidence: read: src/application/build.rs:136-143: the id is `recipe.tags.newest(
 
 Reviewers: review-correctness, review-structure. Origin: older. Floor: above. Fingerprint: `bugs | docs/security.md + src/application/build.rs + src/application/doctor.rs | Builder::build + Current::installed + builds_check + rebuild_remedy + top level`.
 Verdict: CONFIRMED. Action: fix, batch 4. the user's go-ahead of 2026-11-14, the remedy and the documented contract changing; a short-commit build whose commit a release tags since keeps --ref <hash> --force, which builds that release, the same commit, and leaves the old build: the remedy cannot know the tags without a fetch.
+Fixed in `a836158`.
 
 ### 2. no test checks out an annotated release tag, which every llama.cpp release now is
 
