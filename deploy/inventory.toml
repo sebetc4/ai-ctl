@@ -128,6 +128,8 @@ source = { build = "stable-diffusion.cpp" }
 #  Dense 27B, hybrid attention (only 16 of 64 layers keep a KV cache)
 #  Estimated VRAM: weights 15.4 GiB + MTP ~2 GiB + KV q8_0 96K 3.2 GiB
 #                  + DeltaNet state ~0.15 GiB + buffers ~1.5 GiB = ~22.2 GiB
+#  Measured: 21422 MiB at its peak, the context full (`ai-ctl bench run`,
+#  llama.cpp v1.0.0, CUDA 13.5, 2026-11-14), its vram_mib.
 # ---------------------------------------------------------------------
 [[models]]
 id = "qwen3.8-27b"
@@ -136,7 +138,7 @@ repo = "unsloth/Qwen3.8-27B-GGUF"
 dir = "llm/qwen3.8-27b"
 # 96K tokens for the active request
 ctx_size = 98304
-vram_mib = 22733
+vram_mib = 21422
 # The gateway stops it after 30 minutes idle; the next request restarts it.
 ttl = 1800
 # Loaded when the gateway starts.
@@ -165,7 +167,8 @@ cache-type-v = "q8_0"
 reasoning-effort = "medium"
 
 # "Long context" variant: same weights, no MTP, ~160K tokens (estimated).
-# Uncomment to add it; switching reloads the model (~10-20 s).
+# Uncomment to add it, then measure its peak with `ai-ctl bench run`: its
+# vram_mib is the estimate above. Switching reloads the model (~10-20 s).
 # [[models]]
 # id = "qwen3.8-27b-long"
 # backend = "llama-native"
@@ -192,6 +195,9 @@ reasoning-effort = "medium"
 #  attention: 10 of 40 layers keep a KV cache, 20 KiB per token in f16).
 #  Estimated VRAM: weights 16.5 GiB + KV f16 128K 2.5 GiB
 #                  + DeltaNet state ~0.06 GiB + buffers ~1.5 GiB = ~20.6 GiB
+#  Measured: 19926 MiB at its peak, the context full (`ai-ctl bench run`,
+#  llama.cpp v1.0.0, CUDA 13.5, 2026-11-14), its vram_mib: whisper
+#  large-v3-turbo runs beside it.
 # ---------------------------------------------------------------------
 [[models]]
 id = "qwen3.6-35b-a3b"
@@ -199,7 +205,7 @@ backend = "llama-native"
 repo = "unsloth/Qwen3.6-35B-A3B-GGUF"
 dir = "llm/qwen3.6-35b-a3b"
 ctx_size = 131072
-vram_mib = 21094
+vram_mib = 19926
 ttl = 1800
 
 [models.files]
@@ -348,7 +354,8 @@ model = "Fish-Audio-S2-Pro-GGUF/fish-audio-s2-pro-bf16.gguf"
 #  itself and decodes an image whole up to 2048x2048, in tiles above.
 #  Each budget is the peak of a 4096x4096 image, the largest size
 #  sd-server makes, or of an edit when higher, so that a request of any
-#  size passes.
+#  size passes. Measured on 2026-11-14 through the gateway, every other
+#  model unloaded (stable-diffusion.cpp master-1098-b521db4, CUDA 13.5).
 # ---------------------------------------------------------------------
 
 # The fast one, and the one that follows a layout: about 10 s an image
@@ -357,7 +364,7 @@ model = "Fish-Audio-S2-Pro-GGUF/fish-audio-s2-pro-bf16.gguf"
 id = "flux-3-image-klein"
 backend = "sd-native"
 dir = "image/flux-3-image-klein"
-vram_mib = 23384
+vram_mib = 21909
 ttl = 1800
 
 [models.files]
@@ -379,7 +386,7 @@ steps = 16
 id = "qwen-image-2.1"
 backend = "sd-native"
 dir = "image/qwen-image-2.1"
-vram_mib = 22773
+vram_mib = 23771
 ttl = 1800
 
 [models.files]
@@ -400,7 +407,7 @@ sampling-method = "euler"
 id = "fibo-2.0-dev"
 backend = "sd-native"
 dir = "image/fibo-2.0-dev"
-vram_mib = 23514
+vram_mib = 23859
 ttl = 1800
 
 [models.files]

@@ -194,7 +194,7 @@ by default (`tools/mtmd/clip.cpp:1756` at `b11700`), a 2048×2048 image or a pho
 27B read one in 231 s, and a 1024×1024 image, 1024 tokens, in 24 to 30 s (2026-10-30, through
 OpenWebUI). OpenWebUI compresses the images it sends to 1024 a side
 ([openwebui.md §7](openwebui.md#7-images)). On the GPU, the 27B's projector would add its 0.9 GB
-and its working set to a budget of 22733 MiB.
+and its working set to a budget of 21422 MiB.
 
 Every file name above exists in the Unsloth repositories (checked 2026-10-08). Unsloth re-uploaded
 the Qwen3.8-27B GGUFs on 2026-08-19/20 with its Dynamic V3.0 quantization (about 10 % better
@@ -315,7 +315,9 @@ decides which models may run together, by their VRAM budgets; with the shipped i
 alone, and only the speech models share the GPU, with one another (§6.4). llama-server's router
 mode is not used: llama-swap is the only layer that swaps ([gpu/llama-swap.md](gpu/llama-swap.md)).
 
-### 6.2 VRAM Budget of the 27B *(estimated)*
+### 6.2 VRAM Budget of the 27B
+
+Estimated from its parts:
 
 | Item | GiB |
 |---|---|
@@ -326,8 +328,11 @@ mode is not used: llama-swap is the only layer that swaps ([gpu/llama-swap.md](g
 | Compute buffers (ubatch 1024) | ~1.5 |
 | **Total** | **~22.2** |
 
-About 1.5 GiB of margin, provided the display runs on the iGPU. The variant without MTP reaches
-~160K tokens within the same budget; it is in `deploy/inventory.toml`, commented out.
+Measured on 2026-11-14 by `ai-ctl bench run`, llama.cpp v1.0.0 built with CUDA 13.5, the context
+filled to its limit: 21422 MiB at its peak, 1.3 GiB under the estimate, and the inventory's
+`vram_mib` since. It leaves 2.6 GiB of the GPU's 24043 usable MiB, provided the display runs on the
+iGPU. The variant without MTP reaches ~160K tokens within the estimated budget; it is in
+`deploy/inventory.toml`, commented out, and not measured.
 
 ### 6.3 Model Settings
 
@@ -374,16 +379,17 @@ a path or flag value containing `${`.
 
 The configuration uses llama-swap's **`capacity`** router (`routing.router.use: capacity`, since
 v267), with one pool, `vram`: the GPU's usable memory — NVML's total less the memory the driver
-reserves, 24075 MiB here — minus the inventory's `vram_margin_mib`, 1024 by default, the same as
-`fit-target`: a model started beside another finds the memory its `--fit` keeps free, and moves no
-layer to the CPU. Each model takes its `vram_mib` from the pool (`capacities.vram`), and llama-swap
-runs together any models whose budgets fit in it. A model whose budget exceeds the pool takes all
-of it, and runs alone. Evicting a model costs its `vram_mib` (`evict_cost`): llama-swap makes room
-by evicting the running models whose budgets add up to the least, which are the quickest to load
-again. The 27B and the 35B need 43827 MiB together, so each runs alone. A model with no
-`capacities` would take nothing and start beside any other, so ai-ctl writes one for every model;
-a margin that leaves the pool nothing is refused by `doctor`'s configuration check,
-`gateway config` and `up`.
+reserves, 24043 MiB here with driver 620.70.06 — minus the inventory's `vram_margin_mib`, 1024 by
+default, the same as `fit-target`: a model started beside another finds the memory its `--fit`
+keeps free, and moves no layer to the CPU. Each model takes its `vram_mib` from the pool
+(`capacities.vram`), and llama-swap runs together any models whose budgets fit in it. A model whose
+budget exceeds the pool takes all of it, and runs alone. Evicting a model costs its `vram_mib`
+(`evict_cost`): llama-swap makes room by evicting the running models whose budgets add up to the
+least, which are the quickest to load again. The 27B and the 35B need 41348 MiB together, so they
+never run together; whisper large-v3-turbo fits beside the 35B, 22139 MiB of the pool's 23019, and
+not beside the 27B. A model with no `capacities` would take nothing and start beside any other, so
+ai-ctl writes one for every model; a margin that leaves the pool nothing is refused by `doctor`'s
+configuration check, `gateway config` and `up`.
 
 Decided: the capacity router, in place of the `matrix` sets ai-ctl computed from the same
 budgets, one per largest combination of models that fit together, and of their bound of 20000
@@ -642,6 +648,12 @@ at 150 to 171 W where the capped readings reach 173 W, the SM clock then at 0.98
 readings around it (0.83 to 1.07). So "slowed by" leaves it out, and the "policy limit" column
 gives its share apart: 3 to 8 % of the depth, prefill and session scenarios, 35 % of the
 overhead scenario, whose short requests leave the GPU waiting.
+
+The memory read is the device's, every process on the GPU included. A browser whose GPU process
+runs on the NVIDIA GPU adds its own: on 2026-11-14, Firefox's started during a run of the 27B and
+took 93 to 250 MiB, the run's peak 21669 MiB where the 27B alone held 21422. `nvidia-smi` lists
+the processes; a model's budget is its peak measured with no other process on the GPU but the
+desktop's few MiB.
 
 ---
 

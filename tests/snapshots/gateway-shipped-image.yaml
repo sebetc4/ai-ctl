@@ -54,8 +54,8 @@ models:
       tools: true
       context: 98304
     capacities:
-      vram: 22733
-    evict_cost: 22733
+      vram: 21422
+    evict_cost: 21422
   "qwen3.6-35b-a3b":
     cmd: |
       podman run
@@ -106,8 +106,8 @@ models:
       tools: true
       context: 131072
     capacities:
-      vram: 21094
-    evict_cost: 21094
+      vram: 19926
+    evict_cost: 19926
   "whisper-large-v3-turbo":
     cmd: |
       /home/user/.local/share/ai-ctl/builds/whisper.cpp/v1.9.5/whisper-server
@@ -360,11 +360,9 @@ models:
     capabilities:
       in: ["text", "image"]
       out: ["image"]
-    # Its budget of 23384 MiB exceeds the pool's 23051: it takes all of it,
-    # and runs alone.
     capacities:
-      vram: 23051
-    evict_cost: 23384
+      vram: 21909
+    evict_cost: 21909
   "qwen-image-2.1":
     cmd: |
       /home/user/.local/share/ai-ctl/builds/stable-diffusion.cpp/master-1024-77b72a2/sd-server
@@ -386,9 +384,11 @@ models:
     capabilities:
       in: ["text", "image"]
       out: ["image"]
+    # Its budget of 23771 MiB exceeds the pool's 23051: it takes all of it,
+    # and runs alone.
     capacities:
-      vram: 22773
-    evict_cost: 22773
+      vram: 23051
+    evict_cost: 23771
   "fibo-2.0-dev":
     cmd: |
       /home/user/.local/share/ai-ctl/builds/stable-diffusion.cpp/master-1024-77b72a2/sd-server
@@ -412,11 +412,11 @@ models:
     capabilities:
       in: ["text", "image"]
       out: ["image"]
-    # Its budget of 23514 MiB exceeds the pool's 23051: it takes all of it,
+    # Its budget of 23859 MiB exceeds the pool's 23051: it takes all of it,
     # and runs alone.
     capacities:
       vram: 23051
-    evict_cost: 23514
+    evict_cost: 23859
 
 routing:
   router:

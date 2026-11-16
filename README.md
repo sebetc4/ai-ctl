@@ -356,7 +356,7 @@ backend = "llama-native"
 repo = "unsloth/Qwen3.8-27B-GGUF"  # for the `hf download` remedy
 dir = "llm/qwen3.8-27b"            # relative to models_dir
 ctx_size = 98304
-vram_mib = 22733
+vram_mib = 21422
 ttl = 1800                         # seconds idle before the gateway stops it
 preload = true
 
