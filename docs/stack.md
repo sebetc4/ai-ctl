@@ -334,6 +334,9 @@ filled to its limit: 21422 MiB at its peak, 1.3 GiB under the estimate, and the 
 iGPU. The variant without MTP reaches ~160K tokens within the estimated budget; it is in
 `deploy/inventory.toml`, commented out, and not measured.
 
+The 35B, estimated at ~20.6 GiB from its parts in the inventory's comment, was measured the same
+day and the same way: 19926 MiB at its peak, its `vram_mib` since.
+
 ### 6.3 Model Settings
 
 [`deploy/inventory.toml`](../deploy/inventory.toml) holds the settings with their reasons in

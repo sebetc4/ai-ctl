@@ -3,6 +3,7 @@
 ## 0.3.1 — unreleased
 
 - llama.cpp built from its releases `vX.Y.Z` (roadmap `release-0-3-1`): `build`'s `latest`, `build outdated` and `build update` take llama.cpp's newest weekly release, its nightly tags `b<N>`, pre-releases, being no release; a commit both forms tag, such as `b12359`, is built as `v1.0.0`; a release is built with `LLAMA_BUILD_IS_DEV=OFF`, so that `llama-server --version` prints its version, `1.0.0`, where a commit no release tags still prints `1.0.0-dev`, an option no installed build is compared with; an installed `b<N>` build keeps serving and passing `doctor`, reads as built from a commit, and `build update` builds the newest release beside it, `build use` going back to it; for such a build that cannot be read or is unlike its recipe, `doctor`, `up` and `gateway config` name `ai-ctl build llama.cpp`, since `--ref b<N>` would build another id.
+- The shipped inventory's budgets measured on the new builds: each chat and image model's `vram_mib` is its peak measured on 2026-11-14 with llama.cpp v1.0.0 and stable-diffusion.cpp `master-1098-b521db4` built with CUDA 13.5, no other process on the GPU but the desktop's — the 27B 21422 MiB and the 35B 19926, where their budgets were estimates, so that whisper large-v3-turbo now runs beside the 35B on a 24 GB GPU; FLUX.3 Image Klein 21909, Qwen-Image 2.1 23771 and Fibo 2.0 Dev 23859; an inventory an earlier `init` wrote keeps its budgets: copy them from `deploy/inventory.toml`.
 
 ## 0.3.0 — 2026-11-13
 

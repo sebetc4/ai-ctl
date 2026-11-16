@@ -500,6 +500,23 @@ its prefix cache kept, so that it runs alone, as the two others do. It replaces 
 and a budget of 21449 MiB, which runs alone too, for 7 % more time a step; `--max-vram`, which
 does not bound the generation.
 
+**The budgets measured again** on 2026-11-14 at `master-1098-b521db4`, built with CUDA 13.5,
+through the gateway: every model unloaded first, NVML's memory sampled every 100 ms from idle to
+the answer, the samples within a second of another process on the GPU left out (`nvidia-smi
+pmon`). A 4096×4096 image at 4 steps, and the edit above at each model's own steps, its load
+included:
+
+| Model | 4096×4096 | Edit, 2048×2048 | `vram_mib` |
+|---|---|---|---|
+| FLUX.3 Image Klein | 138.6 s, 21909 MiB | 77.9 s, 19643 MiB | 21909 |
+| Qwen-Image 2.1 | 346.8 s, 23126 MiB | 483.3 s, 23771 MiB | 23771 |
+| Fibo 2.0 Dev | 420.6 s, 23859 MiB | 1562.2 s, 23475 MiB | 23859 |
+
+FLUX's peaks fell by 1475 and 1662 MiB since 2026-10-30; Qwen-Image's edit rose by 998 MiB,
+Fibo's generation by 345 and its edit by 548. Qwen-Image's and Fibo's budgets exceed the
+gateway's pool, 23019 MiB under driver 620.70.06, and take all of it; FLUX's leaves 1110 MiB,
+less than any other model's: each image model still runs alone.
+
 An edit from the command line, the key on curl's standard input:
 
 ```bash

@@ -59,10 +59,10 @@ backends, each with several models; each model's `vram_mib` is its peak measured
 
 | Domain | Backend | What it is | GPU notes |
 |---|---|---|---|
-| LLM | llama.cpp (`llama-server`), [stack.md](../stack.md) | GGUF inference, OpenAI and Anthropic APIs | 21094 and 22733 MiB for the two chat models: each runs alone |
+| LLM | llama.cpp (`llama-server`), [stack.md](../stack.md) | GGUF inference, OpenAI and Anthropic APIs | 19926 and 21422 MiB for the 35B and the 27B, measured on 2026-11-14 at v1.0.0 built with CUDA 13.5: the 27B runs alone, the 35B beside whisper large-v3-turbo alone |
 | Speech-to-text | whisper.cpp (`whisper-server`), [audio/whisper-cpp.md](../audio/whisper-cpp.md) | ggml; `/v1/audio/transcriptions` | 2213 and 3895 MiB for large-v3-turbo and large-v3 |
 | Speech, all tasks | audio.cpp (`audiocpp_server`), [audio/audio-cpp.md](../audio/audio-cpp.md) | ggml; TTS, voice cloning, ASR (110+ model families); `/v1/audio/speech`, `/v1/audio/transcriptions`, `/v1/tasks/run` | 5548 MiB for Qwen3-ASR, 5542 to 12768 MiB for the five TTS models, the cloning ones measured with the voice library's longest reference |
-| Image | stable-diffusion.cpp (`sd-server`), [image/stable-diffusion-cpp.md](../image/stable-diffusion-cpp.md) | ggml; `/v1/images/generations`, `/v1/images/edits` | 22773 to 23514 MiB for the three models, each the peak of the largest request it serves, their weights in RAM (16 to 21 GiB): each runs alone |
+| Image | stable-diffusion.cpp (`sd-server`), [image/stable-diffusion-cpp.md](../image/stable-diffusion-cpp.md) | ggml; `/v1/images/generations`, `/v1/images/edits` | 21909 to 23859 MiB for the three models, measured on 2026-11-14 at `master-1098-b521db4` built with CUDA 13.5, each the peak of the largest request it serves, their weights in RAM (16 to 21 GiB): each runs alone |
 
 The clients are OpenCode, OpenWebUI, scripts, and Claude Code's agents through the agents'
 client. Several backends default to port 8080; behind llama-swap each gets its own (below).
