@@ -163,8 +163,8 @@ models:
       in: ["audio"]
       out: ["text"]
     capacities:
-      vram: 5548
-    evict_cost: 5548
+      vram: 5550
+    evict_cost: 5550
   "voxtral-4b-tts":
     # The server reads /home/user/.local/state/ai-ctl/gateway/audiocpp/voxtral-4b-tts.json, which `ai-ctl up` writes:
     #   {
@@ -194,8 +194,8 @@ models:
       in: ["text"]
       out: ["audio"]
     capacities:
-      vram: 8459
-    evict_cost: 8459
+      vram: 8446
+    evict_cost: 8446
   "qwen3-tts":
     # The server reads /home/user/.local/state/ai-ctl/gateway/audiocpp/qwen3-tts.json, which `ai-ctl up` writes:
     #   {
@@ -226,8 +226,8 @@ models:
       in: ["text"]
       out: ["audio"]
     capacities:
-      vram: 6914
-    evict_cost: 6914
+      vram: 6902
+    evict_cost: 6902
   "qwen3-tts-q8":
     # The server reads /home/user/.local/state/ai-ctl/gateway/audiocpp/qwen3-tts-q8.json, which `ai-ctl up` writes:
     #   {
@@ -261,8 +261,8 @@ models:
       in: ["text"]
       out: ["audio"]
     capacities:
-      vram: 5542
-    evict_cost: 5542
+      vram: 5530
+    evict_cost: 5530
   "fish-s2-pro-q8":
     # The server reads /home/user/.local/state/ai-ctl/gateway/audiocpp/fish-s2-pro-q8.json, which `ai-ctl up` writes:
     #   {
@@ -293,8 +293,8 @@ models:
       in: ["text"]
       out: ["audio"]
     capacities:
-      vram: 10310
-    evict_cost: 10310
+      vram: 10084
+    evict_cost: 10084
   "fish-s2-pro-bf16":
     # The server reads /home/user/.local/state/ai-ctl/gateway/audiocpp/fish-s2-pro-bf16.json, which `ai-ctl up` writes:
     #   {
@@ -325,8 +325,8 @@ models:
       in: ["text"]
       out: ["audio"]
     capacities:
-      vram: 12768
-    evict_cost: 12768
+      vram: 12610
+    evict_cost: 12610
   "flux-3-image-klein":
     cmd: |
       /home/user/.local/share/ai-ctl/builds/stable-diffusion.cpp/master-1024-77b72a2/sd-server

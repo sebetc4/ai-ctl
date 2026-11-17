@@ -6,7 +6,9 @@ safetensors. ai-ctl builds it, `ai-ctl build audio.cpp`, and the gateway serves 
 `audiocpp_server` models with it. This document says how it builds, runs, gets ready and answers,
 what guards it, and which models it serves. Every fact below was probed on this
 machine on 2026-10-20 unless dated otherwise, at release `v0.9.2` (commit `0097d365`,
-2026-10-15), with nvcc 13.4.92, g++ 16.2.1 and llama-swap v263.
+2026-10-15), with nvcc 13.4.92, g++ 16.2.1 and llama-swap v263. ai-ctl's build has been at
+`v0.9.5` (commit `61c7838b`, 2026-11-14) since 2026-11-16, with nvcc 13.5.37: §4 gives its key's
+probe and §5 the peaks the inventory budgets.
 
 ---
 
@@ -55,6 +57,8 @@ machine on 2026-10-20 unless dated otherwise, at release `v0.9.2` (commit `0097d
   - The binary is `bin/audiocpp_server`, 100.6 MB. Its 142 cubins are all `sm_120a`, with no PTX.
   - Besides the CUDA libraries whisper.cpp links, it links `libcufft.so.12`, for two CUDA
     objects of its own outside ggml (`istft_cuda_runtime.cu`, `torch_random_cuda_runtime.cu`).
+  - At `v0.9.5` with nvcc 13.5.37 (2026-11-16), `ai-ctl build audio.cpp` compiled 1365 steps in
+    7 min 33 s; `--version` prints `git: 61c7838b 2026-11-14`.
 - **Version and devices.**
   - `--version` (exit 0) prints `audio.cpp dev`, then `git: 0097d36 2026-10-15`,
     `build: Release, gcc 16.2.1, Linux x86_64` and `backends: cpu,cuda`. It says "dev" on the
@@ -73,7 +77,9 @@ machine on 2026-10-20 unless dated otherwise, at release `v0.9.2` (commit `0097d
   `ui_management` and `voice_dir`, plus `models`. Each model has an `id`, a `family`, a `task`,
   a `mode`, a `path` (a GGUF, or a directory of safetensors), an optional
   `model_spec_override` and its `session_options`. `--host` and `--port` override the file.
-  Without `--config`, `lazy_load` is forced on.
+  Without `--config`, `lazy_load` is forced on. `v0.9.5` adds `models_root`, the web UI's models
+  folder, which ai-ctl does not write, the UI being off (`app/server/config.cpp`, read on
+  2026-11-16).
 - **Options of note.**
   - `--max-loaded-models` keeps at most that many models resident, and `--idle-unload-ms` unloads
     them after a quiet spell.
@@ -180,6 +186,10 @@ machine on 2026-10-20 unless dated otherwise, at release `v0.9.2` (commit `0097d
   `POST /v1/models/load`, `/v1/models/unload`, `/v1/tasks/run`, an `OPTIONS` preflight and a
   `text/plain` `POST` from another origin get 401, and `GET /health` 200; with `Bearer` or
   `X-Api-Key`, the voices answer 200; no `Access-Control-*` header.
+- **Rebased on `v0.9.5`** (2026-11-16): the patch applies at an offset of 8 lines, the check
+  still at the top of `RequestDispatcher::handle`, which both runtimes still call for every
+  request. Probed on the server ai-ctl built, Qwen3-TTS with `lazy_load` on: the same answers as
+  at `v0.9.4`, route by route, and SIGTERM ends it with 0.
 
 ---
 
@@ -302,24 +312,28 @@ After it, the French took 3.6 to 4.4 s for 17 to 18 s, and the English 3.5 to 4.
 20 s: warm, Qwen3-TTS is as fast as Voxtral BF16. Fish S2 Pro Q8_0 with its tags took 9.9 to
 10.9 s for 18.6 to 22.0 s.
 
-**The peaks the inventory budgets**, measured on 2026-10-29 through ai-ctl's gateway, every model
-unloaded before each request, the GPU's memory sampled every 100 ms. The peaks above were taken
-with JFK's 11 s as the reference and as the audio; behind the gateway, with a reference of
-40.6 s, the longest of the user's voice library, Fish S2 Pro Q8_0 beside Qwen3-TTS and Voxtral
-answered 500 "failed to allocate Fish DAC codec encode graph". The French text was one
-paragraph of 224 characters, then the same four times:
+**The peaks the inventory budgets**, measured on 2026-11-16 at `v0.9.5` through ai-ctl's gateway,
+every model unloaded before each request, NVML's memory sampled every 100 ms from idle to the
+answer, no other process on the GPU but the desktop's 4 MiB (`nvidia-smi pmon`). The peaks above
+were taken with JFK's 11 s as the reference and as the audio. Behind the gateway, the cloning
+models take the longest reference of the user's voice library, 38.56 s; on 2026-10-29, with one
+of 40.6 s since cut, Fish S2 Pro Q8_0 beside Qwen3-TTS and Voxtral answered 500 "failed to
+allocate Fish DAC codec encode graph". The French text is one paragraph of 227 characters, then
+the same four times, no request giving `language`. Each cell gives the answer's time, the load
+included, and the peak:
 
-| Model | Request | Peak, one paragraph | Peak, four |
-|---|---|---|---|
-| Qwen3-TTS, native | reference of 40.6 s | 6700 MiB | 6914 MiB |
-| Qwen3-TTS, `q8_0` | reference of 40.6 s | 5328 MiB | 5542 MiB |
-| Fish S2 Pro, Q8_0 | reference of 40.6 s | 10310 MiB | 10310 MiB |
-| Fish S2 Pro, BF16 | reference of 40.6 s | 12768 MiB | 12768 MiB |
-| Voxtral 4B TTS, BF16 | `fr_female` | 8444 MiB | 8446 MiB |
+| Model | Request | One paragraph | Four | Larger peak, 2026-10-29 |
+|---|---|---|---|---|
+| Qwen3-TTS, native | reference of 38.56 s | 14.6 s, 6686 MiB | 19.1 s, 6902 MiB | 6914 MiB |
+| Qwen3-TTS, `q8_0` | reference of 38.56 s | 15.8 s, 5318 MiB | 20.0 s, 5530 MiB | 5542 MiB |
+| Fish S2 Pro, Q8_0 | reference of 38.56 s | 16.8 s, 10084 MiB | 40.3 s, 10084 MiB | 10310 MiB |
+| Fish S2 Pro, BF16 | reference of 38.56 s | 25.5 s, 12610 MiB | 53.9 s, 12610 MiB | 12768 MiB |
+| Voxtral 4B TTS, BF16 | `fr_female` | 7.9 s, 8444 MiB | 15.3 s, 8446 MiB | 8446 MiB |
 
-The reference weighs on Fish, whose codec encodes it whole, and the text a little on Qwen3-TTS.
-Qwen3-ASR reads audio in chunks of 30 s at most (`audio_chunk_duration_sec`,
-`model_specs/qwen3_asr.json`): it peaked at 5548 MiB on 60 s of French as on 180 s, where
+The reference weighs on Fish, whose codec encodes it whole, and the text a little on Qwen3-TTS:
+Fish's peaks fell by 226 and 158 MiB with a reference 2 s shorter. Qwen3-ASR reads audio in
+chunks of 30 s at most (`audio_chunk_duration_sec`, `model_specs/qwen3_asr.json`): it peaked at
+5550 MiB on 60 s of French, in 6.8 s, as on 180 s, in 9.0 s, 5548 MiB on 2026-10-29, where
 whisper large-v3 stayed at 3896 MiB. Each budget of the inventory is the larger peak.
 
 The user's verdicts by ear, on 2026-10-23 and 2026-10-28:

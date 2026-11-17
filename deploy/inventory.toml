@@ -248,7 +248,8 @@ model = "ggml-large-v3.bin"
 # The transcript closest to the audio, hesitations included. audio.cpp
 # reads the whole directory, Qwen's safetensors, and transcribes WAV only:
 # OpenWebUI, which sends MP3 or WebM, needs a whisper model. It reads
-# audio in 30 s chunks: its budget is a full chunk's peak.
+# audio in 30 s chunks: its budget is a full chunk's peak, measured on
+# 2026-11-16 (audio.cpp v0.9.5, CUDA 13.5).
 [[models]]
 id = "qwen3-asr-1.7b"
 backend = "audio-native"
@@ -256,7 +257,7 @@ repo = "Qwen/Qwen3-ASR-1.7B-hf"
 dir = "stt/qwen3-asr-1.7b"
 family = "qwen3_asr"
 task = "asr"
-vram_mib = 5548
+vram_mib = 5550
 ttl = 1800
 
 
@@ -266,10 +267,12 @@ ttl = 1800
 #  clone a reference voice: a request's `voice` names <voice>.wav in
 #  `voices`, a directory of models_dir, and its transcript is the line
 #  <voice>|<transcript> of voices/prompt_text. A request naming no
-#  reference fails. Their budgets are the peaks with a 40 s reference and
-#  a long text: a longer reference needs more, Fish's above all, which
-#  fails a request it cannot encode ("failed to allocate Fish DAC codec
-#  encode graph"); measure again before adding one.
+#  reference fails. Their budgets are the peaks with a 38.56 s reference
+#  and a long text: a longer reference needs more, Fish's above all,
+#  which fails a request it cannot encode ("failed to allocate Fish DAC
+#  codec encode graph"); measure again before adding one. Measured on
+#  2026-11-16 through the gateway, every other model unloaded (audio.cpp
+#  v0.9.5, CUDA 13.5).
 # ---------------------------------------------------------------------
 
 # Preset voices, such as fr_male and fr_female; nine languages.
@@ -280,7 +283,7 @@ repo = "audio-cpp/audio.cpp-gguf"
 dir = "tts/voxtral-4b-tts"
 family = "voxtral_tts"
 task = "tts"
-vram_mib = 8459
+vram_mib = 8446
 ttl = 1800
 
 [models.files]
@@ -296,7 +299,7 @@ dir = "tts/qwen3-tts-1.7b-base"
 family = "qwen3_tts"
 task = "tts"
 voices = "voices"
-vram_mib = 6914
+vram_mib = 6902
 ttl = 1800
 
 [[models]]
@@ -307,7 +310,7 @@ dir = "tts/qwen3-tts-1.7b-base"
 family = "qwen3_tts"
 task = "tts"
 voices = "voices"
-vram_mib = 5542
+vram_mib = 5530
 ttl = 1800
 
 [models.session_options]
@@ -323,7 +326,7 @@ dir = "tts/fish-audio-s2-pro"
 family = "fish_audio"
 task = "tts"
 voices = "voices"
-vram_mib = 10310
+vram_mib = 10084
 ttl = 1800
 
 [models.files]
@@ -337,7 +340,7 @@ dir = "tts/fish-audio-s2-pro"
 family = "fish_audio"
 task = "tts"
 voices = "voices"
-vram_mib = 12768
+vram_mib = 12610
 ttl = 1800
 
 [models.files]
