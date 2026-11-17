@@ -41,7 +41,9 @@ the user, which can read everything ai-ctl reads.
   `/wol-health` answers 200, on v263 as well. On v271, probed on 2026-11-08, `/v1/realtime` also
   takes a websocket with no `?model=`, its handshake answered by llama-swap itself behind the
   key until a `session.update` names the model: 401 without the key, with `?model=`,
-  `?intent=transcription` or neither; the routes above answer as on v270.
+  `?intent=transcription` or neither; the routes above answer as on v270. On v273, probed on
+  2026-11-17, every route above answers as on v271, `/props` with `autoload=false` included,
+  whose new handler sits behind the key.
 - **The backends**, llama-server, on `127.0.0.1:${PORT}`, at ports llama-swap assigns from
   5800. Every route answers 401 without the key except `/health`, `/v1/health` and the files of
   the web UI a llama-server embeds, which ai-ctl's build leaves out (§7). ai-ctl passes

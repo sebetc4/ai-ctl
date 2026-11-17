@@ -133,7 +133,7 @@ of `capabilities-status-and-updates`).
   is declared as image; an `mmproj` given as a flag rather than a file is not counted.
 
 Checked through the gateway on v271 on 2026-11-09, the twelve models unloaded and the 27B
-starting: each `sd-server` model showed `image` in `output_modalities` and `image_generation`,
+starting, and on v273 on 2026-11-17, thirteen models and the 27B loaded: each `sd-server` model showed `image` in `output_modalities` and `image_generation`,
 each chat model `vision` and `function_calling` with its window, and no `image_generation`.
 
 ---
@@ -197,7 +197,7 @@ Checked on 2026-10-08 and 2026-10-09:
   `startPreload`, read on 2026-11-12). A llama-server registers `/` only with its web UI, which
   ai-ctl's build leaves out ([security.md §7](../security.md#build-sources)),
   so it answers 404 once its model is loaded: the gateway's log reads `failed to preload model
-  <id>: status 404` beside `model loaded`, and the model answers.
+  <id>: status 404` beside `model loaded`, and the model answers, on v273 as well (2026-11-17).
 
 The audio and image routes, probed on v263 on 2026-10-20 with a fake upstream that logs each
 request, then with each server behind the gateway:
@@ -213,6 +213,11 @@ request, then with each server behind the gateway:
 - **Headers.** Each forwarded request carries the client's `Authorization: Bearer <key>`
   unchanged, its `Host`, and an added `X-Forwarded-For: 127.0.0.1`. llama-swap's own health
   check and its `GET /v1/models` after a start carry no key.
+- **`Expect: 100-continue`**, which curl sends for a body over about 1 MiB, such as an audio
+  upload or an image edit. Since v272 (#1319) the client gets the backend's own status after
+  the `100 Continue`; v271 answered `200 OK` with the backend's error as its body. Probed on
+  2026-11-17: v271 and v273 in front of a fake upstream answering 400, and v273 in front of
+  `sd-server`, whose 400 for an edit with no prompt reached the client.
 
 The models' ports, read in v263's source (`internal/config/macros.go`) and probed on 2026-10-29:
 

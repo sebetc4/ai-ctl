@@ -22,7 +22,8 @@ found on the archive downloaded, then written in `src/domain/gateway.rs`; its `-
 checksums file are captured into `tests/fixtures/`; `llama-swap -validate` runs on the shipped
 configuration's snapshots, and the gateway runs end to end on this machine, a chat, a
 transcription, a speech and an image. v270 took that path on 2026-11-07 and 2026-11-08, v271 on
-2026-11-08 (roadmap `capabilities-status-and-updates`, phase 1).
+2026-11-08 (roadmap `capabilities-status-and-updates`, phase 1), v273 on 2026-11-17 (roadmap
+`release-0-3-1`, phase 2).
 
 The push of the tag runs the workflow `.github/workflows/release.yml` on GitHub Actions, in the
 public repository `sebetc4/ai-ctl`. It checks the tag, checks and builds ai-ctl, and publishes
