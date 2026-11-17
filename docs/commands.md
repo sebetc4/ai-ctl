@@ -222,7 +222,7 @@ llama.cpp             v0.9.0               newest v1.0.0               behind
 whisper.cpp           v1.9.5               newest v1.9.5               current
 stable-diffusion.cpp  master-1024-77b72a2  newest master-1068-fc350be  behind
 audio.cpp             v0.9.3               newest v0.9.4               behind
-llama-swap            v271                 pinned v271                 current
+llama-swap            v273                 pinned v273                 current
 ```
 
 | Argument | Default | Meaning |
@@ -371,7 +371,7 @@ ai-ctl gateway <install|config>
 ai-ctl gateway install
 ```
 
-Installs the llama-swap release this ai-ctl pins, `v271`, and no other: llama-swap is updated only
+Installs the llama-swap release this ai-ctl pins, `v273`, and no other: llama-swap is updated only
 through ai-ctl's pin, whatever release is current, behind or ahead of it. Downloads the release's
 Linux x86_64 archive from GitHub with `curl`, HTTPS only, checks its SHA-256 against the digest
 ai-ctl carries for it, the only source of trust, unpacks the `llama-swap` binary, runs it

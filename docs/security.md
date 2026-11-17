@@ -283,7 +283,7 @@ script before running it. `ai-ctl init` never overwrites the installed one.
 
 ### llama-swap Releases
 
-`ai-ctl gateway install` installs the release ai-ctl pins, v271, and no other: llama-swap is
+`ai-ctl gateway install` installs the release ai-ctl pins, v273, and no other: llama-swap is
 updated only through ai-ctl's pin. It downloads the release's archive from llama-swap's GitHub
 releases, over HTTPS only, redirects included, and checks its SHA-256 against the digest ai-ctl
 carries for that release, the only source of trust. That digest was read in the release's

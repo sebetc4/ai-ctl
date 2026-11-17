@@ -1040,7 +1040,7 @@ mod tests {
                 inventory: FakeInventory(Ok(Some(inventory("/models")))),
                 builds: FakeBuilds::current_b11538(),
                 gpu: ScriptedGpu::new(vec![Probed::Found(gpu())]),
-                releases: FakeReleases::current("v271"),
+                releases: FakeReleases::current("v273"),
                 gateway: FakeGateway::default(),
                 processes: FakeProcesses::default(),
                 ports: FakePorts::default(),
@@ -1108,7 +1108,7 @@ mod tests {
     }
 
     fn release() -> Release {
-        Release::parse("v271").unwrap()
+        Release::parse("v273").unwrap()
     }
 
     fn message<T: std::fmt::Debug>(result: Result<T>) -> String {
@@ -1228,7 +1228,7 @@ mod tests {
     fn up_refuses_a_release_off_the_pin_that_no_ai_ctl_checked_against_its_pin() {
         // An older ai-ctl's `--version` installed it against its release's
         // own checksums, or a digest the user gave, and recorded nothing.
-        for release in ["v267", "v270", "v272", "v300"] {
+        for release in ["v267", "v272", "v274", "v300"] {
             let mut world = World::new();
             world.releases = FakeReleases::current(release);
             world.releases.record = None;
@@ -1243,7 +1243,7 @@ mod tests {
         }
         // Installed by an ai-ctl that pins it, which recorded its check.
         let mut world = World::new();
-        world.releases = FakeReleases::current("v272");
+        world.releases = FakeReleases::current("v274");
         world.releases.record = Some(OTHER_DIGEST);
         world.up().0.unwrap();
         assert_eq!(world.gateway.started.get(), 1);
@@ -1251,7 +1251,7 @@ mod tests {
 
     #[test]
     fn up_refuses_a_release_whose_record_cannot_be_read() {
-        for release in ["v270", "v271", "v272"] {
+        for release in ["v272", "v273", "v274"] {
             let mut world = World::new();
             world.releases = FakeReleases::current(release);
             world.releases.digest_fails = true;
@@ -1273,7 +1273,7 @@ mod tests {
             world.releases.record = record;
             assert_eq!(
                 message(world.up().0),
-                "llama-swap v271 was never checked against the digest this ai-ctl pins for it; \
+                "llama-swap v273 was never checked against the digest this ai-ctl pins for it; \
                  run `ai-ctl gateway install`",
                 "{record:?}"
             );

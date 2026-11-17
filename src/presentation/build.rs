@@ -463,7 +463,7 @@ mod tests {
                 let release = Release::parse(release).unwrap();
                 (release, swap_standing(release))
             }),
-            pinned: Release::parse("v271").unwrap(),
+            pinned: Release::parse("v273").unwrap(),
         }
     }
 
@@ -481,12 +481,12 @@ mod tests {
             found("audio.cpp", "", "v0.9.4", Standing::NotBuilt),
         ];
         assert_eq!(
-            render_outdated(&outdated(projects, Some("v270"))),
+            render_outdated(&outdated(projects, Some("v272"))),
             "llama.cpp             b12111               newest b12177               behind\n\
              whisper.cpp           v1.9.5               newest v1.9.5               current\n\
              stable-diffusion.cpp  master-1024-77b72a2  newest master-1043-0a1b2c3  behind\n\
              audio.cpp             -                    newest v0.9.4               not built\n\
-             llama-swap            v270                 pinned v271                 behind; ai-ctl gateway install\n"
+             llama-swap            v272                 pinned v273                 behind; ai-ctl gateway install\n"
         );
     }
 
@@ -502,10 +502,10 @@ mod tests {
             ),
         ];
         assert_eq!(
-            render_outdated(&outdated(projects, Some("v271"))),
+            render_outdated(&outdated(projects, Some("v273"))),
             "llama.cpp    79e2e74eb1  newest b12177  built from a commit\n\
              whisper.cpp  v1.9.5      newest v1.9.5  off its recipe: v1.9.5 was built without reuse-address.patch\n\
-             llama-swap   v271        pinned v271    current\n"
+             llama-swap   v273        pinned v273    current\n"
         );
     }
 
@@ -520,10 +520,10 @@ mod tests {
             found("whisper.cpp", "v1.9.5", "v1.9.5", Standing::Current),
         ];
         assert_eq!(
-            render_outdated(&outdated(projects, Some("v271"))),
+            render_outdated(&outdated(projects, Some("v273"))),
             "llama.cpp    b12111  newest unknown  cannot read its releases: cannot read the tags: no route\n\
              whisper.cpp  v1.9.5  newest v1.9.5   current\n\
-             llama-swap   v271    pinned v271     current\n"
+             llama-swap   v273    pinned v273     current\n"
         );
     }
 
@@ -533,30 +533,30 @@ mod tests {
             let text = render_outdated(&outdated(vec![], swap));
             text.trim_end().to_owned()
         };
-        assert_eq!(line(Some("v271")), "llama-swap  v271  pinned v271  current");
-        assert_eq!(
-            line(Some("v270")),
-            "llama-swap  v270  pinned v271  behind; ai-ctl gateway install"
-        );
+        assert_eq!(line(Some("v273")), "llama-swap  v273  pinned v273  current");
         assert_eq!(
             line(Some("v272")),
-            "llama-swap  v272  pinned v271  ahead of the pin; ai-ctl gateway install goes back to it"
+            "llama-swap  v272  pinned v273  behind; ai-ctl gateway install"
+        );
+        assert_eq!(
+            line(Some("v274")),
+            "llama-swap  v274  pinned v273  ahead of the pin; ai-ctl gateway install goes back to it"
         );
         assert_eq!(
             line(Some("v266")),
-            "llama-swap  v266  pinned v271  behind, and up needs v267 or later; ai-ctl gateway install"
+            "llama-swap  v266  pinned v273  behind, and up needs v267 or later; ai-ctl gateway install"
         );
         assert_eq!(
             line(None),
-            "llama-swap  -  pinned v271  not installed; ai-ctl gateway install"
+            "llama-swap  -  pinned v273  not installed; ai-ctl gateway install"
         );
-        assert_eq!(PINNED.release, Release::parse("v271").unwrap());
+        assert_eq!(PINNED.release, Release::parse("v273").unwrap());
     }
 
     #[test]
     fn outdated_exits_0_when_each_project_is_current_whatever_llama_swap_is() {
         let current = || vec![found("whisper.cpp", "v1.9.5", "v1.9.5", Standing::Current)];
-        assert_eq!(outdated_status(&outdated(current(), Some("v271"))), 0);
+        assert_eq!(outdated_status(&outdated(current(), Some("v273"))), 0);
         assert_eq!(outdated_status(&outdated(current(), Some("v260"))), 0);
         assert_eq!(outdated_status(&outdated(current(), None)), 0);
         assert_eq!(outdated_status(&outdated(vec![], None)), 0);
@@ -575,7 +575,7 @@ mod tests {
                 found("llama.cpp", "b1", "b2", standing.clone()),
             ];
             assert_eq!(
-                outdated_status(&outdated(projects, Some("v271"))),
+                outdated_status(&outdated(projects, Some("v273"))),
                 4,
                 "{standing:?}"
             );
@@ -592,7 +592,7 @@ mod tests {
                 found: Err("no route".into()),
             },
         ];
-        assert_eq!(outdated_status(&outdated(projects, Some("v271"))), 1);
+        assert_eq!(outdated_status(&outdated(projects, Some("v273"))), 1);
     }
 
     fn updated(project: &str, outcome: UpdateOutcome) -> ProjectUpdate {

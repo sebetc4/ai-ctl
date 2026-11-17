@@ -1035,7 +1035,7 @@ mod tests {
             inventory: &store,
             builds,
             programs,
-            releases: &FakeReleases::current("v271"),
+            releases: &FakeReleases::current("v273"),
             gateway: &FakeGateway::default(),
             processes: &FakeProcesses::default(),
             ports: &FakePorts::default(),
@@ -1045,7 +1045,7 @@ mod tests {
         .run()
     }
 
-    /// The gateway's side of the machine: llama-swap v271 installed, and no
+    /// The gateway's side of the machine: llama-swap v273 installed, and no
     /// gateway recorded until a test records one.
     struct GatewaySide {
         gpu: Probed<Gpu>,
@@ -1063,7 +1063,7 @@ mod tests {
             Self {
                 gpu: Probed::Found(gpu()),
                 inventory: installed(),
-                releases: FakeReleases::current("v271"),
+                releases: FakeReleases::current("v273"),
                 gateway: FakeGateway::default(),
                 processes: FakeProcesses::default(),
                 ports: FakePorts::default(),
@@ -2763,7 +2763,7 @@ mod tests {
                 (
                     "llama-swap",
                     Status::Ok,
-                    "v271, the release this ai-ctl pins"
+                    "v273, the release this ai-ctl pins"
                 ),
                 (
                     "Gateway configuration",
@@ -2790,20 +2790,20 @@ mod tests {
                 Some("ai-ctl gateway install")
             )
         );
-        for release in ["v267", "v270"] {
+        for release in ["v267", "v272"] {
             side.releases = FakeReleases::current(release);
             let swap = side.check("llama-swap");
             assert_eq!(
                 (swap.status, swap.detail.as_str(), swap.remedy.as_deref()),
                 (
                     Status::Warn,
-                    format!("{release} is current, behind v271, the release this ai-ctl pins")
+                    format!("{release} is current, behind v273, the release this ai-ctl pins")
                         .as_str(),
                     Some("ai-ctl gateway install")
                 )
             );
         }
-        for release in ["v272", "v300"] {
+        for release in ["v274", "v300"] {
             side.releases = FakeReleases::current(release);
             let swap = side.check("llama-swap");
             assert_eq!(
@@ -2811,13 +2811,13 @@ mod tests {
                 (
                     Status::Warn,
                     format!(
-                        "{release} is current, ahead of v271, the release this ai-ctl pins \
+                        "{release} is current, ahead of v273, the release this ai-ctl pins \
                          and was tested with"
                     )
                     .as_str(),
                     Some(
                         format!(
-                            "ai-ctl gateway install   # back to v271; or run an ai-ctl that \
+                            "ai-ctl gateway install   # back to v273; or run an ai-ctl that \
                              pins {release}"
                         )
                         .as_str()
@@ -2848,7 +2848,7 @@ mod tests {
     #[test]
     fn a_llama_swap_off_the_pin_that_no_ai_ctl_checked_fails() {
         let mut side = GatewaySide::new();
-        for release in ["v267", "v270", "v272", "v300"] {
+        for release in ["v267", "v272", "v274", "v300"] {
             side.releases = FakeReleases::current(release);
             side.releases.record = None;
             let swap = side.check("llama-swap");
@@ -2870,7 +2870,7 @@ mod tests {
     #[test]
     fn a_llama_swap_whose_record_cannot_be_read_fails() {
         let mut side = GatewaySide::new();
-        for release in ["v270", "v271", "v272"] {
+        for release in ["v272", "v273", "v274"] {
             side.releases = FakeReleases::current(release);
             side.releases.digest_fails = true;
             let swap = side.check("llama-swap");
@@ -2901,7 +2901,7 @@ mod tests {
                 (swap.status, swap.detail.as_str(), swap.remedy.as_deref()),
                 (
                     Status::Fail,
-                    "v271 is current, but was never checked against the digest this ai-ctl \
+                    "v273 is current, but was never checked against the digest this ai-ctl \
                      pins for it",
                     Some("ai-ctl gateway install")
                 ),
@@ -3145,7 +3145,7 @@ mod tests {
             outcome(&side.check("llama-swap")),
             (
                 Status::Fail,
-                "cannot read /data/llama-swap/v271: Permission denied (os error 13)",
+                "cannot read /data/llama-swap/v273: Permission denied (os error 13)",
                 install
             )
         );

@@ -611,8 +611,8 @@ impl GatewayStore for FakeReleases {
 
 /// The address of the recorded gateway.
 pub const LISTEN: &str = "127.0.0.1:8080";
-/// The binary of [`FakeReleases::current`]`("271")`.
-pub const SWAP_BINARY: &str = "/data/llama-swap/v271/llama-swap";
+/// The binary of [`FakeReleases::current`]`("273")`.
+pub const SWAP_BINARY: &str = "/data/llama-swap/v273/llama-swap";
 
 pub fn listen() -> SocketAddr {
     LISTEN.parse().unwrap()

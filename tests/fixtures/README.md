@@ -98,19 +98,20 @@ sorted by name. Read by `src/infrastructure/git.rs`. Report: roadmap
 | `stable-diffusion.cpp-git-ls-remote.txt` | `https://github.com/leejet/stable-diffusion.cpp.git`, `master-[0-9]*`: 733 tags, 603 releases `master-<N>-<hash>` beside the older `master-<hash>` |
 | `audio.cpp-git-ls-remote.txt` | `https://github.com/0xShug0/audio.cpp.git`, `v[0-9]*`: 18 tags, 13 releases `vX.Y.Z` beside suffixed ones |
 
-## llama-swap v271
+## llama-swap v273
 
-Captured on 2026-11-08 from llama-swap v271, its archive downloaded over HTTPS and found to have
-the SHA-256 the release's checksums file gives it. Report: roadmap
-`capabilities-status-and-updates`: `phase-1-llama-swap-v270-report.md`. Read by
-`src/domain/gateway.rs`, the checksums file to tie the pinned digest to the release's.
+Captured on 2026-11-17 from llama-swap v273, its archive downloaded over HTTPS and found to have
+the SHA-256 the release's checksums file gives it. Report: roadmap `release-0-3-1`:
+`phase-2-llama-swap-newest-release-report.md`. Read by `src/domain/gateway.rs`, the checksums
+file to tie the pinned digest to the release's.
 
 | Fixture | Captured from |
 |---|---|
-| `llama-swap-271-version.txt` | `llama-swap -version` |
-| `llama-swap-271-checksums.txt` | `llama-swap_271_checksums.txt` of the v271 GitHub release |
+| `llama-swap-273-version.txt` | `llama-swap -version` |
+| `llama-swap-273-checksums.txt` | `llama-swap_273_checksums.txt` of the v273 GitHub release |
 
-v271 changed none of the routes below, its handlers the same as v270's (`git diff v270 v271`), so
+v271 and v273 changed none of the routes below, their handlers the same as v270's
+(`git diff v270 v271`, `git diff v271 v273`) but for `GET /props`, which ai-ctl does not call, so
 their captures stay v270's.
 
 ## llama-swap v270

@@ -19,8 +19,8 @@ const PLATFORM: &str = "linux_amd64";
 /// router the generated configuration uses, on top of `disableKeepAlives`
 /// (v263).
 pub const PINNED: Pinned = Pinned {
-    release: Release(271),
-    sha256: "58d5c897e14fa0f8c11d48b477b0b9b3da6f9f9f79d733957c06baf12f40c68c",
+    release: Release(273),
+    sha256: "68ffcd890a89288d544be15436feadf41eed3ed7910193c112fffdf5f96dd22e",
 };
 
 /// The oldest release that reads the configuration ai-ctl writes: v267
@@ -128,7 +128,7 @@ impl fmt::Display for Sha256 {
 }
 
 /// Whether the output of `llama-swap -version` names `release`, as in
-/// `version: v271 (06de675), built at 2026-11-08T05:18:35Z`.
+/// `version: v273 (30c7d67), built at 2026-11-15T06:10:14Z`.
 pub fn reports(version_output: &str, release: Release) -> bool {
     version_output
         .trim_start()
@@ -141,8 +141,8 @@ pub fn reports(version_output: &str, release: Release) -> bool {
 mod tests {
     use super::*;
 
-    /// The checksums file of v271.
-    const CHECKSUMS: &str = include_str!("../../tests/fixtures/llama-swap-271-checksums.txt");
+    /// The checksums file of v273.
+    const CHECKSUMS: &str = include_str!("../../tests/fixtures/llama-swap-273-checksums.txt");
 
     #[test]
     fn a_release_is_its_tag() {
@@ -204,12 +204,12 @@ mod tests {
 
     #[test]
     fn the_version_output_must_name_the_release() {
-        let output = include_str!("../../tests/fixtures/llama-swap-271-version.txt");
-        assert!(reports(output, Release(271)));
+        let output = include_str!("../../tests/fixtures/llama-swap-273-version.txt");
+        assert!(reports(output, Release(273)));
         assert!(!reports(output, Release(27)));
-        assert!(!reports(output, Release(2710)));
-        assert!(!reports(output, Release(270)));
-        assert!(!reports("", Release(271)));
-        assert!(!reports("v271\n", Release(271)));
+        assert!(!reports(output, Release(2730)));
+        assert!(!reports(output, Release(272)));
+        assert!(!reports("", Release(273)));
+        assert!(!reports("v273\n", Release(273)));
     }
 }

@@ -373,12 +373,12 @@ mod tests {
             installation,
             Installation {
                 release: PINNED.release,
-                binary: "/data/llama-swap/v271/llama-swap".into(),
+                binary: "/data/llama-swap/v273/llama-swap".into(),
                 outcome: Outcome::Downloaded,
                 previous: None,
             }
         );
-        let url = "https://github.com/mostlygeek/llama-swap/releases/download/v271/llama-swap_271_linux_amd64.tar.gz";
+        let url = "https://github.com/mostlygeek/llama-swap/releases/download/v273/llama-swap_273_linux_amd64.tar.gz";
         assert_eq!(
             events,
             [
@@ -393,7 +393,7 @@ mod tests {
             *world.downloads.downloads.borrow(),
             [(
                 url.to_owned(),
-                "/data/llama-swap/.staging/llama-swap_271_linux_amd64.tar.gz".into()
+                "/data/llama-swap/.staging/llama-swap_273_linux_amd64.tar.gz".into()
             )]
         );
         assert_eq!(*world.store.current.borrow(), Some(PINNED.release));
@@ -401,7 +401,7 @@ mod tests {
 
     #[test]
     fn the_pinned_release_replaces_any_other_current_one() {
-        for other in ["v262", "v272"] {
+        for other in ["v262", "v274"] {
             let world = World::new();
             *world.store.installed.borrow_mut() = vec![release_of(other)];
             *world.store.current.borrow_mut() = Some(release_of(other));
@@ -470,7 +470,7 @@ mod tests {
         let (result, events) = world.install();
         assert_eq!(
             message(result),
-            "cannot install /data/llama-swap/v271: Permission denied (os error 13)"
+            "cannot install /data/llama-swap/v273: Permission denied (os error 13)"
         );
         assert_eq!(
             events.last(),
@@ -489,7 +489,7 @@ mod tests {
         *world.store.installed.borrow_mut() = vec![release_of("v262")];
         *world.store.current.borrow_mut() = Some(release_of("v262"));
         world.store.set_current_fails = true;
-        let refusal = "llama-swap v271 is installed but not current: cannot update \
+        let refusal = "llama-swap v273 is installed but not current: cannot update \
                        /data/llama-swap/current: Permission denied (os error 13)";
         // Downloaded, then installed already.
         for installed in [
@@ -523,7 +523,7 @@ mod tests {
         let message = message(world.install().0);
         assert!(
             message.starts_with(
-                "the new llama-swap is not v271: `llama-swap -version` printed version: v262"
+                "the new llama-swap is not v273: `llama-swap -version` printed version: v262"
             ),
             "{message}"
         );

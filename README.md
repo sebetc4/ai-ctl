@@ -161,7 +161,7 @@ left, which `doctor` reports.
 ### Install the gateway
 
 ```bash
-ai-ctl gateway install                    # the llama-swap release this ai-ctl pins, v271
+ai-ctl gateway install                    # the llama-swap release this ai-ctl pins, v273
 ```
 
 llama-swap is the gateway every client talks to, and the only process that starts or stops a
@@ -176,8 +176,8 @@ at a time.
 
 ```text
 ~/.local/share/ai-ctl/
-  llama-swap/v271/llama-swap
-  llama-swap/current -> v271
+  llama-swap/v273/llama-swap
+  llama-swap/current -> v273
 ```
 
 ### See the gateway's configuration
