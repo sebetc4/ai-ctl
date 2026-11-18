@@ -87,6 +87,7 @@ def notes(name, repository, current, **facts):
 
 
 RELEASES = "https://api.github.com/repos/{}/releases?per_page=100"
+NEXT = '<https://api.github.com/x?page=2>; rel="next"'
 SD_COMMITS = ("https://api.github.com/repos/leejet/stable-diffusion.cpp/commits?sha=master-1079-a3c49b1"
               "&since=2026-11-09T14%3A16%3A04Z&per_page=100")
 GATEWAY = ('pub const REPOSITORY: &str = "https://github.com/mostlygeek/llama-swap";\n'
@@ -437,23 +438,81 @@ class ReleaseNotesTest(unittest.TestCase):
     def test_a_project_s_pre_releases_are_no_release(self):
         # llama.cpp's nightly `b<N>`, pre-releases about its weekly `vX.Y.Z`.
         page = {RELEASES.format("ggml-org/llama.cpp"): captured("github-releases-ggml-org-llama.cpp-v1.0.0.http")}
-        record, _, _ = self.notes_of({**LLAMA_CPP, "current": "v1.0.0", "date": "2026-11-13T11:09:55+02:00"}, page)
+        record, _, asked = self.notes_of({**LLAMA_CPP, "current": "v1.0.0", "date": "2026-11-13T11:09:55+02:00"},
+                                         page)
         self.assertEqual(record, notes("llama.cpp", "ggml-org/llama.cpp", "v1.0.0", anchor="2026-11-13T10:20:13Z",
                                        newest="v1.0.0"))
-        record, _, _ = self.notes_of({**LLAMA_CPP, "current": "v0.9.0", "date": "2026-11-06T08:00:00+02:00"}, page)
-        self.assertEqual(([release["tag"] for release in record["releases"]], record["newest"], record["left_out"]),
-                         (["v1.0.0"], "v1.0.0", ["the releases before b12359, past the page"]))
+        # Its own release on the page, the next one is not asked.
+        self.assertEqual(asked, [RELEASES.format("ggml-org/llama.cpp")])
+        # The page's pre-releases past v0.9.0 lead to the next page, which holds it.
+        older = dependencies.Response(200, {}, json.dumps([
+            {"tag_name": "b12358", "prerelease": True, "created_at": "2026-11-13T09:00:00Z", "body": "a nightly"},
+            {"tag_name": "v0.9.0", "prerelease": False, "created_at": "2026-11-06T06:10:00Z", "body": "the build"}
+        ]).encode())
+        first = RELEASES.format("ggml-org/llama.cpp")
+        record, _, asked = self.notes_of({**LLAMA_CPP, "current": "v0.9.0", "date": "2026-11-06T08:00:00+02:00"},
+                                         {**page, f"{first}&page=2": older})
+        self.assertEqual(asked, [first, f"{first}&page=2"])
+        self.assertEqual(([release["tag"] for release in record["releases"]], record["newest"], record["anchor"],
+                          record["left_out"]), (["v1.0.0"], "v1.0.0", "2026-11-06T06:10:00Z", []))
         v1 = record["releases"][0]
         self.assertIn("\n\n## Overview\n\nllama.cpp v1.0.0 removes the deprecated public API", v1["note"])
         self.assertEqual(v1["cut_from"], 28800)
-        # A page of pre-releases alone may hide releases past it.
-        nightlies = dependencies.Response(200, {"link": '<https://api.github.com/x?page=2>; rel="next"'}, json.dumps([
+
+    def test_a_release_past_a_page_of_pre_releases_is_read_on_the_next_page(self):
+        # llama.cpp tags about 25 nightlies a day: one page of 100 spans about four days, its weekly release past it.
+        first = RELEASES.format("ggml-org/llama.cpp")
+        nightlies = dependencies.Response(200, {"link": NEXT}, json.dumps([
+            {"tag_name": "b4", "prerelease": True, "created_at": "2026-11-21T00:00:00Z", "body": "four"},
+            {"tag_name": "b3", "prerelease": True, "created_at": "2026-11-20T12:00:00Z", "body": "three"}]).encode())
+        releases = dependencies.Response(200, {}, json.dumps([
+            {"tag_name": "v1.1.0", "prerelease": False, "created_at": "2026-11-20T10:00:00Z", "body": "the release"},
             {"tag_name": "b2", "prerelease": True, "created_at": "2026-11-14T00:00:00Z", "body": "two"},
-            {"tag_name": "b1", "prerelease": True, "created_at": "2026-11-13T00:00:00Z", "body": "one"}]).encode())
-        record, _, _ = self.notes_of({**LLAMA_CPP, "current": "v0.9.0", "date": "2026-11-06T08:00:00+02:00"},
-                                     {RELEASES.format("ggml-org/llama.cpp"): nightlies})
-        self.assertEqual(record, notes("llama.cpp", "ggml-org/llama.cpp", "v0.9.0", anchor="2026-11-06T08:00:00+02:00",
-                                       left_out=["the releases before b1, past the page"]))
+            {"tag_name": "v1.0.0", "prerelease": False, "created_at": "2026-11-13T10:20:13Z", "body": "the build"},
+            {"tag_name": "b1", "prerelease": True, "created_at": "2026-11-13T10:00:00Z", "body": "one"}]).encode())
+        record, status, asked = self.notes_of({**LLAMA_CPP, "current": "v1.0.0", "date": "2026-11-13T11:09:55+02:00"},
+                                              {first: nightlies, f"{first}&page=2": releases})
+        self.assertEqual(asked, [first, f"{first}&page=2"])
+        self.assertEqual((record, status), (notes(
+            "llama.cpp", "ggml-org/llama.cpp", "v1.0.0", anchor="2026-11-13T10:20:13Z", newest="v1.1.0", releases=[
+                {"tag": "v1.1.0", "created": "2026-11-20T10:00:00Z", "note": "the release", "cut_from": None}]), None))
+
+    def test_a_build_is_reached_by_its_release_or_at_its_commit_s_instant(self):
+        build = {"current": "v1.0.0", "date": "2026-11-13T11:09:55+02:00"}
+        nightly = {"tag": "b12358", "created": "2026-11-13T09:09:55Z"}
+        self.assertTrue(dependencies.reached([nightly], build))
+        self.assertFalse(dependencies.reached([{**nightly, "created": "2026-11-13T09:09:56Z"}], build))
+        self.assertTrue(dependencies.reached([{"tag": "v1.0.0", "created": "2026-11-13T10:20:13Z"}], build))
+        self.assertFalse(dependencies.reached([{**nightly, "created": "2026-11-13T09:09:56Z"}], {**build, "date": None}))
+
+    def test_the_pages_read_stop_at_five(self):
+        first = RELEASES.format("ggml-org/llama.cpp")
+        pages = {first if n == 1 else f"{first}&page={n}": dependencies.Response(200, {"link": NEXT}, json.dumps([
+            {"tag_name": f"b{10 - n}", "prerelease": True, "created_at": f"2026-11-{20 - n}T00:00:00Z", "body": ""}
+        ]).encode()) for n in range(1, 7)}
+        record, _, asked = self.notes_of({**LLAMA_CPP, "current": "v0.9.0", "date": "2026-11-06T08:00:00+02:00"},
+                                         pages)
+        self.assertEqual(asked, [first] + [f"{first}&page={n}" for n in range(2, 6)])
+        self.assertEqual((record["newest"], record["releases"], record["left_out"]),
+                         (None, [], ["the releases before b5, past the 5 pages read"]))
+
+    def test_a_page_github_refuses_after_the_first_keeps_what_was_read(self):
+        first = RELEASES.format("ggml-org/llama.cpp")
+        page = dependencies.Response(200, {"link": NEXT}, json.dumps([
+            {"tag_name": "b3", "prerelease": True, "created_at": "2026-11-21T00:00:00Z", "body": "three"},
+            {"tag_name": "v1.1.0", "prerelease": False, "created_at": "2026-11-20T10:00:00Z", "body": ""},
+            {"tag_name": "b2", "prerelease": True, "created_at": "2026-11-20T00:00:00Z", "body": "two"}]).encode())
+        limited = dependencies.Response(403, {"x-ratelimit-remaining": "0"}, b"")
+        commits = ("https://api.github.com/repos/ggml-org/llama.cpp/commits?sha=v1.1.0&since=2026-11-13T09%3A09%3A55Z"
+                   "&per_page=100")
+        record, status, asked = self.notes_of({**LLAMA_CPP, "current": "v1.0.0", "date": "2026-11-13T11:09:55+02:00"},
+                                              {first: page, f"{first}&page=2": limited, commits: limited})
+        # Its note empty, the commits since the build are not asked of a GitHub that refused.
+        self.assertEqual(asked, [first, f"{first}&page=2"])
+        self.assertEqual((record, status), (notes(
+            "llama.cpp", "ggml-org/llama.cpp", "v1.0.0", anchor="2026-11-13T11:09:55+02:00", newest="v1.1.0",
+            releases=[{"tag": "v1.1.0", "created": "2026-11-20T10:00:00Z", "note": "", "cut_from": None}],
+            left_out=["the releases before b2, past the page: HTTP 403, rate limit reached"]), 403))
 
     def test_a_build_neither_on_the_page_nor_dated_reads_no_note(self):
         self.assertEqual(self.notes_of({**LLAMA_CPP, "date": None})[0], notes(

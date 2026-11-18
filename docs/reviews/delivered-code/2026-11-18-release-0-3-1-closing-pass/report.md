@@ -60,6 +60,7 @@ evidence: reproduced: `readelf -d` on the current builds gives the RUNPATHs abov
 
 Reviewers: review-security. Origin: mixed. Floor: above. Fingerprint: `security | docs/toolchain.md + src/application/build.rs + src/application/doctor.rs + src/domain/build.rs + src/infrastructure/command.rs | Builder::smoke_test + Doctor::build_check + SystemPrograms::run + cmake_flags + top level`.
 Verdict: CONFIRMED. Action: fix, batch 2. the verifier's fix, the reviewer's set aside: CMAKE_NO_BUILTIN_CHRPATH=ON stops CMake 4.3.0's Ninja generator at configure, and a recipe's own CMAKE_ option is refused by recipes_leave_toolchain_and_cuda_options_to_the_builder; the builds made before are not refused, the builder's options being compared with no build (the user, 2026-11-06), and SystemPrograms::run's working directory, /, covers them wherever ai-ctl runs them. Sibling paths: SystemPrograms::run is the one runner of a built server (doctor's check, build's smoke test and listing) and of llama-swap's -version; llama-swap starts the backends in its 0700 directory; every other program ai-ctl runs, git, cmake, podman, curl, tar, sha256sum, nvcc, the compilers, dnf, rpm, busctl, nvidia-ctk and kill, is the system's, built with no RUNPATH. Hand mutants M99 to M101.
+Fixed in `9953907`.
 
 ### 2. clap, clap_complete, clap_derive and clap_lex lag patch releases Cargo.toml already admits
 
@@ -97,7 +98,7 @@ evidence: read: dependencies.py:461-462 and :477-478 at 17365b9; dependencies.js
 ```
 
 Reviewers: review-dependencies. Origin: mixed. Floor: above. Fingerprint: `dependencies | .claude/agents/review-dependencies.md + .claude/skills/reviewing-delivered-code/scripts/dependencies.py | lines + release_notes + top level`.
-Verdict: CONFIRMED. Action: fix, batch 3.
+Verdict: CONFIRMED. Action: fix, batch 3. the pages of releases followed while the last read holds a pre-release and none reaches the build, five at most, a page refused after the first leaving what was read with its reason in left_out; a project with no pre-release, such as stable-diffusion.cpp, reads one page as before; review-dependencies.md unchanged, what left_out names still going to LEFT OUT. Thirteen hand mutants of the paging each fail test_dependencies.py, unrecorded since mutants.json holds the crate's mutants alone. Run on GitHub on 2026-11-18: llama.cpp's newest v1.0.0, anchored on its own release, nothing left out.
 
 ### 4. the recorded mutant M62 still names v271's digest, gone since the pin moved to v273
 

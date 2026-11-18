@@ -43,18 +43,21 @@ sources/<project>, read with no fetch:
 project             its name
 repository          its GitHub repository, owner/name
 current             the release or build ai-ctl runs
-anchor              the date its releases are compared with: its own release's on GitHub's page,
+anchor              the date its releases are compared with: its own release's on GitHub's pages,
                     else its commit's in its clone
-newest              the newest release on the page; a pre-release, such as llama.cpp's nightly
+newest              the newest release on the pages; a pre-release, such as llama.cpp's nightly
                     b<N>, is none, here and below
-releases            each release made after the anchor, newest first, on one page of 100: its
+releases            each release made after the anchor, newest first, on one page of 100, and on
+                    the next ones while the last read holds a pre-release and none reaches the
+                    build, its own release or one made before its commit, five pages at most: its
                     tag, the date it was made, its note and cut_from; a note leaves out the lines
-                    in more than half the page's releases and in two at least, the project's
+                    in more than half the pages' releases and in two at least, the project's
                     template, and those linking to the release's own assets
 commits             when every release kept has an empty note, the commits after the anchor up
                     to the newest release, on one page of 100: hash, date, message and cut_from;
                     null otherwise
-left_out            what lies past a page, or the page's releases when no anchor is found
+left_out            what lies past the pages read and why, or their releases when no anchor is
+                    found
 github              null when GitHub answered; otherwise its status, or why it was not asked
 
 A note or a message is cut at 8 KB, cut_from giving its size in bytes, null when whole.
@@ -99,6 +102,9 @@ YEAR = timedelta(days=365)
 REFUSALS = (403, 429)
 GITHUB_ACCEPT = "application/vnd.github+json"
 PAGE = 100
+# The pages of a project's releases read at most while pre-releases fill them: 500 releases, about
+# 17 days of llama.cpp's nightlies in November 2026, which bury its weekly releases.
+PAGES = 5
 NOTE_LIMIT = 8192
 GATEWAY = "src/domain/gateway.rs"
 PIN_RE = re.compile(r"^pub const PINNED: Pinned = Pinned \{\s*release: Release\((\d+)\)", re.M)
@@ -441,10 +447,19 @@ def listing(web, url, parse):
         return 200, str(error), False
 
 
+def reached(listed, found):
+    """Whether the releases listed, newest first, reach the build `found`: its own release among them, or one made
+    at or before its commit."""
+    if any(release["tag"] == found["current"] for release in listed):
+        return True
+    return found["date"] is not None and moment(listed[-1]["created"]) <= moment(found["date"])
+
+
 def release_notes(found, web, refused):
-    """The release notes of a project between its current release and its newest, on one page of GitHub's releases,
-    and the commits since its build when every note is empty; with the status of a refusal from GitHub, that given
-    when it was not asked."""
+    """The release notes of a project between its current release and its newest, on one page of GitHub's releases
+    and the next ones while pre-releases fill them and none reaches its build, PAGES at most, and the commits since
+    its build when every note is empty; with the status of a refusal from GitHub, that given when it was not
+    asked."""
     record = {"project": found["project"], "repository": found["repository"], "current": found["current"],
               "anchor": None, "newest": None, "releases": [], "commits": None, "left_out": [],
               "github": found["reason"]}
@@ -454,10 +469,20 @@ def release_notes(found, web, refused):
         record["github"] = f"not asked: GitHub answered {refused} earlier"
         return record, refused
     repository = found["repository"]
-    status, listed, more = listing(web, f"{GITHUB}{repository}/releases?per_page={PAGE}", releases_of)
+    first = f"{GITHUB}{repository}/releases?per_page={PAGE}"
+    status, listed, more = listing(web, first, releases_of)
     if isinstance(listed, str):
         record["github"] = listed
         return record, status if status in REFUSALS else refused
+    pages, last, failed = 1, listed, None
+    while (more and last and pages < PAGES and any(release["prerelease"] for release in last)
+           and not reached(listed, found)):
+        status, last, more = listing(web, f"{first}&page={pages + 1}", releases_of)
+        if isinstance(last, str):
+            failed, more = last, True
+            refused = status if status in REFUSALS else refused
+            break
+        listed, pages = listed + last, pages + 1
     page = [release for release in listed if not release["prerelease"]]
     record["newest"] = page[0]["tag"] if page else None
     record["anchor"] = next((release["created"] for release in page if release["tag"] == found["current"]),
@@ -475,8 +500,10 @@ def release_notes(found, web, refused):
             record["releases"].append({"tag": release["tag"], "created": release["created"], "note": note,
                                        "cut_from": cut_from})
     if more and listed and moment(listed[-1]["created"]) > anchor:
-        record["left_out"].append(f"the releases before {listed[-1]['tag']}, past the page")
-    if not record["releases"] or any(release["note"] for release in record["releases"]):
+        read = "the page" if pages == 1 else f"the {pages} pages read"
+        why = f": {failed}" if failed else ""
+        record["left_out"].append(f"the releases before {listed[-1]['tag']}, past {read}{why}")
+    if refused or not record["releases"] or any(release["note"] for release in record["releases"]):
         return record, refused
     since = anchor.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     query = urllib.parse.urlencode({"sha": record["releases"][0]["tag"], "since": since, "per_page": PAGE})
