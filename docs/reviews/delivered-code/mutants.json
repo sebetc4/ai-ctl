@@ -939,6 +939,36 @@
       "test": "application::build::tests::a_build_is_built_again_under_its_name_when_a_build_still_takes_it",
       "review": "2026-11-14-release-0-3-1-phase-0",
       "finding": 1
+    },
+    {
+      "id": "M99",
+      "kind": "an option removed",
+      "file": "src/domain/build.rs",
+      "text": "        (\"CMAKE_BUILD_WITH_INSTALL_RPATH\", \"ON\".to_owned()),\n",
+      "replacement": "",
+      "test": "domain::build::tests::no_build_loads_a_library_from_the_working_directory",
+      "review": "2026-11-18-release-0-3-1-closing-pass",
+      "finding": 1
+    },
+    {
+      "id": "M100",
+      "kind": "an option removed",
+      "file": "src/domain/build.rs",
+      "text": "        (\"CMAKE_INSTALL_RPATH_USE_LINK_PATH\", \"ON\".to_owned()),\n",
+      "replacement": "",
+      "test": "domain::build::tests::no_build_loads_a_library_from_the_working_directory",
+      "review": "2026-11-18-release-0-3-1-closing-pass",
+      "finding": 1
+    },
+    {
+      "id": "M101",
+      "kind": "a call removed",
+      "file": "src/infrastructure/command.rs",
+      "text": "command.args(args).current_dir(\"/\");",
+      "replacement": "command.args(args);",
+      "test": "infrastructure::command::tests::a_program_runs_in_the_root_directory_not_the_callers",
+      "review": "2026-11-18-release-0-3-1-closing-pass",
+      "finding": 1
     }
   ]
 }

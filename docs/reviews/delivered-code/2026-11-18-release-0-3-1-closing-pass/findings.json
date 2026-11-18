@@ -304,7 +304,7 @@
       "verdict": "CONFIRMED",
       "action": "fix",
       "batch": 2,
-      "note": "the verifier's fix, the reviewer's set aside: CMAKE_NO_BUILTIN_CHRPATH=ON stops CMake 4.3.0's Ninja generator at configure, and a recipe's own CMAKE_ option is refused by recipes_leave_toolchain_and_cuda_options_to_the_builder; the builds made before are not refused, the builder's options being compared with no build (the user, 2026-11-06), and SystemPrograms::run's working directory, /, covers them wherever ai-ctl runs them",
+      "note": "the verifier's fix, the reviewer's set aside: CMAKE_NO_BUILTIN_CHRPATH=ON stops CMake 4.3.0's Ninja generator at configure, and a recipe's own CMAKE_ option is refused by recipes_leave_toolchain_and_cuda_options_to_the_builder; the builds made before are not refused, the builder's options being compared with no build (the user, 2026-11-06), and SystemPrograms::run's working directory, /, covers them wherever ai-ctl runs them. Sibling paths: SystemPrograms::run is the one runner of a built server (doctor's check, build's smoke test and listing) and of llama-swap's -version; llama-swap starts the backends in its 0700 directory; every other program ai-ctl runs, git, cmake, podman, curl, tar, sha256sum, nvcc, the compilers, dnf, rpm, busctl, nvidia-ctk and kill, is the system's, built with no RUNPATH. Hand mutants M99 to M101",
       "fixed_in": null
     },
     {
@@ -337,7 +337,7 @@
       "action": "fix at once",
       "batch": 1,
       "note": null,
-      "fixed_in": null
+      "fixed_in": "40b370f"
     },
     {
       "number": 3,

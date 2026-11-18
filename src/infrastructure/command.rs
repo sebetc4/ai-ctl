@@ -193,13 +193,16 @@ pub fn script(path: &Path, body: &str) {
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755)).unwrap();
 }
 
-/// Runs programs for the use cases, with a bounded time.
+/// Runs programs for the use cases, with a bounded time, in `/`, which no
+/// other account writes: a server an earlier ai-ctl built loads a library
+/// its toolkit lacks from its working directory first, through the empty
+/// element that ends its RUNPATH.
 pub struct SystemPrograms;
 
 impl Programs for SystemPrograms {
     fn run(&self, program: &Path, args: &[&str]) -> Result<ProgramOutput> {
         let mut command = Command::new(program);
-        command.args(args);
+        command.args(args).current_dir("/");
         let missing = format!("{} not found", program.display());
         let output = checked(execute(command, Some(PROGRAM_TIMEOUT)), &missing)?;
         Ok(ProgramOutput {
@@ -357,6 +360,15 @@ mod tests {
             .unwrap_err()
             .to_string();
         assert_eq!(message, "/nonexistent/llama-server not found");
+    }
+
+    #[test]
+    fn a_program_runs_in_the_root_directory_not_the_callers() {
+        // A build whose RUNPATH ends in an empty element loads a missing
+        // library from its working directory, which another account may
+        // write, such as /tmp.
+        let output = SystemPrograms.run(Path::new("sh"), &["-c", "pwd"]).unwrap();
+        assert_eq!(output.stdout, "/\n");
     }
 
     fn failed(stderr: &str) -> Output {

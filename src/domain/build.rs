@@ -274,6 +274,14 @@ pub fn cmake_flags(
         // llama.cpp and ggml inside the binary: nothing is loaded from the
         // build tree, which is removed after the build.
         ("BUILD_SHARED_LIBS", "OFF".to_owned()),
+        // The RUNPATH a binary is installed with, the toolkit's libraries
+        // alone, from the link: by default CMake pads the build tree's with
+        // a trailing `:`, room for its rewrite at install, which ai-ctl
+        // never runs, and glibc reads that empty element as the working
+        // directory. `CMAKE_NO_BUILTIN_CHRPATH`, which relinks at install
+        // instead, stops the Ninja generator at configure.
+        ("CMAKE_BUILD_WITH_INSTALL_RPATH", "ON".to_owned()),
+        ("CMAKE_INSTALL_RPATH_USE_LINK_PATH", "ON".to_owned()),
         ("GGML_CUDA", "ON".to_owned()),
         // CPU code tuned for this machine, the only one the build runs on.
         ("GGML_NATIVE", "ON".to_owned()),
@@ -416,11 +424,13 @@ mod tests {
         let expected = [
             ("BUILD_SHARED_LIBS", "OFF"),
             ("CMAKE_BUILD_TYPE", "Release"),
+            ("CMAKE_BUILD_WITH_INSTALL_RPATH", "ON"),
             ("CMAKE_CUDA_ARCHITECTURES", "120a-real"),
             ("CMAKE_CUDA_COMPILER", "/usr/local/cuda-13.4/bin/nvcc"),
             ("CMAKE_CUDA_HOST_COMPILER", "/usr/bin/g++-15"),
             ("CMAKE_CXX_COMPILER", "/usr/bin/g++-15"),
             ("CMAKE_C_COMPILER", "/usr/bin/gcc-15"),
+            ("CMAKE_INSTALL_RPATH_USE_LINK_PATH", "ON"),
             ("GGML_CUDA", "ON"),
             ("GGML_NATIVE", "ON"),
             ("LLAMA_BUILD_APP", "OFF"),
@@ -458,6 +468,28 @@ mod tests {
                 assert_eq!(
                     flags.get(*name).map(String::as_str),
                     Some(*value),
+                    "{}: {name}",
+                    recipe.project
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn no_build_loads_a_library_from_the_working_directory() {
+        // CMake's built-in RPATH editing pads the build tree's RUNPATH of a
+        // target with an install rule, as each server has, with a trailing
+        // `:`, which glibc reads as the working directory; ai-ctl installs
+        // the build tree's binary, never `cmake --install`.
+        for recipe in crate::domain::recipe::RECIPES {
+            let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"), &commit_id());
+            for name in [
+                "CMAKE_BUILD_WITH_INSTALL_RPATH",
+                "CMAKE_INSTALL_RPATH_USE_LINK_PATH",
+            ] {
+                assert_eq!(
+                    flags.get(name).map(String::as_str),
+                    Some("ON"),
                     "{}: {name}",
                     recipe.project
                 );

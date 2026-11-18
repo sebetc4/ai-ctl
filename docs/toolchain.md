@@ -126,6 +126,17 @@ A build loads the CUDA libraries by their major version (`libcudart.so.13`, `lib
 from the toolkit it was built with, which its `RUNPATH` names (`/usr/local/cuda-13.4/…`), and
 through `/usr/local/cuda` once that toolkit is removed (`/etc/ld.so.conf.d/000_cuda.conf`): it
 keeps running after a minor change, and breaks when no toolkit of its major version is left.
+ai-ctl builds with `CMAKE_BUILD_WITH_INSTALL_RPATH=ON` and `CMAKE_INSTALL_RPATH_USE_LINK_PATH=ON`,
+so that the `RUNPATH` names that directory alone. Without them, CMake pads the `RUNPATH` of a
+target that has an install rule, as the servers of llama.cpp, whisper.cpp and
+stable-diffusion.cpp have, with a trailing `:`, room for its rewrite at install, which ai-ctl
+never runs: glibc reads that empty element as the working directory, searched before the
+system's libraries, so such a server loads a `libgomp.so.1` or a `libc.so.6` it finds in the
+directory it runs in (CMake 4.3.0 and glibc 2.43, 2026-11-18). A server an earlier ai-ctl built
+keeps that element until it is built again: `readelf -d <binary> | grep RUNPATH` shows it, and
+`ai-ctl build update` builds a project behind its newest release without it, `ai-ctl build
+<project> --ref <id> --force` any other. `CMAKE_NO_BUILTIN_CHRPATH=ON`, CMake's other way, stops
+the Ninja generator at configure.
 
 ---
 
