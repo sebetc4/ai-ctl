@@ -115,6 +115,7 @@ evidence: reproduced: `TMPDIR=<scratch> scripts/regression.py` at 17365b9, exit 
 
 Reviewers: session. Origin: older. Floor: below. Fingerprint: `tests | docs/reviews/delivered-code/mutants.json + src/domain/gateway.rs | top level`.
 Verdict: none, below the floor. Action: fix at once, batch 1.
+Fixed in `734fe89`.
 
 ### 5. test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run
 

@@ -400,7 +400,7 @@
       "action": "fix at once",
       "batch": 1,
       "note": null,
-      "fixed_in": null
+      "fixed_in": "734fe89"
     },
     {
       "number": 5,
