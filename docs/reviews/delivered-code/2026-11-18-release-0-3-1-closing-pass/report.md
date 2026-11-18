@@ -1,0 +1,186 @@
+# Review: 2026-11-18-release-0-3-1-closing-pass
+
+**Status:** reviewing — the reviewers' answers to come
+**Scope:** roadmap `release-0-3-1`, 3051139..17365b9: 270 hunks, +656 −360 lines of code
+**Go-ahead:** the user, tier `xhigh`
+
+## Summary
+
+| # | Title | Axis | Effect | Severity | Origin | Verdict | Action | Batch |
+|---|---|---|---|---|---|---|---|---|
+| 1 | llama-server, whisper-server and sd-server load their libraries from the working directory, where doctor and build run them | security | wrong action | medium | mixed | CONFIRMED | fix | 2 |
+| 2 | clap, clap_complete, clap_derive and clap_lex lag patch releases Cargo.toml already admits | dependencies | maintenance | — | older | — | fix at once | 1 |
+| 3 | a llama.cpp weekly release older than about four days drops out of the dependency facts | dependencies, bugs | misleading | low | mixed | CONFIRMED | fix | 3 |
+| 4 | the recorded mutant M62 still names v271's digest, gone since the pin moved to v273 | tests | maintenance | — | older | — | fix at once | 1 |
+| 5 | test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run | tests | maintenance | — | older | — | known | — |
+| 6 | cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds | dependencies | none | — | older | — | known | — |
+
+## Checks
+
+- `cargo fmt --check`: exit 0
+- `cargo clippy --all-targets -- -D warnings`: exit 0
+- `cargo test`: exit 0: 951 passed, 0 failed, 0 ignored; no test skipped itself
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py`: exit 0: 34 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py`: exit 0: 14 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py`: exit 0: 34 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py`: exit 0: 15 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py`: exit 0: 54 tests
+- `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py`: exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding
+- `python3 .github/scripts/test_check_release.py`: exit 0: 15 tests
+- `sid.py check .`: exit 0: cites 0, names 0, other 0
+- `cargo deny check`: exit 0: advisories, bans, licenses and sources ok; three duplicate warnings, syn, thiserror and thiserror-impl, the session's finding
+- `scripts/dependencies.py`: exit 0: 65 crates, 9 direct, 4 updates within the requirements, 9 behind the newest; llama-swap v273 and llama.cpp v1.0.0 at their newest, stable-diffusion.cpp master-1098 to master-1106
+- `scripts/regression.py`: exit 1: 94 recorded mutants at 17365b9, 93 caught, M62 gone, the session's finding
+- `cargo mutants --in-diff` on the scope's diff: 28 mutants in 86 s, 0 missed, 20 caught, 8 unviable
+
+## Agents
+
+- `review-security`, effort `xhigh`: answered
+- `review-verifier`, effort `xhigh`: answered
+- `review-dependencies`, effort `xhigh`: answered
+- `session`, effort `xhigh`: answered
+
+## Findings
+
+### 1. llama-server, whisper-server and sd-server load their libraries from the working directory, where doctor and build run them
+
+```
+FINDING
+axis: security
+severity: medium
+where: src/domain/build.rs:257-290 (cmake_flags), src/infrastructure/command.rs:200-210 (SystemPrograms::run), src/application/doctor.rs:459 (Doctor::build_check), src/application/build.rs:382-404 (Builder::smoke_test), docs/toolchain.md:125-128 (top level)
+title: llama-server, whisper-server and sd-server load their libraries from the working directory, where doctor and build run them
+cause: cmake_flags leaves CMake's built-in RPATH editing on. CMake 4.3.0 therefore links a target that has an install rule, as llama-server, whisper-server and sd-server do, with its build RUNPATH padded by a trailing `:`, room for the rewrite at install time. ai-ctl installs the build tree's binary and never runs `cmake --install`, so the padding stays: llama-server v1.0.0 and sd-server master-1098-b521db4 carry `/usr/local/cuda-13.5/targets/x86_64-linux/lib:`, whisper-server v1.9.5 `/usr/local/cuda-13.4/targets/x86_64-linux/lib:`. glibc reads the empty element as the current directory, searched after the toolkit's directory and before the system's, for every NEEDED library the toolkit's directory lacks: libgomp.so.1, libssl.so.3, libcrypto.so.3, libstdc++.so.6, libgcc_s.so.1, libm.so.6, libc.so.6, libcuda.so.1. SystemPrograms::run sets no working directory, so Doctor::build_check (`doctor`) and Builder::smoke_test (`build`, `build update`) run each server in the shell's directory. The planted library needs no symbol: the binaries bind lazily, and a library with no version definitions draws only a warning.
+effect: wrong action
+consequence: Another user of the machine (§1, first row), able to write a file into a directory the user runs `ai-ctl doctor`, `ai-ctl build` or `ai-ctl build update` from, such as /tmp, /var/tmp, /dev/shm or a shared folder, drops a `libgomp.so.1` there. The next such run loads it into llama-server, whisper-server and sd-server, as the user. No control stands in the way, and the account boundary that §1 draws is crossed: the code reads the 0600 key file, through the gateway every prompt, and everything else of the account. A folder holding files someone else wrote, such as a cloned repository or the browser's downloads, works the same way. The gateway's backends are spared: `up` starts llama-swap in ~/.local/state/ai-ctl/gateway, mode 0700, and the backends inherit that directory. audiocpp_server's RUNPATH has no empty element, and llama-swap is linked statically.
+fix: set `CMAKE_NO_BUILTIN_CHRPATH=ON`, with which CMake relinks at install rather than padding, among each recipe's own CMake options. unlike_recipe then reports the builds installed now as off their recipe, so that doctor stops before running them and `up` refuses them until they are rebuilt. Have SystemPrograms::run run its program in a directory only the user writes, such as the build's own directory, so that doctor and the smoke test never read the shell's directory. Say both in docs/toolchain.md §3 and security.md §7.
+test: a domain test that the CMake options of every recipe hold CMAKE_NO_BUILTIN_CHRPATH=ON, and an infrastructure test that SystemPrograms::run runs a script printing `pwd` in a directory other than the caller's; both fail today
+evidence: reproduced: `readelf -d` on the current builds gives the RUNPATHs above, and `[/usr/local/cuda-13.5/targets/x86_64-linux/lib]` for audiocpp_server v0.9.5. glibc 2.43 checked with a toy executable linked with `-Wl,-rpath,/usr/local/cuda-13.5/targets/x86_64-linux/lib:` and its library placed in one directory only: run from another directory, "cannot open shared object file", exit 127; run from that directory, the library's constructor ran. End to end, the scope end's `ai-ctl doctor` (cargo build of the copy) was run from a folder of the review's scratch holding a harmless `libgomp.so.1`, built with `gcc -shared -Wl,-soname,libgomp.so.1`, whose constructor appends a line to a file and then calls `_exit(0)`. The file got "planted code ran as uid 1000 in ~/.local/share/ai-ctl/builds/llama.cpp/v1.0.0/llama-server", and the same line for whisper.cpp/v1.9.5/whisper-server and stable-diffusion.cpp/master-1098-b521db4/sd-server. doctor then failed llama.cpp, whisper.cpp and stable-diffusion.cpp with "printed no `version: `" and "libgomp.so.1: no version information available", and passed audio.cpp. Cause checked with CMake 4.3.0 on a toy project linking a shared library outside the implicit directories: with `install(TARGETS victim RUNTIME)`, RUNPATH `<libdir>:`; without the install rule, `<libdir>`; with -DCMAKE_NO_BUILTIN_CHRPATH=ON, or with -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON, `<libdir>` alone. Install rules read in the sources: llama.cpp v1.0.0 tools/server/CMakeLists.txt:72, whisper.cpp v1.9.5 examples/server/CMakeLists.txt:15, stable-diffusion.cpp master-1098-b521db4 examples/server/CMakeLists.txt:106. Directories read: gateway_process.rs:214 `current_dir(&self.dir)` for llama-swap; llama-swap v273 internal/process sets no cmd.Dir.
+```
+
+Reviewers: review-security. Origin: mixed. Floor: above. Fingerprint: `security | docs/toolchain.md + src/application/build.rs + src/application/doctor.rs + src/domain/build.rs + src/infrastructure/command.rs | Builder::smoke_test + Doctor::build_check + SystemPrograms::run + cmake_flags + top level`.
+Verdict: CONFIRMED. Action: fix, batch 2. the verifier's fix, the reviewer's set aside: CMAKE_NO_BUILTIN_CHRPATH=ON stops CMake 4.3.0's Ninja generator at configure, and a recipe's own CMAKE_ option is refused by recipes_leave_toolchain_and_cuda_options_to_the_builder; the builds made before are not refused, the builder's options being compared with no build (the user, 2026-11-06), and SystemPrograms::run's working directory, /, covers them wherever ai-ctl runs them.
+
+### 2. clap, clap_complete, clap_derive and clap_lex lag patch releases Cargo.toml already admits
+
+```
+FINDING
+axis: dependencies
+where: Cargo.lock:89 (clap), Cargo.lock:111 (clap_complete), Cargo.lock:120 (clap_derive), Cargo.lock:132 (clap_lex)
+title: clap, clap_complete, clap_derive and clap_lex lag patch releases Cargo.toml already admits
+cause: the lock holds clap 4.6.7, clap_complete 4.6.11, clap_derive 4.6.7 and clap_lex 1.1.1, where 4.6.8, 4.6.12, 4.6.8 and 1.1.2, each the newest, released on 2026-11-16, fall within `clap = "4.6"` and `clap_complete = "4.6"` (Cargo.toml:15-16)
+effect: maintenance
+consequence: none known: no advisory names the locked versions, and the patch releases' changes are not among the facts; a release built with `--locked` carries the older versions until the lock moves
+fix: cargo update -p clap -p clap_complete -p clap_derive -p clap_lex, then cargo test and cargo deny check
+test: none: a lock refresh within the requirements changes no code a test could pin before it; cargo test and cargo deny check after it prove it
+evidence: read: dependencies.json of 2026-11-18, from cargo update --dry-run --verbose: update 4.6.8 for clap 4.6.7, 4.6.12 for clap_complete 4.6.11, 4.6.8 for clap_derive 4.6.7, 1.1.2 for clap_lex 1.1.1, last_release 2026-11-16 each; dependencies.out's four `update:` lines
+```
+
+Reviewers: review-dependencies. Origin: older. Floor: below. Fingerprint: `dependencies | Cargo.lock | clap + clap_complete + clap_derive + clap_lex`.
+Verdict: none, below the floor. Action: fix at once, batch 1.
+
+### 3. a llama.cpp weekly release older than about four days drops out of the dependency facts
+
+```
+FINDING
+axis: dependencies, bugs
+severity: low
+where: .claude/skills/reviewing-delivered-code/scripts/dependencies.py:461-462 (release_notes), .claude/skills/reviewing-delivered-code/scripts/dependencies.py:477-478 (release_notes), .claude/skills/reviewing-delivered-code/scripts/dependencies.py:562 (lines), .claude/agents/review-dependencies.md:48-51 (top level)
+title: a llama.cpp weekly release older than about four days drops out of the dependency facts
+cause: release_notes keeps the non-pre-releases of one page of 100 and takes `newest` from them alone; llama.cpp tags about 25 nightly pre-releases a day, so the page spans about four days and holds no weekly vX.Y.Z older than that, and the reviewer's fallback to git ls-remote covers only a missing dependencies.json
+effect: misleading
+consequence: a review gathered four to seven days after a weekly release ai-ctl does not build yet records llama.cpp with newest null and no release, its summary counts llama.cpp among the projects not behind, and its left_out names only a nightly: the release's notes go unjudged, against CLAUDE.md's rule to read them before ai-ctl works around a backend; today v1.0.0 is still the newest release and nothing is missed
+fix: while a page holds no release dated at or before the anchor and GitHub names a next page, follow it, up to a bound of pages whose rest left_out names (or ask GitHub's /releases/latest for `newest`); and extend step 5 of review-dependencies.md to read the tags with git ls-remote --tags when a record's newest is null and its left_out names a page
+test: in evals/test_dependencies.py, a first page of nightlies alone with a `next` link, then a page holding v1.1.0 and v1.0.0: release_notes for current v1.0.0 gives newest v1.1.0 and its note, where today it gives newest None and no release; the last case of test_a_project_s_pre_releases_are_no_release (test_dependencies.py:449-455), which asserts today's outcome, changes with it
+evidence: read: dependencies.py:461-462 and :477-478 at 17365b9; dependencies.json of 2026-11-18, llama.cpp: newest null, releases [], left_out "the releases before b12378, past the page"; git ls-remote --tags on 2026-11-18: 120 nightly tags b12360 to b12502 after b12359, v1.0.0's commit of 2026-11-13, the page's 100 (b12378 to b12502) all made after b12377's 2026-11-14T08:49Z, about four days; tests/fixtures/github-releases-ggml-org-llama.cpp-v1.0.0.http: v1.0.0 prerelease false, every b<N> true, 18 nightlies in v1.0.0's first day
+```
+
+Reviewers: review-dependencies. Origin: mixed. Floor: above. Fingerprint: `dependencies | .claude/agents/review-dependencies.md + .claude/skills/reviewing-delivered-code/scripts/dependencies.py | lines + release_notes + top level`.
+Verdict: CONFIRMED. Action: fix, batch 3.
+
+### 4. the recorded mutant M62 still names v271's digest, gone since the pin moved to v273
+
+```
+FINDING
+axis: tests
+where: docs/reviews/delivered-code/mutants.json:584-592 (top level), src/domain/gateway.rs:21-24 (top level)
+title: the recorded mutant M62 still names v271's digest, gone since the pin moved to v273
+cause: `feat(gateway): pin llama-swap v273` (72016d2) replaced PINNED's sha256 and left M62's text and replacement on v271's digest, 58d5c897...c68c, which no longer occurs in src/domain/gateway.rs
+effect: maintenance
+consequence: no effect on ai-ctl; the regression run no longer proves that the_pinned_digest_is_the_one_its_release_publishes kills a pinned digest changed by one digit, and every later run reports M62 gone
+fix: M62's text and replacement moved to v273's digest, 68ffcd89...dd22e and its last digit changed, its kind, test, review and finding kept
+test: none: scripts/regression.py M62 at the fix's commit, caught
+evidence: reproduced: `TMPDIR=<scratch> scripts/regression.py` at 17365b9, exit 1, `gone: M62 src/domain/gateway.rs: its text no longer occurs`, 93 of 94 caught
+```
+
+Reviewers: session. Origin: older. Floor: below. Fingerprint: `tests | docs/reviews/delivered-code/mutants.json + src/domain/gateway.rs | top level`.
+Verdict: none, below the floor. Action: fix at once, batch 1.
+
+### 5. test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run
+
+```
+FINDING
+axis: tests
+where: .claude/skills/reviewing-delivered-code/evals/test_guard.py:335-342 (Sandbox::child)
+title: test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run
+cause: child() opens the listener with `stdout=subprocess.PIPE` and registers its kill and wait as cleanups, never the pipe's close, so unittest's cleanup prints `ResourceWarning: unclosed file <_io.TextIOWrapper name=3>`
+effect: maintenance
+consequence: no effect on the guard; the check's output carries a warning every run, beside which a new one passes unread
+fix: `self.addCleanup(process.stdout.close)` after the kill and wait cleanups
+test: none: the check's own output, the warning gone
+evidence: reproduced: `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py` at 17365b9, 37 tests OK with `ResourceWarning: unclosed file <_io.TextIOWrapper name=3 encoding='UTF-8'>`
+```
+
+Reviewers: session. Origin: older. Floor: below. Fingerprint: `tests | .claude/skills/reviewing-delivered-code/evals/test_guard.py | Sandbox::child`.
+Register: `2026-11-12-review-skill-v2-5-phase-2` finding 16, open: test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run.
+Verdict: none, below the floor. Action: known. 2026-11-12-review-skill-v2-5-phase-2 finding 16.
+
+### 6. cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds
+
+```
+FINDING
+axis: dependencies
+where: deny.toml:17-18 (top level), Cargo.lock:286 (top level)
+title: cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds
+cause: nvml-wrapper 0.13.0, its newest release, depends on thiserror 1 and, through wrapcenum-derive and darling 0.20, on syn 2, where ai-ctl's other crates take thiserror 2 and syn 3; deny.toml warns on multiple versions and names no exception
+effect: none
+consequence: none today: advisories, bans, licenses and sources ok, exit 0; the check prints three warnings each run, beside which a fourth would pass unread
+fix: deny.toml's [bans] skips syn 2.0.119, thiserror 1.0.69 and thiserror-impl 1.0.69 by their exact versions, nvml-wrapper 0.13.0 as the reason
+test: none: cargo deny check's output, the three warnings gone
+evidence: reproduced: cargo deny check at 17365b9, exit 0, `warning[duplicate]` for syn, thiserror and thiserror-impl, each older copy's tree ending in nvml-wrapper v0.13.0
+```
+
+Reviewers: session. Origin: older. Floor: below. Fingerprint: `dependencies | Cargo.lock + deny.toml | top level`.
+Register: `2026-11-12-review-skill-v2-5-phase-2` finding 17, open: cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds.
+Verdict: none, below the floor. Action: known. 2026-11-12-review-skill-v2-5-phase-2 finding 17.
+
+## Facts
+
+- `review-security`: The pin: PINNED's SHA-256 68ffcd89…dd22e equals the linux_amd64 line of the captured v273 checksums file and the installed release's archive.sha256, and the installed binary prints "version: v273 (30c7d67)". Installer::fetch hashes the archive before `tar`, which extracts only the `llama-swap` member with --no-same-owner, and unpack refuses a member that is not a regular file. curl runs with --proto =https --proto-redir =https, and an archive whose sum differs never reaches the release directory.
+- `review-security`: llama-swap v273's routes with no authentication middleware: GET /health, GET /wol-health, GET /{$}, /ui (any method, 308), GET /ui/site.webmanifest and its two icons, GET /favicon.ico, GET /upstream, and every OPTIONS answered by the CORS middleware ahead of the mux. They are the open routes §2 names. Every other registration passes authMW, through apiChain, modelChain, upstreamChain or deferRealtimeModel, /props?autoload=false included. The Tailcat listener needs -listen-tailcat, which `up` does not pass. The default CORS policy sends `*` without credentials or private-network access.
+- `review-security`: Tag resolution: `git ls-remote --tags --refs`, `git tag --list v[0-9]*` and `git tag --points-at` all pass through TagPattern::release, which for llama.cpp admits `v` followed by exactly three decimal numbers. A tag elsewhere under refs/tags, such as `x/v9.9.9`, is no release, and a build id taken from a tag stays a safe file name. A short commit can no longer read as a release, so the guard the scope removed from standing was dead. v1.0.0 is an annotated tag by github-actions[bot] on b1b770d, the clone's HEAD. The checkout resolves to a full hash that CommitId validates, and a reference starting with `-` is refused.
+- `review-security`: LLAMA_BUILD_IS_DEV=OFF only sets LLAMA_VERSION (llama.cpp v1.0.0 CMakeLists.txt:14-21). The UI download depends on LLAMA_USE_PREBUILT_UI, which the recipe sets OFF, and on HF_UI_VERSION, not on this option. LLAMA_BUILD_UI and LLAMA_CONNECT, which fetch, default to OFF.
+- `review-dependencies`: cargo deny check: advisories ok, bans ok, licenses ok, sources ok, exit 0, under unmaintained = "all" and unsound = "all"; no advisory, unsound or yanked version in the lock, so no reach to search in src/; no crate requires a Rust newer than 1.99.1
+- `review-dependencies`: duplicates: syn 2.0.119 (Cargo.lock:422) beside 3.0.10 (Cargo.lock:433), thiserror 1.0.69 (Cargo.lock:457) beside 2.0.21 (Cargo.lock:466), thiserror-impl 1.0.69 (Cargo.lock:475) beside 2.0.21 (Cargo.lock:486); each older copy through nvml-wrapper 0.13.0, crates.io's newest, by darling 0.20.11, wrapcenum-derive 0.4.1 and thiserror 1; build-time macros; held by the register's open entry, 2026-11-12-review-skill-v2-5-phase-2 finding 17
+- `review-dependencies`: behind the newest beyond the requirements, none fixing an advisory, none yanked, all transitive and held by their parents: darling, darling_core, darling_macro 0.20.11 (0.24.1, Cargo.lock:144), libloading 0.8.9 (0.9.1, Cargo.lock:264, through nvml-wrapper and nvml-wrapper-sys), r-efi 6.0.0 (7.2.0, Cargo.lock:339, getrandom under tempfile, UEFI only), windows-link 0.2.1 (0.100.0, Cargo.lock:548, Windows only), syn 2.0.119 and thiserror(-impl) 1.0.69 above
+- `review-dependencies`: last released over a year ago, no RustSec warning, no repository archived: fnv 1.0.7 (2020), ident_case 1.0.1 (2019) and strsim 0.11.1 (2024) through darling_core; static_assertions 1.1.0 (2019) and wrapcenum-derive 0.4.1 (2024, one dependent, last push 2024-02-10) through nvml-wrapper; heck 0.5.0 (2024) through clap_derive; utf8parse 0.2.2 (2024), is_terminal_polyfill 1.70.2 and anstyle-query 1.1.5 (2025) through anstream; anstyle-wincon 3.0.11, once_cell_polyfill 1.70.2 and windows-sys 0.61.2, not on the Linux graph
+- `review-dependencies`: moved repositories, none archived: nvml-wrapper and wrapcenum-derive from Cldfire/ to rust-nvml/, static_assertions from nvzqz/static-assertions-rs to nvzqz/static-assertions; nvml-wrapper last released and pushed 2026-08-31, 3 releases in the year, 152 dependents and 8.2 M downloads, the narrowest base of the direct crates
+- `review-dependencies`: unsafe counts that stand out: nvml-wrapper-sys 794 and nvml-wrapper 317, the NVML FFI ai-ctl reads the GPU through; libc 800; linux-raw-sys 6930 and rustix 1610 under tempfile, a dev-dependency only; windows-sys 12530 and r-efi 332, not built for x86_64 Linux
+- `review-dependencies`: llama-swap: pinned v273 (2026-11-15), the newest release on GitHub's page and among the remote's tags (git ls-remote, 2026-11-18: v271, v272, v273); no lag
+- `review-dependencies`: llama.cpp: builds v1.0.0 (b1b770d, 2026-11-13), still the newest vX.Y.Z tag on the remote (git ls-remote, 2026-11-18); 120 nightly tags since, b12360 to b12502, pre-releases the recipe does not take; the 18 commits to b12377 in the local clone touch nothing ai-ctl works around: #32016 refactors DFlash's drafts and adds draft-dflash2 and draft-lilicorr where the inventory runs draft-mtp, #32230 drops a Mistral workaround in common/chat.cpp, #32196 changes the npm setup of a web UI the recipe leaves out; no lag
+- `review-dependencies`: stable-diffusion.cpp: builds master-1098-b521db4, newest master-1106-532d2c1, 2 releases (master-1104-5dcfa79, master-1106-532d2c1) with empty notes and 8 commits: five of documentation (#2359's C# binding among them), #2350 trimming a MiniMax-H3 video's audio, which no shipped model uses, #2354 syncing ggml to 1.0.0 (the fork's d803c23 to eeda9ec, 321 commits of llama.cpp's ggml, none naming a key, a bind or a listen), #2365 refactoring the C API; none fixes a defect ai-ctl meets or does what its three patches do; the image budgets measured at master-1098 (21909 to 23859 MiB) want measuring again on a build with the new ggml
+- `review-dependencies`: whisper.cpp: builds v1.9.5, the newest release (git ls-remote, 2026-11-18); 138 commits on master after it in the clone, fetched to 2026-10-28, none naming the server's key, bind or listen; no lag
+- `review-dependencies`: audio.cpp: builds v0.9.5, the newest release (git ls-remote, 2026-11-18); 15 commits on main after it in the clone (to 2026-11-16), none on the server's key; no lag
+
+## Coverage
+
+- `review-security`: in full: docs/security.md, src/infrastructure/download.rs, tests/fixtures/llama-swap-273-checksums.txt, tests/fixtures/llama-swap-273-version.txt, tests/fixtures/llama.cpp-git-ls-remote.txt, llama-swap/internal/server/auth.go, llama-swap/changelog/v272.md, llama-swap/changelog/v273.md, scope.txt; in part: src/domain/recipe.rs (lines 1-340), src/domain/build.rs (lines 1-320), src/infrastructure/git.rs (lines 1-450), src/application/build.rs (lines 1-960), src/application/gateway.rs (lines 1-330), src/domain/gateway.rs (lines 1-140), src/infrastructure/gateway_store.rs (lines 1-280), src/application/doctor.rs (lines 380-480), src/infrastructure/gateway_process.rs (lines 190-260), src/infrastructure/command.rs (lines 199-211), src/infrastructure/cmake.rs (lines 40-140, 395-440), src/domain/gateway_config.rs (lines 40-70, 570-600), tests/cli.rs (lines 225-290), tests/fixtures/README.md (lines 87-99, 290-292), tests/fixtures/github-releases-ggml-org-llama.cpp-v1.0.0.http (headers and first release), docs/toolchain.md (lines 120-130 and the scope's hunks), docs/commands.md (the scope's hunks), docs/gpu/llama-swap.md (the scope's hunks), docs/release.md (the scope's hunks), docs/stack.md (the scope's hunks), README.md (the scope's hunks), CHANGELOG.md (the scope's hunks), deploy/inventory.toml (the scope's hunks), tests/snapshots/gateway-shipped.yaml (the scope's hunks and lines 1-40), src/application/fakes.rs (the scope's hunks), src/application/gateway_config.rs (the scope's hunks), src/application/toolchain.rs (the scope's hunks), llama-swap/internal/server/server.go (lines 241-261, 330-560), llama-swap/internal/server/cors.go (lines 1-260), llama-swap/internal/server/metrics_middleware.go (lines 1-140), llama-swap/internal/server/metrics.go (lines 70-110, 160-190), llama-swap/internal/server/realtime_defer.go (lines 50-90), llama-swap/internal/server/apigroup.go (lines 495-515), llama-swap/internal/swaputil/http.go (lines 604-630), llama-swap/internal/config/load.go (lines 30-80), llama-swap/internal/config/config.go (lines 140-160, 270-300), llama-swap/internal/config/tailcat.go (lines 1-80), llama-swap/internal/config/upstream.go (lines 24-50), llama-swap/llama-swap.go (lines 245-265 and the Tailcat lines), llama.cpp v1.0.0 CMakeLists.txt (lines 1-80, 129-147), llama.cpp v1.0.0 tools/ui/CMakeLists.txt (lines 1-70), audio.cpp v0.9.5 CMakeLists.txt (lines 380-395, 3365-3380); left out: .claude/skills/reviewing-delivered-code/scripts/dependencies.py and its eval: the review's own tooling, outside ai-ctl's surface; docs/reviews/delivered-code/: records of earlier reviews, no code; the tests' bodies (2484 lines): read only where they bear on a sink, as tests/cli.rs's ls-remote test; `ai-ctl build` and `ai-ctl build update` not run, which the rules forbid: their smoke test reaches the same SystemPrograms::run that doctor reproduced; llama-swap v271's source: the scratch clone is shallow at v273, so §2's routes were checked against v273 alone, not compared with v271; llama-swap v273's request captures: on by default (captureBuffer 5 MB, in memory), they hold each metered request's and answer's bodies, and any key holder reads them at GET /api/captures/{id}, among them OpenWebUI's container, which then reads OpenCode's prompts; §3's list of what a key holder does omits them; this is one key shared by clients with no roles, the multi-tenant class the brief leaves out
+- `review-verifier`: in full: review-verifier/findings.md, src/infrastructure/command.rs, review-security/rpath/src/mark.c, review-security/rpath/src/victim.c, review-security/rpath/cm/src/CMakeLists.txt, review-security/rpath/out/markers; in part: scope.txt (its header and first hunk lines), src/domain/build.rs (lines 1-25, 230-300, 370-500), src/domain/recipe.rs (lines 1-60, 160-560), src/application/doctor.rs (lines 400-470), src/application/build.rs (lines 360-420, 425-480), src/application/ports.rs (lines 255-275), src/infrastructure/gateway_process.rs (lines 200-225), src/infrastructure/cmake.rs (lines 110-125), docs/security.md (lines 1-80, 262-480), docs/toolchain.md (lines 100-200), docs/audio/audio-cpp.md (lines 38-50), CHANGELOG.md (lines 1-30), llama-swap/internal/process/process_command.go (lines 530-560), ~/.local/share/ai-ctl/builds/*/current/build.log (first line), ~/.local/share/ai-ctl/sources/llama.cpp/tools/server/CMakeLists.txt (lines 70-74, at v1.0.0), ~/.local/share/ai-ctl/sources/whisper.cpp/examples/server/CMakeLists.txt (lines 13-16, at v1.9.5), ~/.local/share/ai-ctl/sources/stable-diffusion.cpp/examples/server/CMakeLists.txt (lines 104-107) and CMakeLists.txt (lines 35-70, at master-1098-b521db4); left out: a whole compile of a server with the corrected options: not run. The CUDA compile is `ai-ctl build`'s. The RUNPATH was read in each real tree's generated link line and checked by readelf on the toy only.; cargo mutants --in-diff on fix.patch: not run. Its code diff adds two map entries and a `current_dir` call, which the two new tests name.; `ai-ctl build` and `build update`'s smoke test from a planted folder: not run, as these rules forbid it. The smoke test reaches the same SystemPrograms::run that doctor does, read at build.rs:384 and 390.; a second login account writing the planted library: none exists on this machine. My own account planted it, standing in for another account, in a folder of the scratch. /tmp's mode 1777 gives any account the same write.
+- `review-dependencies`: in full: Cargo.toml, deny.toml, docs/image/stable-diffusion-cpp.md, docs/reviews/delivered-code/2026-11-18-release-0-3-1-closing-pass/dependencies.json, deny.txt, dependencies.out; in part: src/domain/recipe.rs (lines 1-330), Cargo.lock (each package's name and version lines), deploy/inventory.toml (lines 96-169, by search for spec, draft, MiniMax and video), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 1-70, 101, 290-500, 525-576, and this roadmap's diff), .claude/skills/reviewing-delivered-code/evals/test_dependencies.py (lines 430-470), .claude/agents/review-dependencies.md (lines 44-52), tests/fixtures/github-releases-ggml-org-llama.cpp-v1.0.0.http (its headers, each release's tag, prerelease and date), tests/fixtures/README.md (lines 289-293), scope.txt (lines 1-30, 434-465), docs/security.md (§1 and §2), docs/reviews/delivered-code/register.json (its dependencies entries), docs/reviews/delivered-code/2026-11-14-release-0-3-1-phase-0/findings.json (its review-dependencies facts), .agent-conventions.toml (lines 3-11), src/ (search for spec-draft, spec-type and dflash), docs/ (search for stable-diffusion.cpp, spec-draft and dflash); left out: llama.cpp, dependencies.json's "the releases before b12378, past the page": the nightlies b12360 to b12377, read instead as the local clone's 18 commits after v1.0.0; the page's nightlies b12378 to b12502 unread, the gatherer dropping pre-releases and the clone stopping at b12377; none is a release the recipe takes; stable-diffusion.cpp: 532d2c1 (#2365), 01c463a, 5dcfa79 (#2354), 394d210 and 6201bcc are not in the local clone, read by their messages, #2354 through the clone's branch sync/update-ggml (fe4c91d); whether ai-ctl's three patches to examples/server/main.cpp still apply after #2365's API refactor is unchecked, a fetch reaching GitHub; crates: GitHub's state not asked for 44 transitive crates released within the year, by the gatherer's rule; clap 4.6.8, clap_complete 4.6.12, clap_derive 4.6.8 and clap_lex 1.1.2: their changelogs, not among the facts
+- `session`: in full: scope.txt; in part: docs/reviews/delivered-code/mutants.json (M62), src/domain/gateway.rs (lines 18-30, 185-195), .claude/skills/reviewing-delivered-code/scripts/dependencies.py (lines 400-500 and this roadmap's diff), deny.toml (lines 17-18); left out: none
+
+## Fix Plan
+
+- Batch 1: findings 2, 4
+- Batch 2: findings 1
+- Batch 3: findings 3

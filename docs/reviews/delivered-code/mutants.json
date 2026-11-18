@@ -584,8 +584,8 @@
       "id": "M62",
       "kind": "a digest changed by one digit",
       "file": "src/domain/gateway.rs",
-      "text": "    sha256: \"58d5c897e14fa0f8c11d48b477b0b9b3da6f9f9f79d733957c06baf12f40c68c\",",
-      "replacement": "    sha256: \"58d5c897e14fa0f8c11d48b477b0b9b3da6f9f9f79d733957c06baf12f40c68d\",",
+      "text": "    sha256: \"68ffcd890a89288d544be15436feadf41eed3ed7910193c112fffdf5f96dd22e\",",
+      "replacement": "    sha256: \"68ffcd890a89288d544be15436feadf41eed3ed7910193c112fffdf5f96dd22f\",",
       "test": "domain::gateway::tests::the_pinned_digest_is_the_one_its_release_publishes",
       "review": "2026-11-08-capabilities-status-and-updates-phase-1-after-review",
       "finding": 4

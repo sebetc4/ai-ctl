@@ -1,0 +1,53 @@
+diff --git a/src/domain/build.rs b/src/domain/build.rs
+index f02a949..2bf7573 100644
+--- a/src/domain/build.rs
++++ b/src/domain/build.rs
+@@ -465,6 +465,28 @@ mod tests {
+         }
+     }
+ 
++    #[test]
++    fn no_build_loads_a_library_from_the_working_directory() {
++        // CMake's built-in RPATH editing pads the build tree's RUNPATH of a
++        // target with an install rule, as each server has, with a trailing
++        // `:`, which glibc reads as the working directory; ai-ctl installs
++        // the build tree's binary, never `cmake --install`.
++        for recipe in crate::domain::recipe::RECIPES {
++            let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"), &commit_id());
++            for name in [
++                "CMAKE_BUILD_WITH_INSTALL_RPATH",
++                "CMAKE_INSTALL_RPATH_USE_LINK_PATH",
++            ] {
++                assert_eq!(
++                    flags.get(name).map(String::as_str),
++                    Some("ON"),
++                    "{}: {name}",
++                    recipe.project
++                );
++            }
++        }
++    }
++
+     /// The id of a build made from a commit no release tags.
+     fn commit_id() -> BuildId {
+         BuildId::from_commit(&CommitId::parse(COMMIT).unwrap())
+diff --git a/src/infrastructure/command.rs b/src/infrastructure/command.rs
+index 75c41a2..3ccb3e6 100644
+--- a/src/infrastructure/command.rs
++++ b/src/infrastructure/command.rs
+@@ -359,6 +359,15 @@ mod tests {
+         assert_eq!(message, "/nonexistent/llama-server not found");
+     }
+ 
++    #[test]
++    fn a_program_runs_in_the_root_directory_not_the_callers() {
++        // A build whose RUNPATH ends in an empty element loads a missing
++        // library from its working directory, which another account may
++        // write, such as /tmp.
++        let output = SystemPrograms.run(Path::new("sh"), &["-c", "pwd"]).unwrap();
++        assert_eq!(output.stdout, "/\n");
++    }
++
+     fn failed(stderr: &str) -> Output {
+         Output {
+             success: false,
