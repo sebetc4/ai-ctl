@@ -1,6 +1,6 @@
 # Review: 2026-11-18-release-0-3-1-closing-pass
 
-**Status:** reviewing — the reviewers' answers to come
+**Status:** complete — finding 4 fixed at once in `test(review): record M62 again on llama-swap v273's digest` (734fe89) and 2 in `chore(deps): update clap within its requirements` (40b370f); 1 fixed in `fix(build): keep the working directory out of the servers' RUNPATH` (9953907), 3 in `fix(review): read the releases past a page of pre-releases` (c0faea9); 5 and 6 known. The regression run: M62 caught at 734fe89, 97 recorded mutants caught at 9953907 and at c0faea9, none missed or gone. The builds installed on this machine keep the RUNPATH's empty element until built again
 **Scope:** roadmap `release-0-3-1`, 3051139..17365b9: 270 hunks, +656 −360 lines of code
 **Go-ahead:** the user, tier `xhigh`
 
@@ -99,6 +99,7 @@ evidence: read: dependencies.py:461-462 and :477-478 at 17365b9; dependencies.js
 
 Reviewers: review-dependencies. Origin: mixed. Floor: above. Fingerprint: `dependencies | .claude/agents/review-dependencies.md + .claude/skills/reviewing-delivered-code/scripts/dependencies.py | lines + release_notes + top level`.
 Verdict: CONFIRMED. Action: fix, batch 3. the pages of releases followed while the last read holds a pre-release and none reaches the build, five at most, a page refused after the first leaving what was read with its reason in left_out; a project with no pre-release, such as stable-diffusion.cpp, reads one page as before; review-dependencies.md unchanged, what left_out names still going to LEFT OUT. Thirteen hand mutants of the paging each fail test_dependencies.py, unrecorded since mutants.json holds the crate's mutants alone. Run on GitHub on 2026-11-18: llama.cpp's newest v1.0.0, anchored on its own release, nothing left out.
+Fixed in `c0faea9`.
 
 ### 4. the recorded mutant M62 still names v271's digest, gone since the pin moved to v273
 
