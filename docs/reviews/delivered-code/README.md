@@ -22,3 +22,4 @@ ending with its fix plan; `register.json` holds the debt register, the findings 
 - [Review: 2026-11-09-capabilities-status-and-updates-phase-4](2026-11-09-capabilities-status-and-updates-phase-4/README.md) — the review of roadmap `capabilities-status-and-updates`, phase 4.
 - [Review: 2026-11-12-review-skill-v2-5-closing-pass](2026-11-12-review-skill-v2-5-closing-pass/README.md) — the review of roadmap `review-skill-v2-5`, its closing pass.
 - [Review: 2026-11-12-review-skill-v2-5-phase-2](2026-11-12-review-skill-v2-5-phase-2/README.md) — the review of roadmap `review-skill-v2-5`, phase 2.
+- [Review: 2026-11-14-release-0-3-1-phase-0](2026-11-14-release-0-3-1-phase-0/README.md) — the review of roadmap `release-0-3-1`, phase 0.
