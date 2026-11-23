@@ -121,16 +121,6 @@
       "reason": "not a local fix: the remotes read on threads need a Sync bound on the Sources port, its fake's RefCells made Mutexes and its call-order assertions made order-free, for about 1.6 s on a command run by hand"
     },
     {
-      "fingerprint": "tests | .claude/skills/reviewing-delivered-code/evals/test_guard.py | Sandbox::child",
-      "axis": "tests",
-      "effect": "maintenance",
-      "title": "test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run",
-      "state": "open",
-      "review": "2026-11-12-review-skill-v2-5-phase-2",
-      "finding": 16,
-      "reason": "older code below the floor: the skill's own test, from `chore(release): release 0.2.0` of 2026-11-06, which this roadmap did not change"
-    },
-    {
       "fingerprint": "dependencies | Cargo.lock + deny.toml | top level",
       "axis": "dependencies",
       "effect": "none",

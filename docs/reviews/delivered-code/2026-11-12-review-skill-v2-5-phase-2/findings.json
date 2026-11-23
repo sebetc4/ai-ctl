@@ -414,27 +414,27 @@
       "result": "exit 0: 929 passed, 0 failed, 0 ignored; no test skipped itself"
     },
     {
-      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py",
+      "command": "python3 test_scope.py",
       "result": "exit 0: 34 tests"
     },
     {
-      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py",
+      "command": "python3 test_fixtures.py",
       "result": "exit 0"
     },
     {
-      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py",
+      "command": "python3 test_findings.py",
       "result": "exit 0: 34 tests"
     },
     {
-      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py",
+      "command": "python3 test_regression.py",
       "result": "exit 0: 15 tests"
     },
     {
-      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py",
+      "command": "python3 test_dependencies.py",
       "result": "exit 0: 53 tests"
     },
     {
-      "command": "python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py",
+      "command": "python3 test_guard.py",
       "result": "exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding"
     },
     {
@@ -461,7 +461,7 @@
   },
   "status": {
     "stage": "complete",
-    "note": "every finding fixed or registered: batches 1 to 6 in `docs(build): state the exit codes and lock of build outdated and update` of 2026-11-12, `docs: list the gateway's open redirects and explain the preload's 404` of 2026-11-12, `refactor(build): share the swap standing, built projects and table` of 2026-11-12, `build(deps): update errno to 0.3.15` of 2026-11-12, `fix(build): tell how to go on when a build's release was withdrawn` of 2026-11-12 and `fix(gateway): run the pinned llama-swap once checked against its pin` of 2026-11-12; 13, 16 and 17 registered; the recorded mutants at `docs(review): record M78 again on doctor's pinned arm` of 2026-11-12 all caught, M34, M63 to M65, M69 and M78 recorded again on the text the fixes moved"
+    "note": "every finding fixed or registered: batches 1 to 6 in `docs(build): state the exit codes and lock of build outdated and update` of 2026-11-12, `docs: list the gateway's open redirects and explain the preload's 404` of 2026-11-12, `refactor(build): share the swap standing, built projects and table` of 2026-11-12, `build(deps): update errno to 0.3.15` of 2026-11-12, `fix(build): tell how to go on when a build's release was withdrawn` of 2026-11-12 and `fix(gateway): run the pinned llama-swap once checked against its pin` of 2026-11-12; 13 and 17 registered; 16, registered at first, fixed in batch 7 on 2026-11-23, outside this repository, where its test lives since; the recorded mutants at `docs(review): record M78 again on doctor's pinned arm` of 2026-11-12 all caught, M34, M63 to M65, M69 and M78 recorded again on the text the fixes moved"
   },
   "findings": [
     {
@@ -968,10 +968,10 @@
       "fingerprint": "tests | .claude/skills/reviewing-delivered-code/evals/test_guard.py | Sandbox::child",
       "matches": [],
       "verdict": null,
-      "action": "register",
-      "batch": null,
-      "note": "older code below the floor: the skill's own test, from `chore(release): release 0.2.0` of 2026-11-06, which this roadmap did not change",
-      "fixed_in": null
+      "action": "fix at once",
+      "batch": 7,
+      "note": "fixed on 2026-11-23 where the test lives since it left this repository, its run free of the warning",
+      "fixed_in": "2026-11-23, outside this repository, where the test lives since"
     },
     {
       "number": 17,

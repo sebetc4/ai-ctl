@@ -1,6 +1,6 @@
 # Review: 2026-11-12-review-skill-v2-5-phase-2
 
-**Status:** complete — every finding fixed or registered: batches 1 to 6 in `docs(build): state the exit codes and lock of build outdated and update` of 2026-11-12, `docs: list the gateway's open redirects and explain the preload's 404` of 2026-11-12, `refactor(build): share the swap standing, built projects and table` of 2026-11-12, `build(deps): update errno to 0.3.15` of 2026-11-12, `fix(build): tell how to go on when a build's release was withdrawn` of 2026-11-12 and `fix(gateway): run the pinned llama-swap once checked against its pin` of 2026-11-12; 13, 16 and 17 registered; the recorded mutants at `docs(review): record M78 again on doctor's pinned arm` of 2026-11-12 all caught, M34, M63 to M65, M69 and M78 recorded again on the text the fixes moved
+**Status:** complete — every finding fixed or registered: batches 1 to 6 in `docs(build): state the exit codes and lock of build outdated and update` of 2026-11-12, `docs: list the gateway's open redirects and explain the preload's 404` of 2026-11-12, `refactor(build): share the swap standing, built projects and table` of 2026-11-12, `build(deps): update errno to 0.3.15` of 2026-11-12, `fix(build): tell how to go on when a build's release was withdrawn` of 2026-11-12 and `fix(gateway): run the pinned llama-swap once checked against its pin` of 2026-11-12; 13 and 17 registered; 16, registered at first, fixed in batch 7 on 2026-11-23, outside this repository, where its test lives since; the recorded mutants at `docs(review): record M78 again on doctor's pinned arm` of 2026-11-12 all caught, M34, M63 to M65, M69 and M78 recorded again on the text the fixes moved
 **Scope:** roadmap `review-skill-v2-5`, phase 2, `chore(release): release 0.2.0` of 2026-11-06..`fix(reviewing-as-an-agent): give the driven programs facts a source` of 2026-11-11: 269 hunks, +3135 −882 lines of code
 **Go-ahead:** the user, tier `medium`
 
@@ -23,7 +23,7 @@
 | 13 | build outdated and build update read the four remotes one after the other | performance | slow | — | new | — | register | — |
 | 14 | errno 0.3.14 is locked where 0.3.15 is within the requirements | dependencies | maintenance | — | older | — | fix at once | 4 |
 | 15 | each preload of a llama-server model logs failed to preload model: status 404, the model loaded all the same | bugs, the CLI's contract | misleading | low | older | CONFIRMED | fix | 2 |
-| 16 | test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run | tests | maintenance | — | older | — | register | — |
+| 16 | test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run | tests | maintenance | — | older | — | fix at once | 7 |
 | 17 | cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds | dependencies | none | — | older | — | register | — |
 
 ## Checks
@@ -31,12 +31,12 @@
 - `cargo fmt --check`: exit 0
 - `cargo clippy --all-targets -- -D warnings`: exit 0
 - `cargo test`: exit 0: 929 passed, 0 failed, 0 ignored; no test skipped itself
-- `python3 .claude/skills/reviewing-delivered-code/evals/test_scope.py`: exit 0: 34 tests
-- `python3 .claude/skills/reviewing-delivered-code/evals/test_fixtures.py`: exit 0
-- `python3 .claude/skills/reviewing-delivered-code/evals/test_findings.py`: exit 0: 34 tests
-- `python3 .claude/skills/reviewing-delivered-code/evals/test_regression.py`: exit 0: 15 tests
-- `python3 .claude/skills/reviewing-delivered-code/evals/test_dependencies.py`: exit 0: 53 tests
-- `python3 .claude/skills/reviewing-delivered-code/evals/test_guard.py`: exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding
+- `python3 test_scope.py`: exit 0: 34 tests
+- `python3 test_fixtures.py`: exit 0
+- `python3 test_findings.py`: exit 0: 34 tests
+- `python3 test_regression.py`: exit 0: 15 tests
+- `python3 test_dependencies.py`: exit 0: 53 tests
+- `python3 test_guard.py`: exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding
 - `python3 .github/scripts/test_check_release.py`: exit 0: 15 tests
 - `sid.py check .`: exit 0: cites 0, names 0, other 0
 - `cargo deny check`: exit 0: advisories, bans, licenses and sources ok; three duplicate warnings, syn, thiserror and thiserror-impl, the session's finding
@@ -365,7 +365,8 @@ evidence: reproduced: `python3 .claude/skills/reviewing-delivered-code/evals/tes
 ```
 
 Reviewers: session. Origin: older. Floor: below. Fingerprint: `tests | .claude/skills/reviewing-delivered-code/evals/test_guard.py | Sandbox::child`.
-Verdict: none, below the floor. Action: register. older code below the floor: the skill's own test, from `chore(release): release 0.2.0` of 2026-11-06, which this roadmap did not change.
+Verdict: none, below the floor. Action: fix at once, batch 7. fixed on 2026-11-23 where the test lives since it left this repository, its run free of the warning.
+Fixed in `2026-11-23, outside this repository, where the test lives since`.
 
 ### 17. cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds
 
@@ -423,3 +424,4 @@ Verdict: none, below the floor. Action: register. older, effect none: the three 
 - Batch 4: findings 14
 - Batch 5: findings 10
 - Batch 6: findings 8
+- Batch 7: findings 16
