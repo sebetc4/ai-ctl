@@ -164,9 +164,6 @@ processes only within the bounds `up` and `down` give them, and on the loopback.
 
 ```
 .
-├── .claude/
-│   ├── agents/          The reviewer and verifier agents of the review skill
-│   └── skills/          The code review skill, reviewing-delivered-code, with its evals
 ├── .github/
 │   ├── scripts/         check_release.py, the release's guard, with its tests
 │   └── workflows/       release.yml: the checks and the build at each tag, the release

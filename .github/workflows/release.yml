@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Packages
         # git before the checkout, which otherwise downloads the tree without its history.
-        run: dnf install -y --setopt=install_weak_deps=False git-core gcc python3 tar gzip iproute
+        run: dnf install -y --setopt=install_weak_deps=False git-core gcc python3 tar gzip
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -54,8 +54,6 @@ jobs:
           # --no-self-update: rustup would otherwise replace itself with the newest rustup-init
           # of its update root, unchecked, wherever CI is unset (docs/release.md).
           rustup toolchain install --no-self-update
-          # The evals run cargo in folders outside the repository, where the default applies.
-          rustup default "$(rustup show active-toolchain | cut -d' ' -f1)"
           rustc --version
 
       - name: cargo-deny
@@ -80,12 +78,6 @@ jobs:
 
       - name: cargo test
         run: cargo test --locked
-
-      - name: The review skill's evals
-        run: |
-          for t in scope fixtures findings regression dependencies guard; do
-            python3 ".claude/skills/reviewing-delivered-code/evals/test_$t.py"
-          done
 
       - name: The release guard's tests
         run: python3 .github/scripts/test_check_release.py

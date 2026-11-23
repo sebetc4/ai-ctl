@@ -47,15 +47,13 @@ Fedora 44 being ai-ctl's only target: the binary is linked against the glibc it 
 **The build job**, which reads the repository and writes nothing:
 
 1. The packages, from Fedora's repositories: `git-core` before the checkout, which without git
-   downloads the tree with no history, `gcc` as the linker, `python3`, `tar`, `gzip` and
-   `iproute`, whose `ss` the tests of the review skill's guard run.
+   downloads the tree with no history, `gcc` as the linker, `python3`, `tar` and `gzip`.
 2. The checkout, its token not kept, and the workspace marked safe for git, the container's
    root not owning it.
 3. On a pushed tag, the guard, `.github/scripts/check_release.py`, before anything costly: it
    refuses a tag not of the form `vX.Y.Z`, one that is not `Cargo.toml`'s version, and a version
    whose `CHANGELOG.md` entry is missing, given twice or not dated. A refused tag stops the run.
-4. rustup, then the toolchain `rust-toolchain.toml` pins, made the default too: the review
-   skill's evals run cargo in folders outside the repository. The install takes
+4. rustup, then the toolchain `rust-toolchain.toml` pins. The install takes
    `--no-self-update`, which keeps the pinned rustup-init: rustup's self-update downloads the
    newest rustup-init of its update root and runs it with no checksum. rustup 1.29.3 skips it
    on its own while `CI` is set, as GitHub sets it, but not in the steps run under podman
@@ -64,9 +62,9 @@ Fedora 44 being ai-ctl's only target: the binary is linked against the glibc it 
 6. `cargo build --release --locked`; then `ai-ctl gateway install` with that binary, which
    installs llama-swap for the gateway's test end to end, `tests/gateway_lifecycle.rs`, which
    skips itself without it.
-7. The checks of `CLAUDE.md` — fmt, clippy, the tests, the six evals, the guard's own tests —
-   and `cargo deny check` under `deny.toml`. `sid.py check`, the closed rule's check, is left
-   out: the pre-push hook runs it on every push, and the runner has no study link.
+7. `cargo fmt --check`, `cargo clippy --all-targets --locked -- -D warnings`,
+   `cargo test --locked`, the release guard's own tests, `.github/scripts/test_check_release.py`,
+   and `cargo deny check` under `deny.toml`.
 8. The binary and its `SHA256SUMS`, its `--version` printed, uploaded as the artifact.
 
 **The release job**, on a pushed tag alone, after the build job: it downloads the artifact,

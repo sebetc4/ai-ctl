@@ -438,10 +438,10 @@ protocol (2026-11-06): that scope adds an SSH key to the account, a way in that 
 agent's key, and `gh auth refresh --remove-scopes admin:public_key` drops it; `gh auth status`
 lists them.
 
-The CI runs the repository's code, its tests and the review skill's evals on a GitHub-hosted
-runner, in Fedora 44's image pinned by digest, with a token that reads the repository alone. The
-job that publishes runs no code of the repository, only `gh` on the build's artifact, its sum
-checked again ([release.md §4](release.md#4-what-it-trusts)).
+The CI runs the repository's code and its tests on a GitHub-hosted runner, in Fedora 44's
+image pinned by digest, with a token that reads the repository alone. The job that publishes
+runs no code of the repository, only `gh` on the build's artifact, its sum checked again
+([release.md §4](release.md#4-what-it-trusts)).
 
 ---
 
