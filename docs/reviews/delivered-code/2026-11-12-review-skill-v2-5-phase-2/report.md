@@ -31,12 +31,12 @@
 - `cargo fmt --check`: exit 0
 - `cargo clippy --all-targets -- -D warnings`: exit 0
 - `cargo test`: exit 0: 929 passed, 0 failed, 0 ignored; no test skipped itself
-- `python3 test_scope.py`: exit 0: 34 tests
-- `python3 test_fixtures.py`: exit 0
-- `python3 test_findings.py`: exit 0: 34 tests
-- `python3 test_regression.py`: exit 0: 15 tests
-- `python3 test_dependencies.py`: exit 0: 53 tests
-- `python3 test_guard.py`: exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding
+- `the tests of the review's scope`: exit 0: 34 tests
+- `the tests of the evals' fixtures`: exit 0
+- `the tests of the findings' record`: exit 0: 34 tests
+- `the tests of the mutants' rerun`: exit 0: 15 tests
+- `the tests of the dependencies' facts`: exit 0: 53 tests
+- `the tests of the review agents' guard`: exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding
 - `python3 .github/scripts/test_check_release.py`: exit 0: 15 tests
 - `sid.py check .`: exit 0: cites 0, names 0, other 0
 - `cargo deny check`: exit 0: advisories, bans, licenses and sources ok; three duplicate warnings, syn, thiserror and thiserror-impl, the session's finding

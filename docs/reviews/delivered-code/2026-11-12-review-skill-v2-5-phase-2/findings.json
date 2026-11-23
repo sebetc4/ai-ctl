@@ -414,27 +414,27 @@
       "result": "exit 0: 929 passed, 0 failed, 0 ignored; no test skipped itself"
     },
     {
-      "command": "python3 test_scope.py",
+      "command": "the tests of the review's scope",
       "result": "exit 0: 34 tests"
     },
     {
-      "command": "python3 test_fixtures.py",
+      "command": "the tests of the evals' fixtures",
       "result": "exit 0"
     },
     {
-      "command": "python3 test_findings.py",
+      "command": "the tests of the findings' record",
       "result": "exit 0: 34 tests"
     },
     {
-      "command": "python3 test_regression.py",
+      "command": "the tests of the mutants' rerun",
       "result": "exit 0: 15 tests"
     },
     {
-      "command": "python3 test_dependencies.py",
+      "command": "the tests of the dependencies' facts",
       "result": "exit 0: 53 tests"
     },
     {
-      "command": "python3 test_guard.py",
+      "command": "the tests of the review agents' guard",
       "result": "exit 0: 37 tests, with a ResourceWarning: unclosed file, the session's finding"
     },
     {
