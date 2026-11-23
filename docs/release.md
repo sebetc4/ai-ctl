@@ -155,3 +155,5 @@ to try a branch before its tag, comes the same way from the run's artifact:
   fixed workflow. Its first run on GitHub is v0.2.0's tag in the repository made again that day.
 - The release notes of `actions/checkout` v7.0.1, `actions/upload-artifact` v7.0.2 and
   `actions/download-artifact` v8.0.2.
+- The run by hand on GitHub on 2026-11-23, of the build job as §2 describes it: green from end
+  to end.
