@@ -13,9 +13,9 @@ When a tool's output changes with a new version, capture it again and update its
 ## Host and Toolchain
 
 Captured on 2026-10-09 for `doctor`'s probes, read by `src/infrastructure/host.rs`. Report:
-`docs/roadmap/completed/v2-rebuild/phase-1-doctor-and-inventory-report.md`, or
-`docs/roadmap/completed/v2-rebuild/phase-2-native-build-report.md` where marked (2), or
-`docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md` where marked (5).
+roadmap `v2-rebuild`: `phase-1-doctor-and-inventory-report.md`, or
+roadmap `v2-rebuild`: `phase-2-native-build-report.md` where marked (2), or
+roadmap `v2-review-fixes`: `phase-5-closing-review-report.md` where marked (5).
 
 | Fixture | Captured from |
 |---|---|
@@ -37,8 +37,8 @@ Captured on 2026-10-09 for `doctor`'s probes, read by `src/infrastructure/host.r
 ## Native Build
 
 Captured on 2026-10-09 while building llama.cpp `b11538`. Report:
-`docs/roadmap/completed/v2-rebuild/phase-2-native-build-report.md`, or
-`docs/roadmap/completed/v2-review-fixes/phase-2-dead-code-and-tests-report.md` where marked (3).
+roadmap `v2-rebuild`: `phase-2-native-build-report.md`, or
+roadmap `v2-review-fixes`: `phase-2-dead-code-and-tests-report.md` where marked (3).
 
 | Fixture | Captured from | Read by |
 |---|---|---|
@@ -150,7 +150,7 @@ front of the 27B on `b12111`, each request by `curl -s -i --http1.0` with the ke
 ## llama-server b11538
 
 Captured on 2026-10-11 and 2026-10-12 from the 27B on the native `b11538`, through
-`/upstream/qwen3.8-27b/`. Report: `docs/roadmap/completed/v2-rebuild/phase-4-bench-report.md`. Read by
+`/upstream/qwen3.8-27b/`. Report: roadmap `v2-rebuild`: `phase-4-bench-report.md`. Read by
 `src/infrastructure/server_api.rs`, the stream by `src/infrastructure/chat_api.rs`.
 
 | Fixture | Captured from |
@@ -169,19 +169,19 @@ The CDI specifications are read by `src/infrastructure/host.rs`, podman's output
 
 | Fixture | Captured from | Report |
 |---|---|---|
-| `nvidia-ctk-1.20.1-cdi-spec-excerpt.yaml` | Excerpt of `/var/run/cdi/nvidia.yaml`, driver 615.71.09, 2026-10-12: the device `all`, the env, the libcuda links and mount | `docs/roadmap/completed/v2-rebuild/phase-4-bench-report.md` |
-| `nvidia-ctk-1.20.1-cdi-spec.yaml` | `/var/run/cdi/nvidia.yaml`, whole, written by `nvidia-cdi-refresh.service` at 15:01 on 2026-10-18, driver 615.78.08: 60 `hostPath` entries; the GPU's UUID replaced with zeros | `docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md` |
-| `nvidia-ctk-1.20.1-cdi-spec-excerpt.json` | Excerpt of `nvidia-ctk cdi generate --format json --quiet`, driver 615.78.08, 2026-10-16: the device `all`'s name, the env and the libcuda mount; the GPU's UUID left out | `docs/roadmap/completed/v2-review-fixes/phase-2-dead-code-and-tests-report.md` |
-| `podman-5.8.7-ps-bogus-storage-driver.txt` | `podman ps` under a `CONTAINERS_STORAGE_CONF` naming the driver `bogus`, 2026-10-16: stderr, scratch path included | `docs/roadmap/completed/v2-review-fixes/phase-1-bugs-and-error-handling-report.md` |
-| `podman-5.8.7-image-inspect-digest.txt` | `podman image inspect --format '{{.Digest}}' ghcr.io/ggml-org/llama.cpp:server-cuda13-b11541`, 2026-10-16 | `docs/roadmap/completed/v2-review-fixes/phase-2-dead-code-and-tests-report.md` |
-| `podman-5.8.7-ps-pid.txt` | `podman ps --format '{{.Pid}}'`, one container running, 2026-10-16 | `docs/roadmap/completed/v2-review-fixes/phase-2-dead-code-and-tests-report.md` |
+| `nvidia-ctk-1.20.1-cdi-spec-excerpt.yaml` | Excerpt of `/var/run/cdi/nvidia.yaml`, driver 615.71.09, 2026-10-12: the device `all`, the env, the libcuda links and mount | roadmap `v2-rebuild`: `phase-4-bench-report.md` |
+| `nvidia-ctk-1.20.1-cdi-spec.yaml` | `/var/run/cdi/nvidia.yaml`, whole, written by `nvidia-cdi-refresh.service` at 15:01 on 2026-10-18, driver 615.78.08: 60 `hostPath` entries; the GPU's UUID replaced with zeros | roadmap `v2-review-fixes`: `phase-5-closing-review-report.md` |
+| `nvidia-ctk-1.20.1-cdi-spec-excerpt.json` | Excerpt of `nvidia-ctk cdi generate --format json --quiet`, driver 615.78.08, 2026-10-16: the device `all`'s name, the env and the libcuda mount; the GPU's UUID left out | roadmap `v2-review-fixes`: `phase-2-dead-code-and-tests-report.md` |
+| `podman-5.8.7-ps-bogus-storage-driver.txt` | `podman ps` under a `CONTAINERS_STORAGE_CONF` naming the driver `bogus`, 2026-10-16: stderr, scratch path included | roadmap `v2-review-fixes`: `phase-1-bugs-and-error-handling-report.md` |
+| `podman-5.8.7-image-inspect-digest.txt` | `podman image inspect --format '{{.Digest}}' ghcr.io/ggml-org/llama.cpp:server-cuda13-b11541`, 2026-10-16 | roadmap `v2-review-fixes`: `phase-2-dead-code-and-tests-report.md` |
+| `podman-5.8.7-ps-pid.txt` | `podman ps --format '{{.Pid}}'`, one container running, 2026-10-16 | roadmap `v2-review-fixes`: `phase-2-dead-code-and-tests-report.md` |
 
 ## Processes
 
 `/proc` files read by `src/infrastructure/gateway_process.rs`, captured on 2026-10-17, kernel
 7.2.10, podman 5.8.9, while a container of `docker.io/library/node:22-bookworm-slim` ran `sleep`
 (`podman run -d --rm --pull=never`). Report:
-`docs/roadmap/completed/v2-review-fixes/phase-3-performance-report.md`.
+roadmap `v2-review-fixes`: `phase-3-performance-report.md`.
 
 | Fixture | Captured from |
 |---|---|
@@ -194,7 +194,7 @@ The socket tables, captured on 2026-10-18, kernel 7.2.11, while a Python process
 `127.0.0.1:34545` and `[::1]:53305` and held one connection to the first, accepted. Each excerpt
 keeps the header and the rows whose addresses name the listener's port, and leaves out the
 machine's other sockets. Report:
-`docs/roadmap/completed/v2-review-fixes/phase-5-closing-review-report.md`.
+roadmap `v2-review-fixes`: `phase-5-closing-review-report.md`.
 
 | Fixture | Captured from |
 |---|---|
@@ -203,7 +203,7 @@ machine's other sockets. Report:
 
 The dual-stack socket, captured on 2026-10-19, kernel 7.2.11, while llama-swap v263 ran with
 `-listen 0.0.0.0:19200` alone in a network namespace (`unshare -rn`), whose user mapping shows
-its uid as 0. Report: `docs/reviews/delivered-code/2026-10-19-v2-review-fixes-security-pass.md`,
+its uid as 0. Report: the security pass over roadmap `v2-review-fixes`'s fixes, 2026-10-19,
 finding 1.
 
 | Fixture | Captured from |

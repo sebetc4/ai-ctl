@@ -487,14 +487,14 @@ and the configuration directory keep the umask's mode: they hold no secret.
 
 ## Sources
 
-- The review `docs/reviews/delivered-code/2026-10-15-v2-rebuild.md`, findings 1 to 7, and their
-  verification runs.
-- The review `docs/reviews/delivered-code/2026-10-17-v2-review-fixes.md`, finding 1: a squatter on
-  a backend's port, end to end with llama-swap v263 and llama-server `b11700`, natively and as the
+- The review of roadmap `v2-rebuild`'s code, 2026-10-15, findings 1 to 7, and their verification
+  runs.
+- The closing review of roadmap `v2-review-fixes`, 2026-10-17, finding 1: a squatter on a
+  backend's port, end to end with llama-swap v263 and llama-server `b11700`, natively and as the
   image, measured on 2026-10-18 with the GPU visible.
-- The review `docs/reviews/delivered-code/2026-10-19-v2-review-fixes-security-pass.md`, findings 1
-  and 5: llama-swap v263's dual-stack socket on `0.0.0.0`, its reach over IPv6, and podman's
-  publishing, probed in network namespaces on 2026-10-19.
+- The security pass over roadmap `v2-review-fixes`'s fixes, 2026-10-19, findings 1 and 5:
+  llama-swap v263's dual-stack socket on `0.0.0.0`, its reach over IPv6, and podman's publishing,
+  probed in network namespaces on 2026-10-19.
 - Phase 0 of the `v2-review-fixes` roadmap, whose report records each probe and the live check of
   2026-10-16: the gateway `ai-ctl up` started, OpenCode and OpenWebUI through it.
 - [stack.md](stack.md) §4.4, §5, §6.4 and §7.

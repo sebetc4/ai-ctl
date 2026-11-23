@@ -1,7 +1,7 @@
 # Documentation
 
 What ai-ctl is and why, by domain. Each document describes the code and the machine as they are
-now; how they got there is in the reviews, `CHANGELOG.md` and git's history.
+now; how they got there is in `CHANGELOG.md` and git's history.
 
 ---
 
@@ -22,8 +22,8 @@ now; how they got there is in the reviews, `CHANGELOG.md` and git's history.
 
 ## Records
 
-- [reviews/](reviews/README.md) — the reviews of delivered code, each ending with its fix plan, and
-  the debt register.
+- [reviews/](reviews/README.md) — the debt register and the recorded mutants of the reviews of
+  delivered code.
 
 ## Outside `docs/`
 
