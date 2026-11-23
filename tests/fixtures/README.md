@@ -291,24 +291,3 @@ phase 0's, `phase-0-decisions-and-design-report.md`, of the `review-skill-v2-5` 
 | `github-releases-ggml-org-llama.cpp-v1.0.0.http` | The same request on 2026-11-14, llama.cpp built at b12359: the first 17 of 100 releases, b12377 to b12359, the nightly pre-releases about the release v1.0.0, and the `link` to the next page; `tag_name`, `prerelease`, `created_at` and `body` of each. Report: roadmap `release-0-3-1`: `phase-0-llama-cpp-releases-report.md` |
 | `github-releases-leejet-stable-diffusion.cpp.http` | `GET https://api.github.com/repos/leejet/stable-diffusion.cpp/releases?per_page=100`: master-1079-a3c49b1 to master-940-1da55eb, every `body` null, a `link` to the next page; the same fields |
 | `github-commits-leejet-stable-diffusion.cpp.http` | `GET https://api.github.com/repos/leejet/stable-diffusion.cpp/commits?sha=master-1079-a3c49b1&since=2026-11-09T22:16:04+08:00&per_page=100`: 9 commits, the current build's `cfdf3cf` last; `sha`, `commit.committer.date` and `commit.message` of each |
-
-## Claude Code Hooks
-
-The hook inputs and the listening sockets read by the `reviewing-delivered-code` skill's
-`scripts/guard.py`, and tested by its `evals/test_guard.py`. Captured on 2026-11-02, Claude Code
-2.1.312: one `claude -p` session, `claude-haiku-5-5` at effort `low`, under
-`--setting-sources project,local`, in a repository made in scratch, whose
-`.claude/settings.json` wired a hook recording its standard input on `PreToolUse` matched on
-`Bash`, and on `SubagentStart` and `SubagentStop` matched on `review-probe`, an agent running
-nine commands with Bash. Each input is one line, as the hook read it; the repository's path is
-replaced with `/home/user/project`, the home folder with `/home/user`. Report: phase 2's,
-`phase-2-scripts-report.md`, of the `review-skill-v2` roadmap.
-
-| Fixture | Captured from |
-|---|---|
-| `claude-hook-pre-tool-use-main.json` | `PreToolUse` on the main session's `git status --porcelain`: no `agent_id` and no `agent_type` |
-| `claude-hook-pre-tool-use-agent.json` | `PreToolUse` on the agent's `git log --oneline -1` |
-| `claude-hook-subagent-start.json` | `SubagentStart` of the agent |
-| `claude-hook-subagent-stop.json` | The agent's first `SubagentStop`, `stop_hook_active` false, its `sleep 97` run in the background listed `running` in `background_tasks` |
-| `claude-hook-subagent-stop-active.json` | Its second, `stop_hook_active` true, after the hook blocked the first |
-| `ss-listening.txt` | `LC_ALL=C ss -Hltnup`, iproute2 6.17.0, among the machine's sockets those of a process named `probe server` by `prctl`: a loopback UDP socket, and a loopback TCP server held on two of its descriptors; the machine's LAN address replaced with `192.0.2.1`, its link-local address with `fe80::1` |
