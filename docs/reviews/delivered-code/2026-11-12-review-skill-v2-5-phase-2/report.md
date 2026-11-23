@@ -23,7 +23,7 @@
 | 13 | build outdated and build update read the four remotes one after the other | performance | slow | — | new | — | register | — |
 | 14 | errno 0.3.14 is locked where 0.3.15 is within the requirements | dependencies | maintenance | — | older | — | fix at once | 4 |
 | 15 | each preload of a llama-server model logs failed to preload model: status 404, the model loaded all the same | bugs, the CLI's contract | misleading | low | older | CONFIRMED | fix | 2 |
-| 16 | test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run | tests | maintenance | — | older | — | fix at once | 7 |
+| 16 | a test of the review agents' guard leaves its process's stdout open, a ResourceWarning in a green run | tests | maintenance | — | older | — | fix at once | 7 |
 | 17 | cargo deny check warns of three duplicates, syn, thiserror and thiserror-impl, which nvml-wrapper 0.13.0 holds | dependencies | none | — | older | — | register | — |
 
 ## Checks
@@ -349,13 +349,13 @@ Reviewers: session. Origin: older. Floor: above. Fingerprint: `bugs | docs/comma
 Verdict: CONFIRMED. Action: fix, batch 2.
 Fixed in `docs: list the gateway's open redirects and explain the preload's 404`.
 
-### 16. test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run
+### 16. a test of the review agents' guard leaves its process's stdout open, a ResourceWarning in a green run
 
 ```
 FINDING
 axis: tests
 where: .claude/skills/reviewing-delivered-code/evals/test_guard.py:335-342 (Sandbox::child)
-title: test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run
+title: a test of the review agents' guard leaves its process's stdout open, a ResourceWarning in a green run
 cause: child() opens the listener with `stdout=subprocess.PIPE` and registers its kill and wait as cleanups, never the pipe's close, so unittest's cleanup prints `ResourceWarning: unclosed file <_io.TextIOWrapper name=3>`
 effect: maintenance
 consequence: no effect on the guard; the check's output carries a warning every run, beside which a new one passes unread

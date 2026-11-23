@@ -955,7 +955,7 @@
       "where": [
         ".claude/skills/reviewing-delivered-code/evals/test_guard.py:335-342 (Sandbox::child)"
       ],
-      "title": "test_guard.py's child() leaves its process's stdout open, a ResourceWarning in a green run",
+      "title": "a test of the review agents' guard leaves its process's stdout open, a ResourceWarning in a green run",
       "cause": "child() opens the listener with `stdout=subprocess.PIPE` and registers its kill and wait as cleanups, never the pipe's close, so unittest's cleanup prints `ResourceWarning: unclosed file <_io.TextIOWrapper name=3>`",
       "effect": "maintenance",
       "severity": null,
