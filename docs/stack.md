@@ -531,7 +531,7 @@ For a text task, later:
 - `"share": "disabled"`.
 
 OpenCode's install script (`https://opencode.ai/install`) downloads the latest release from
-`github.com/anomalyco/opencode` without checking it. Download the release's
+the project's GitHub releases without checking it. Download the release's
 `opencode-linux-x64.tar.gz` instead, check its SHA-256 against the digest GitHub publishes for the
 asset, then install the binary with the script's `--binary <path> --no-modify-path` into
 `~/.opencode/bin`.
