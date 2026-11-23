@@ -1,7 +1,7 @@
 # Test Fixtures
 
 Outputs captured on this machine, for the parsers and adapters to be tested on what the tools
-really print (CLAUDE.md, Tests). None is written from memory. Commands ran with `LC_ALL=C`, as ai-ctl
+really print. None is written from memory. Commands ran with `LC_ALL=C`, as ai-ctl
 runs them: `gcc` and the compilers answer in French otherwise. An `.http` file is a whole HTTP
 response, status line and headers included, as `infrastructure::http::parse` reads it.
 
@@ -222,9 +222,9 @@ the `audio-image-backends` roadmap.
 
 ## Test Runs
 
-The stdout of `cargo test` run on one test by name, read by the `reviewing-delivered-code`
-skill's `scripts/regression.py`, which reads each test's `test <name> ... <status>` line, and
-tested by its `evals/test_regression.py`. Captured on 2026-11-02 on this repository at
+The stdout of `cargo test` run on one test by name, read by the code review's rerun of the
+recorded mutants, which reads each test's `test <name> ... <status>` line, and by that rerun's
+tests. Captured on 2026-11-02 on this repository at
 `7822811`, cargo 1.97.1; cargo's `Finished` and `Running` lines go to stderr, left out. Report:
 phase 2's, `phase-2-scripts-report.md`, of the `review-skill-v2` roadmap.
 
@@ -236,8 +236,8 @@ phase 2's, `phase-2-scripts-report.md`, of the `review-skill-v2` roadmap.
 
 ## Dependencies
 
-The outputs of cargo, crates.io and GitHub read by the `reviewing-delivered-code` skill's
-`scripts/dependencies.py`, and tested by its `evals/test_dependencies.py`. Captured on 2026-11-02,
+The outputs of cargo, crates.io and GitHub read by the code review's gathering of the
+dependencies' facts, and by that gathering's tests. Captured on 2026-11-02,
 cargo 1.97.1. The probe crate, `facts`, made in scratch: `equivalent = "1.0"` locked at 1.0.1,
 `heck = { version = "0.4", features = ["unicode"] }`, its `unicode-segmentation` locked at 1.13.1,
 a yanked version, `heck5 = { package = "heck", version = "0.5" }`, `fnv = "1"` as a
