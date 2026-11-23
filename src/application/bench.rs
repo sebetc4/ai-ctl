@@ -1,5 +1,5 @@
 //! `bench`: measures a model served through the gateway, with the protocol
-//! of `docs/stack.md` §9.
+//! of `docs/bench.md`.
 //!
 //! The prompts are an agent's, from [`crate::domain::prompt`], fitted to an
 //! exact number of tokens as the model's own template and tokenizer count

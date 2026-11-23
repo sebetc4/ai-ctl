@@ -11,14 +11,15 @@ now; how they got there is in `CHANGELOG.md` and git's history.
 |---|---|---|
 | [architecture.md](architecture.md) | Layers, dependency rule, ports, errors, concurrency, testing, repository layout | Changing the structure of the code |
 | [audio/](audio/README.md) | [whisper-cpp.md](audio/whisper-cpp.md), whisper.cpp's `whisper-server`, and [audio-cpp.md](audio/audio-cpp.md), audio.cpp's `audiocpp_server`: build, options, routes, readiness, the key, their speech models, OpenWebUI's fit, with sources | Touching whisper.cpp or audio.cpp, a recipe, a kind or their models |
+| [bench.md](bench.md) | How the LLM stack is measured: what a comparison holds fixed, the measures `ai-ctl bench run` takes through the gateway, and how its GPU and memory readings read | Changing the bench or reading its runs |
 | [commands.md](commands.md) | Every command: arguments, options, defaults, output, exit status, files | Changing a command, and change it with the command |
 | [gpu/](gpu/README.md) | [llama-swap.md](gpu/llama-swap.md): how the GPU is shared: llama-swap as the only arbiter, ai-ctl and the clients around it, the backends served and planned, several models per use, what each model declares it can do, and why | Touching a backend, the gateway or VRAM |
 | [image/](image/README.md) | [stable-diffusion-cpp.md](image/stable-diffusion-cpp.md): stable-diffusion.cpp's `sd-server`: build, options, routes, readiness, the key, its image models, OpenWebUI's fit, with sources | Touching stable-diffusion.cpp, its recipe, its kind or its models |
 | [openwebui.md](openwebui.md) | OpenWebUI, the client for daily use: its container, the key, and the settings of its chat, speech and images, step by step | Running or setting OpenWebUI |
 | [release.md](release.md) | A release: the tag, the workflow that checks, builds and publishes it, what it pins and trusts, how each pin is renewed, and how production installs it | Touching the workflow or one of its pins, making a release or installing one |
 | [security.md](security.md) | Who can reach the gateway and the backends; what the API key, loopback, `expose` and CORS guard; what ai-ctl runs and keeps | Touching the key, the gateway's address, the inventory's checks, a download or an image |
-| [stack.md](stack.md) | The LLM stack: engine, models, settings, clients, measurement protocol, with sources | Changing an engine, a model, a setting or a client |
-| [toolchain.md](toolchain.md) | Driver, CUDA toolkit and compilers: fresh install, version changes, and the record of every command run on this machine | Changing the toolchain, and add an entry to its record |
+| [stack.md](stack.md) | The LLM stack: engine, models, settings, clients, with sources | Changing an engine, a model, a setting or a client |
+| [toolchain.md](toolchain.md) | Driver, CUDA toolkit and compilers: fresh install, version changes, the rest of the machine's setup from the container tooling to the gateway, and the record of every command run on this machine | Changing the toolchain or the machine's setup, and add an entry to its record |
 
 ## Records
 

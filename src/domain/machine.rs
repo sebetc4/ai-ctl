@@ -113,7 +113,7 @@ pub struct CudaToolkit {
 }
 
 /// CUDA 13.2 is reported to produce wrong output in llama.cpp builds
-/// (llama.cpp issue #21255); see `docs/stack.md` §8.
+/// (llama.cpp issue #21255); see `docs/toolchain.md` §1.
 pub const BROKEN_TOOLKIT: (u32, u32) = (13, 2);
 /// ggml adds the `120a-real` architecture from CUDA 12.8 on.
 pub const MIN_TOOLKIT: (u32, u32) = (12, 8);

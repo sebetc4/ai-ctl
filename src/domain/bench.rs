@@ -1,7 +1,7 @@
 //! The bench: what a run sends through the gateway, scenario by scenario,
 //! and what each request gives back.
 //!
-//! The scenarios follow the measurement protocol of `docs/stack.md` §9. Each
+//! The scenarios follow the measurement protocol of `docs/bench.md`. Each
 //! request is measured twice: by the client, which times the stream, and by
 //! llama-server, whose `timings` object tells how many prompt tokens came from
 //! the cache and how fast the rest went.
@@ -66,7 +66,7 @@ pub const DEPTHS: [u32; 3] = [8_192, 32_768, 65_536];
 /// Tokens each request of the depth and session scenarios generates.
 pub const GENERATE: u32 = 512;
 /// The fresh prompt of the prefill scenario: 40K tokens, the size of an
-/// agent's first request (`docs/stack.md` §9).
+/// agent's first request (`docs/bench.md`).
 pub const PREFILL: u32 = 40_960;
 /// Tokens a prefill request generates: one, since only the time to it counts.
 pub const PREFILL_GENERATE: u32 = 1;

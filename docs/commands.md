@@ -595,7 +595,7 @@ ai-ctl bench run [--repeat <N>] [--scenario <SCENARIO>]… <MODEL>
 ```
 
 Measures a llama-server model the running gateway serves, through the gateway, with the protocol
-of [docs/stack.md](stack.md) §9, and saves the run. Each request measured is printed on stderr as it
+of [docs/bench.md](bench.md), and saves the run. Each request measured is printed on stderr as it
 is measured, but the overhead's, printed every ten requests each way; the request that sets the
 context aside before a fresh prompt is not. The run's tables go on stdout, then the saved run's id
 and path.

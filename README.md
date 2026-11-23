@@ -274,7 +274,7 @@ ai-ctl bench compare 20261011T154305Z-qwen3.8-27b 20261011T171210Z-qwen3.8-27b
 ```
 
 `bench run` measures a llama-server model the running gateway serves, through the gateway, with
-the protocol of [docs/stack.md](docs/stack.md) §9. The prompts are a coding agent's at work on
+the protocol of [docs/bench.md](docs/bench.md). The prompts are a coding agent's at work on
 ai-ctl's own code, frozen at one commit, fitted to the token with the model's own template and
 tokenizer: two runs send the same tokens, and a request that must miss the prompt cache asks `cache_prompt: false`,
 after an unmeasured request of the same prompt cut to a quarter, which pays llama-server's saving
@@ -295,7 +295,7 @@ Every run also checks the drafts of speculative decoding each request reports ag
 `/metrics` counters, and reads the GPU every 250 ms: memory, temperature, SM clock, power, and
 what slowed the clocks down — the power limit, heat or the hardware. A column of its own gives the
 readings NVML puts down to a board or reliability policy: on this machine, those the power limit
-does not hold ([docs/stack.md](docs/stack.md) §9). Each request measured is printed on stderr as
+does not hold ([docs/bench.md](docs/bench.md)). Each request measured is printed on stderr as
 it is measured, the overhead's every ten requests each way, the run's tables on stdout. On the
 27B, a run of 5 repetitions takes about 20 minutes. A request that fails ends the run; the
 scenarios it completed before are saved, and the error names the saved run.
