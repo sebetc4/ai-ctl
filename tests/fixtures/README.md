@@ -277,11 +277,11 @@ roadmap.
 
 ## Release Notes
 
-GitHub's releases and commits read by the same script for the release notes of llama-swap and
-the backends. Captured on 2026-11-10 with `curl -i`, unauthenticated, the same User-Agent and
+GitHub's releases and commits read by the same gathering for the release notes of llama-swap
+and the backends. Captured on 2026-11-10 with `curl -i`, unauthenticated, the same User-Agent and
 `Accept: application/vnd.github+json`; llama-swap pinned at v271, llama.cpp built at b12227,
 stable-diffusion.cpp at master-1071-cfdf3cf. Each body is an excerpt: the items in their order,
-each with the fields the script reads alone, the headers as captured, `link` included. Report:
+each with the fields the gathering reads alone, the headers as captured, `link` included. Report:
 phase 0's, `phase-0-decisions-and-design-report.md`, of the `review-skill-v2-5` roadmap.
 
 | Fixture | Captured from |

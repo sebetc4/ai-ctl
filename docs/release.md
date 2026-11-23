@@ -1,9 +1,9 @@
 # Release
 
 How a release of ai-ctl is made, checked, built and published, what the workflow that does it
-pins and trusts, how each pin is renewed, and how production installs a release. Every fact
-below was checked on 2026-11-06, by the workflow's steps run in its image under rootless podman
-5.8.9 on this machine, and by runs of the workflow on GitHub, the last on 2026-11-23.
+pins and trusts, how each pin is renewed, and how production installs a release. The facts
+below were checked by the workflow's steps run in its image under rootless podman 5.8.9 on this
+machine on 2026-11-06, and by runs of the workflow on GitHub, the last on 2026-11-23.
 
 ---
 
