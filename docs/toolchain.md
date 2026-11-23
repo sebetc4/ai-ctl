@@ -238,8 +238,8 @@ cargo install --locked cargo-deny@0.20.2
 ```
 
 After: `cargo-deny` 0.20.2 in `~/.cargo/bin`, built in 58 s with the versions its own
-`Cargo.lock` pins: crates.io's newest release, of 2026-07-09, which needs Rust 1.88. The
-`reviewing-delivered-code` skill's dependency axis runs `cargo deny check` under `deny.toml`.
+`Cargo.lock` pins: crates.io's newest release, of 2026-07-09, which needs Rust 1.88. The code
+review's check of the crates runs `cargo deny check` under `deny.toml`.
 
 ### 2026-10-15 — Driver 615.71.09 → 615.78.08
 

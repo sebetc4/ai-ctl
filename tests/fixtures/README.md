@@ -242,10 +242,10 @@ cargo 1.97.1. The probe crate, `facts`, made in scratch: `equivalent = "1.0"` lo
 `heck = { version = "0.4", features = ["unicode"] }`, its `unicode-segmentation` locked at 1.13.1,
 a yanked version, `heck5 = { package = "heck", version = "0.5" }`, `fnv = "1"` as a
 dev-dependency, `itoa` from its git repository at the tag 1.0.18, and a path crate, `inner`,
-outside its folder, using `static_assertions = "1"`; rust-version 1.89. The HTTP
-answers are `curl -i`'s, with the User-Agent `ai-ctl-review-dependencies (reviewing-delivered-code
-skill)`; one GitHub answer holds its redirect, the 301, then the 200. Report: phase 2's,
-`phase-2-scripts-report.md`, of the `review-skill-v2` roadmap.
+outside its folder, using `static_assertions = "1"`; rust-version 1.89. The HTTP answers are
+`curl -i`'s, with the code review's own User-Agent; one GitHub answer holds its redirect, the
+301, then the 200. Report: phase 2's, `phase-2-scripts-report.md`, of the `review-skill-v2`
+roadmap.
 
 | Fixture | Captured from |
 |---|---|

@@ -3,8 +3,7 @@
 How a release of ai-ctl is made, checked, built and published, what the workflow that does it
 pins and trusts, how each pin is renewed, and how production installs a release. Every fact
 below was checked on 2026-11-06, by the workflow's steps run in its image under rootless podman
-5.8.9 on this machine, and by a run of the workflow on GitHub; the build job's steps as they
-stand, by a run on GitHub on 2026-11-23.
+5.8.9 on this machine, and by runs of the workflow on GitHub, the last on 2026-11-23.
 
 ---
 
@@ -12,8 +11,8 @@ stand, by a run on GitHub on 2026-11-23.
 
 A release is a tag `vX.Y.Z` on `main`, on the commit where `Cargo.toml` holds `version = "X.Y.Z"`
 and `CHANGELOG.md` heads its entry `## X.Y.Z — YYYY-MM-DD`; while in work, the entry reads
-`## X.Y.Z — unreleased`. The `committing-changes` skill makes the tag on that commit and pushes
-it, by the `[git]` table of `.agent-conventions.toml`; no one tags by hand.
+`## X.Y.Z — unreleased`. The tag is made on that commit and pushed with it by the tooling that
+commits to `main`; no one tags by hand.
 
 Each release starts from llama-swap's newest release, since ai-ctl pins one release of it, the
 only one `ai-ctl gateway install` installs: its notes are read since the pinned release and checked
@@ -106,7 +105,7 @@ with a build of the same home alone.
   repository is public, its one writer the user: anyone reads it and its releases, only a writer
   pushes, and a fork's pull request runs nothing, the workflow having no `pull_request` trigger.
   The guard checks what the tag names, not who pushed it, nor that its commit is on `main`,
-  which `committing-changes` alone ensures.
+  which the tooling that makes the tag alone ensures.
 - **GitHub**: its runners, its Actions and the token it gives each job, scoped as §2 says.
 - **The sources of §3**: Fedora's repositories, `static.rust-lang.org`, the cargo-deny and
   llama-swap releases on GitHub, crates.io. A pin detects a change to what it pins; it does not
@@ -156,5 +155,4 @@ to try a branch before its tag, comes the same way from the run's artifact:
   fixed workflow. Its first run on GitHub is v0.2.0's tag in the repository made again that day.
 - The release notes of `actions/checkout` v7.0.1, `actions/upload-artifact` v7.0.2 and
   `actions/download-artifact` v8.0.2.
-- The run by hand on GitHub on 2026-11-23, of the build job as §2 describes it: green from end
-  to end.
+- The run by hand on GitHub on 2026-11-23: green from end to end.
