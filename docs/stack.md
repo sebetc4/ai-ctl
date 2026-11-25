@@ -622,10 +622,12 @@ connection, the empty task model and autocomplete turned off among them.
 Decided with the user at the opening of the roadmap `release-0-3-1`, built in its phase 0: ai-ctl
 builds llama.cpp at its releases `vX.Y.Z`, which `latest`, `build outdated` and `build update`
 take, and never at its nightly tags `b<N>`. A release is built with `LLAMA_BUILD_IS_DEV=OFF`, as
-llama.cpp's own release binaries are, so that `--version` prints `1.0.0` and not `1.0.0-dev`. An
-installed `b<N>` build is not migrated: it reads as built from a commit, `build update` builds the
-newest release beside it, and `build use` goes back to it. It shapes §1, §4.4 and [toolchain.md §5](toolchain.md#5-machine-setup), and
-the recipe in [commands.md](commands.md#build).
+llama.cpp asks of a build from a release tag, so that `--version` prints `1.0.0` and not
+`1.0.0-dev`; llama.cpp's own binaries and images of a release are those of the nightly on its
+commit, which print `1.0.0-dev`. An installed `b<N>` build is not migrated: it reads as built from
+a commit, `build update` builds the newest release beside it, and `build use` goes back to it. It
+shapes §1, §4.4 and [toolchain.md §5](toolchain.md#5-machine-setup), and the recipe in
+[commands.md](commands.md#build).
 
 - Set aside: the nightly tags `b<N>`, several a day, pre-releases built as development builds: a
   production with several users runs the releases a project publishes, not its nightlies.
@@ -640,8 +642,12 @@ the recipe in [commands.md](commands.md#build).
   page on 2026-11-14. `v1.0.0`, `b12359` and `v1.0.0-b12359-b1b770d` name one commit,
   `b1b770d` (`git ls-remote`, 2026-11-14). `LLAMA_BUILD_IS_DEV`, on by default, sets the version
   alone, its comment asking it off "when making a release from a release tag" (`CMakeLists.txt`
-  at `v1.0.0`). llama.cpp's own CUDA 13 binaries have been built with CUDA 13.5 since
-  2026-11-06 (the backend updates tour, 2026-11-13 and 2026-11-14).
+  at `v1.0.0`), and `docs/release.md` asking it of "distributors building from a release tag".
+  The release `v1.0.0` links to the binaries of the nightly `b12359`, on its commit, and its
+  images are that nightly's, tagged again; `release.yml` and the Dockerfiles leave the option on
+  (`make-release.yml` and `release.yml` at `v1.0.0`, read in the review of 0.3.1, 2026-11-25).
+  llama.cpp's own CUDA 13 binaries have been built with CUDA 13.5 since 2026-11-06 (the backend
+  updates tour, 2026-11-13 and 2026-11-14).
 - Revisit: when llama.cpp stops publishing `vX.Y.Z` each week, or a fix ai-ctl needs waits in a
   nightly for longer than a release.
 

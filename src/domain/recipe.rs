@@ -26,9 +26,8 @@ pub struct Recipe {
     /// toolchain ones.
     pub cmake_flags: &'static [(&'static str, &'static str)],
     /// CMake options set only for a build of a release tag, as the project
-    /// sets them for its own release binaries. They change what the binary
-    /// says of itself, not what it does: a build is never compared with
-    /// them.
+    /// asks of whoever builds one. They change what the binary says of
+    /// itself, not what it does: a build is never compared with them.
     pub release_flags: &'static [(&'static str, &'static str)],
     /// The CMake target to build, and nothing else.
     pub target: &'static str,
@@ -182,8 +181,10 @@ pub const LLAMA_CPP: Recipe = Recipe {
         // and compile its file names into the server's code.
         ("LLAMA_USE_PREBUILT_UI", "OFF"),
     ],
-    // `--version` prints the release's version, `1.0.0`, as llama.cpp's own
-    // release binaries do, where a development build prints `1.0.0-dev`.
+    // `--version` prints the release's version, `1.0.0`, where a development
+    // build prints `1.0.0-dev`: llama.cpp asks the option off "when making a
+    // release from a release tag" (CMakeLists.txt). Its own binaries and
+    // images of a release are its nightly's, which print `1.0.0-dev`.
     release_flags: &[("LLAMA_BUILD_IS_DEV", "OFF")],
     target: "llama-server",
     artifact: "bin/llama-server",
