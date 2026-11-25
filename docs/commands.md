@@ -420,8 +420,7 @@ model is loaded ([gpu/llama-swap.md](gpu/llama-swap.md#what-each-model-can-do)).
 
 It fails when the inventory is missing or invalid, when a backend in use has no current build or
 one made without a patch its recipe now applies or one of its CMake options at its value, with
-the commands that build it again, at its release or at the newest when its project withdrew it
-or when its id names no build any more, as llama.cpp's `b<N>`,
+the commands that build it again, at its release or at the newest when its project withdrew it,
 when a path or value contains `${`, which llama-swap would read as a macro, or a control character or a
 line separator, when the GPU cannot be read, since the models are sized to its memory, or when
 the inventory's `vram_margin_mib` leaves the pool nothing of it. The error lists every value the
@@ -455,7 +454,7 @@ Before starting, `up` pulls the images the models run on, and refuses when:
   as an older ai-ctl installed it, naming `ai-ctl gateway install`;
 - a backend in use runs a build made without a patch its recipe now applies or one of its CMake
   options at its value, with the commands that build it again, at its release or at the newest
-  when its project withdrew it or when its id names no build any more, as llama.cpp's `b<N>`;
+  when its project withdrew it;
 - the GPU cannot be read, since the models are sized to its memory;
 - the inventory gives a configuration `gateway config` refuses, such as a `${` in a flag or a
   margin that leaves the models none of the GPU's memory;

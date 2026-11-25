@@ -544,20 +544,9 @@ pub enum Current {
     Installed(Build),
 }
 
-/// How to build the current build `id` of `recipe`'s project again: at its
-/// own release, or at the newest when the project withdrew it, whose tag the
-/// fetch drops. An id that is neither a release of the recipe's form nor a
-/// short commit, such as llama.cpp's `b12359`, which an ai-ctl before 0.3.1
-/// named a build after, names no build `--ref` would make: the newest
-/// release alone.
-pub(crate) fn rebuild_remedy(recipe: &Recipe, id: &BuildId) -> String {
-    let project = recipe.project;
-    if recipe.tags.release(id.as_str()).is_none() && !id.is_short_commit() {
-        return format!(
-            "`ai-ctl build {project}`, at the newest release: no build of {project} is named \
-             {id} any more"
-        );
-    }
+/// How to build `project`'s current build `id` again: at its own release,
+/// or at the newest when the project withdrew it, whose tag the fetch drops.
+pub(crate) fn rebuild_remedy(project: &str, id: &BuildId) -> String {
     format!(
         "`ai-ctl build {project} --ref {id} --force`, or `ai-ctl build {project}` at the newest \
          release if the project withdrew {id}"
@@ -566,8 +555,7 @@ pub(crate) fn rebuild_remedy(recipe: &Recipe, id: &BuildId) -> String {
 
 impl Current {
     /// The installed build, or the error that tells how to get one.
-    pub fn installed(self, recipe: &Recipe) -> Result<Build> {
-        let project = recipe.project;
+    pub fn installed(self, project: &str) -> Result<Build> {
         match self {
             Current::Installed(build) => Ok(build),
             Current::None => bail!("{project} has no build; run `ai-ctl build {project}`"),
@@ -576,7 +564,7 @@ impl Current {
             ),
             Current::Unreadable { id, reason } => bail!(
                 "the current build of {project}, {id}, cannot be read: {reason}; run {}",
-                rebuild_remedy(recipe, &id)
+                rebuild_remedy(project, &id)
             ),
         }
     }
@@ -656,7 +644,7 @@ pub fn list(
             let replaced_by = "`ai-ctl build use` or `ai-ctl build`";
             let current = current_or_none(store.current(recipe.project), replaced_by, warn);
             if let Some(id) = &current
-                && let Err(err) = lookup(id.clone(), &builds, &unreadable).installed(recipe)
+                && let Err(err) = lookup(id.clone(), &builds, &unreadable).installed(recipe.project)
             {
                 warn(format!("{err:#}"));
             }
@@ -862,7 +850,7 @@ fn project_standing(
     let build = current(store, recipe.project)
         .and_then(|current| match current {
             Current::None => Ok(None),
-            current => current.installed(recipe).map(Some),
+            current => current.installed(recipe.project).map(Some),
         })
         .unwrap_or_else(|err| {
             warn(format!("{err:#}"));
@@ -2288,62 +2276,61 @@ mod tests {
     #[test]
     fn a_current_build_not_installed_tells_how_to_build_one() {
         assert_eq!(
-            Current::Installed(b11538()).installed(&LLAMA_CPP).unwrap(),
+            Current::Installed(b11538()).installed("llama.cpp").unwrap(),
             b11538()
         );
         assert_eq!(
-            message(Current::None.installed(&LLAMA_CPP)),
+            message(Current::None.installed("llama.cpp")),
             "llama.cpp has no build; run `ai-ctl build llama.cpp`"
         );
         assert_eq!(
-            message(Current::Missing(id("b9")).installed(&LLAMA_CPP)),
+            message(Current::Missing(id("b9")).installed("llama.cpp")),
             "the current build of llama.cpp, b9, is not installed; run `ai-ctl build llama.cpp`"
         );
         let unreadable = Current::Unreadable {
-            id: id("b9"),
+            id: id("v1.0.0"),
             reason: "no build.json".into(),
         };
         assert_eq!(
-            message(unreadable.installed(&LLAMA_CPP)),
-            "the current build of llama.cpp, b9, cannot be read: no build.json; run `ai-ctl \
-             build llama.cpp`, at the newest release: no build of llama.cpp is named b9 any more"
+            message(unreadable.installed("llama.cpp")),
+            "the current build of llama.cpp, v1.0.0, cannot be read: no build.json; run `ai-ctl \
+             build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the newest \
+             release if the project withdrew v1.0.0"
         );
     }
 
     #[test]
-    fn a_build_is_built_again_under_its_name_when_a_build_still_takes_it() {
-        let again = |recipe: &Recipe, name: &str| {
-            let project = recipe.project;
-            (rebuild_remedy(recipe, &id(name))
-                == format!(
-                    "`ai-ctl build {project} --ref {name} --force`, or `ai-ctl build {project}` \
-                     at the newest release if the project withdrew {name}"
-                ))
-            .then_some(())
-            .ok_or_else(|| rebuild_remedy(recipe, &id(name)))
-        };
-        // A release of the recipe's form, and a short commit.
-        assert_eq!(again(&LLAMA_CPP, "v1.0.0"), Ok(()));
-        assert_eq!(again(&STABLE_DIFFUSION_CPP, "master-1068-fc350be"), Ok(()));
-        assert_eq!(again(&LLAMA_CPP, "d628a98f09"), Ok(()));
-        // llama.cpp's nightly tags, which named its builds before 0.3.1:
-        // `--ref b12359` builds `v1.0.0`, and `--ref b12227` its commit.
-        let newest = |name: &str| {
-            Err(format!(
-                "`ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp is named \
-                 {name} any more"
-            ))
-        };
-        for name in [
-            "b12359",
-            "d628a98f0",
-            "d628a98f09a",
-            "build12359",
-            "master-123",
-            "v1.0.0-b12359-b1b770d",
-            "D628A98F09",
-        ] {
-            assert_eq!(again(&LLAMA_CPP, name), newest(name));
+    fn a_current_build_is_built_again_by_its_remedy_beside_the_newest_release() {
+        // The remedy doctor, up and gateway config give for a current build
+        // that cannot be read, is off its recipe or fails its smoke test,
+        // run as the user would, with the newest release installed: for a
+        // release, and for a commit that release tagged since.
+        for (current, rebuilt) in [("v0.9.0", "v0.9.0"), ("b1b770d90d", "v1.0.0")] {
+            let mut world = World::new();
+            world
+                .sources
+                .project_tags
+                .insert("llama.cpp", vec!["v0.9.0", "v1.0.0"]);
+            *world.store.builds.borrow_mut() =
+                vec![installed(current, 10), installed("v1.0.0", 20)];
+            *world.store.current.borrow_mut() = Some(id(current));
+            let remedy = rebuild_remedy("llama.cpp", &id(current));
+            let command: Vec<&str> = remedy.split('`').nth(1).unwrap().split(' ').collect();
+            let (build, options) = command.split_at(3);
+            assert_eq!(build, ["ai-ctl", "build", "llama.cpp"], "{remedy}");
+            let reference = options
+                .iter()
+                .position(|option| *option == "--ref")
+                .map(|at| options[at + 1]);
+            let (built, _) = world.build(reference, options.contains(&"--force"));
+            assert_eq!(
+                built
+                    .map(|built| built.build.id)
+                    .map_err(|err| format!("{err:#}")),
+                Ok(id(rebuilt)),
+                "{remedy}"
+            );
+            assert_eq!(*world.store.current.borrow(), Some(id(rebuilt)));
         }
     }
 

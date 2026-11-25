@@ -433,7 +433,7 @@ impl Doctor<'_> {
             Ok(Current::Unreadable { id, reason }) => {
                 return problem(
                     format!("the current build, {id}, cannot be read: {reason}"),
-                    rebuild_remedy(recipe, &id),
+                    rebuild_remedy(project, &id),
                 );
             }
             Ok(Current::None) if used == Some(true) => {
@@ -451,7 +451,7 @@ impl Doctor<'_> {
             Err(err) => return problem(format!("{err:#}"), build_remedy),
         };
         let current = &build.id;
-        let rebuild = rebuild_remedy(recipe, current);
+        let rebuild = rebuild_remedy(project, current);
         if let Some(unlike) = unlike_recipe(recipe, &build) {
             return problem(unlike, rebuild);
         }
@@ -978,7 +978,7 @@ mod tests {
         FakeApi, FakeBuilds, FakeCdi, FakeContainers, FakeGateway, FakeGpu,
         FakeInventory as FakeStore, FakePorts, FakePower, FakeProcesses, FakePrograms,
         FakeReleases, FakeToolchain, LoadFailure, OTHER_DIGEST, ScriptedGpu, advance, b11538, gpu,
-        gxx, inventory, inventory_parts, model, now, printed, record, toolkit,
+        gxx, inventory, inventory_parts, model, now, printed, record, toolkit, v1_0_0,
     };
     use crate::application::lifecycle::Lifecycle;
     use crate::application::ports::{Liveness, RunningModel};
@@ -1167,18 +1167,18 @@ mod tests {
             version: printed(true, "", "usage: llama-server [options]\n"),
             ..FakePrograms::default()
         };
-        let check = builds_check(&FakeBuilds::current_b11538(), &programs, installed());
+        let check = builds_check(&FakeBuilds::current_v1_0_0(), &programs, installed());
         assert_eq!(check.status, Status::Fail);
         assert_eq!(
             check.detail,
-            "b11538 is not the server its recipe builds: `llama-server --version` printed no \
+            "v1.0.0 is not the server its recipe builds: `llama-server --version` printed no \
              `version: `: usage: llama-server [options]"
         );
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp`, at the newest release: no build of \
-                 llama.cpp is named b11538 any more"
+                "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
+                 newest release if the project withdrew v1.0.0"
             )
         );
     }
@@ -1317,7 +1317,7 @@ mod tests {
 
     #[test]
     fn a_current_build_without_one_of_its_recipes_cmake_options_is_built_again() {
-        // b11538 built before its recipe set LLAMA_USE_PREBUILT_UI=OFF.
+        // v1.0.0 built without LLAMA_USE_PREBUILT_UI=OFF, as before its recipe set it.
         let mut flags: BTreeMap<String, String> = crate::domain::recipe::LLAMA_CPP
             .cmake_flags
             .iter()
@@ -1327,21 +1327,21 @@ mod tests {
         let builds = FakeBuilds {
             builds: vec![Build {
                 cmake_flags: flags,
-                ..b11538()
+                ..v1_0_0()
             }],
-            ..FakeBuilds::current_b11538()
+            ..FakeBuilds::current_v1_0_0()
         };
         let check = builds_check(&builds, &FakePrograms::default(), installed());
         assert_eq!(check.status, Status::Fail);
         assert_eq!(
             check.detail,
-            "b11538 was built without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets"
+            "v1.0.0 was built without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets"
         );
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp`, at the newest release: no build of \
-                 llama.cpp is named b11538 any more"
+                "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
+                 newest release if the project withdrew v1.0.0"
             )
         );
     }
@@ -1356,10 +1356,10 @@ mod tests {
             ),
             ..FakePrograms::default()
         };
-        let check = builds_check(&FakeBuilds::current_b11538(), &programs, installed());
+        let check = builds_check(&FakeBuilds::current_v1_0_0(), &programs, installed());
         assert_eq!(check.status, Status::Fail);
         assert!(
-            check.detail.starts_with("b11538 does not run: "),
+            check.detail.starts_with("v1.0.0 does not run: "),
             "{}",
             check.detail
         );
@@ -1367,13 +1367,13 @@ mod tests {
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp`, at the newest release: no build of \
-                 llama.cpp is named b11538 any more"
+                "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
+                 newest release if the project withdrew v1.0.0"
             )
         );
         // Without the inventory running it, the same build only warns.
         let check = builds_check(
-            &FakeBuilds::current_b11538(),
+            &FakeBuilds::current_v1_0_0(),
             &programs,
             FakeStore(Ok(None)),
         );
@@ -1438,9 +1438,9 @@ mod tests {
     #[test]
     fn a_current_build_that_cannot_be_read_fails_with_its_rebuild() {
         let unreadable = FakeBuilds {
-            current: Some(crate::domain::build::BuildId::parse("b9").unwrap()),
+            current: Some(crate::domain::build::BuildId::parse("v1.0.0").unwrap()),
             unreadable: vec![crate::application::ports::Unreadable {
-                dir: "/data/builds/llama.cpp/b9".into(),
+                dir: "/data/builds/llama.cpp/v1.0.0".into(),
                 reason: "no build.json".into(),
             }],
             ..FakeBuilds::default()
@@ -1449,37 +1449,13 @@ mod tests {
         assert_eq!(check.status, Status::Fail);
         assert_eq!(
             check.detail,
-            "the current build, b9, cannot be read: no build.json"
+            "the current build, v1.0.0, cannot be read: no build.json"
         );
         assert_eq!(
             check.remedy.as_deref(),
             Some(
-                "`ai-ctl build llama.cpp`, at the newest release: no build of \
-                 llama.cpp is named b9 any more"
-            )
-        );
-    }
-
-    #[test]
-    fn a_build_named_as_no_build_is_named_now_is_not_rebuilt_under_its_name() {
-        // `b12359`, a nightly tag an ai-ctl before 0.3.1 named its build
-        // after: `--ref b12359` now builds `v1.0.0`, the release of the
-        // same commit.
-        let unreadable = FakeBuilds {
-            current: Some(crate::domain::build::BuildId::parse("b12359").unwrap()),
-            unreadable: vec![crate::application::ports::Unreadable {
-                dir: "/data/builds/llama.cpp/b12359".into(),
-                reason: "no build.json".into(),
-            }],
-            ..FakeBuilds::default()
-        };
-        let check = builds_check(&unreadable, &FakePrograms::default(), installed());
-        assert_eq!(check.status, Status::Fail);
-        assert_eq!(
-            check.remedy.as_deref(),
-            Some(
-                "`ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp is \
-                 named b12359 any more"
+                "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
+                 newest release if the project withdrew v1.0.0"
             )
         );
     }
@@ -1487,13 +1463,13 @@ mod tests {
     #[test]
     fn failing_build_stores_fail_the_build_check_with_a_remedy() {
         let build = "ai-ctl build llama.cpp";
-        let rebuild = "`ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp \
-                       is named b11538 any more";
+        let rebuild = "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` \
+                       at the newest release if the project withdrew v1.0.0";
         let cases = [
             (
                 FakeBuilds {
                     current_fails: true,
-                    ..FakeBuilds::current_b11538()
+                    ..FakeBuilds::current_v1_0_0()
                 },
                 FakePrograms::default(),
                 "cannot read /data/builds/llama.cpp/current: Permission denied (os error 13)",
@@ -1502,19 +1478,19 @@ mod tests {
             (
                 FakeBuilds {
                     builds_fails: true,
-                    ..FakeBuilds::current_b11538()
+                    ..FakeBuilds::current_v1_0_0()
                 },
                 FakePrograms::default(),
                 "cannot read /data/builds/llama.cpp: Permission denied (os error 13)",
                 build,
             ),
             (
-                FakeBuilds::current_b11538(),
+                FakeBuilds::current_v1_0_0(),
                 FakePrograms {
                     run_fails: true,
                     ..FakePrograms::default()
                 },
-                "b11538: cannot run /data/builds/llama.cpp/b11538/llama-server: \
+                "v1.0.0: cannot run /data/builds/llama.cpp/v1.0.0/llama-server: \
                  Permission denied (os error 13)",
                 rebuild,
             ),

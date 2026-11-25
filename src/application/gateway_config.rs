@@ -120,11 +120,11 @@ impl Configurator<'_> {
                 let build = match builds.entry(project.clone()) {
                     Entry::Occupied(entry) => entry.into_mut(),
                     Entry::Vacant(entry) => {
-                        let build = current(self.builds, project)?.installed(recipe)?;
+                        let build = current(self.builds, project)?.installed(project)?;
                         if let Some(unlike) = unlike_recipe(recipe, &build) {
                             bail!(
                                 "{project} {unlike}; build it again with {}",
-                                rebuild_remedy(recipe, &build.id)
+                                rebuild_remedy(project, &build.id)
                             );
                         }
                         entry.insert(build)
@@ -173,6 +173,7 @@ mod tests {
     use super::*;
     use crate::application::fakes::{
         FakeBuilds, FakeGpu, FakeInventory, ScriptedGpu, b11538, gpu, inventory, inventory_parts,
+        v1_0_0,
     };
     use crate::domain::build::BuildId;
     use crate::domain::inventory::BackendKind;
@@ -451,7 +452,7 @@ mod tests {
 
     #[test]
     fn a_current_build_without_one_of_its_recipes_cmake_options_is_refused() {
-        // b11538 built before its recipe set LLAMA_USE_PREBUILT_UI=OFF.
+        // v1.0.0 built without LLAMA_USE_PREBUILT_UI=OFF, as before its recipe set it.
         let mut flags: BTreeMap<String, String> = crate::domain::recipe::LLAMA_CPP
             .cmake_flags
             .iter()
@@ -461,19 +462,19 @@ mod tests {
         let builds = FakeBuilds {
             builds: vec![Build {
                 cmake_flags: flags,
-                ..b11538()
+                ..v1_0_0()
             }],
-            ..FakeBuilds::current_b11538()
+            ..FakeBuilds::current_v1_0_0()
         };
         assert_eq!(
             message(generate(
                 FakeInventory(Ok(Some(inventory("/models")))),
                 &builds
             )),
-            "backend `llama-native`, which `qwen3.8-27b` uses: llama.cpp b11538 was built \
+            "backend `llama-native`, which `qwen3.8-27b` uses: llama.cpp v1.0.0 was built \
              without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets; build it again with \
-             `ai-ctl build llama.cpp`, at the newest release: no build of llama.cpp is named \
-             b11538 any more"
+             `ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
+             newest release if the project withdrew v1.0.0"
         );
     }
 

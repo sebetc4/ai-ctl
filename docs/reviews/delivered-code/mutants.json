@@ -911,36 +911,6 @@
       "finding": 2
     },
     {
-      "id": "M96",
-      "kind": "an if guard forced true",
-      "file": "src/application/build.rs",
-      "text": "    if recipe.tags.release(id.as_str()).is_none() && !id.is_short_commit() {",
-      "replacement": "    if true {",
-      "test": "application::build::tests::a_build_is_built_again_under_its_name_when_a_build_still_takes_it",
-      "review": "2026-11-14-release-0-3-1-phase-0",
-      "finding": 1
-    },
-    {
-      "id": "M97",
-      "kind": "an if guard forced false",
-      "file": "src/application/build.rs",
-      "text": "    if recipe.tags.release(id.as_str()).is_none() && !id.is_short_commit() {",
-      "replacement": "    if false {",
-      "test": "application::doctor::tests::a_build_named_as_no_build_is_named_now_is_not_rebuilt_under_its_name",
-      "review": "2026-11-14-release-0-3-1-phase-0",
-      "finding": 1
-    },
-    {
-      "id": "M98",
-      "kind": "the short commit's hexadecimal class widened",
-      "file": "src/domain/build.rs",
-      "text": "                .all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))",
-      "replacement": "                .all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'z'))",
-      "test": "application::build::tests::a_build_is_built_again_under_its_name_when_a_build_still_takes_it",
-      "review": "2026-11-14-release-0-3-1-phase-0",
-      "finding": 1
-    },
-    {
       "id": "M99",
       "kind": "an option removed",
       "file": "src/domain/build.rs",

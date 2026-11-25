@@ -354,7 +354,7 @@ pub fn recipe_flags(recipe: &Recipe) -> BTreeMap<String, String> {
         .collect()
 }
 
-/// llama.cpp build b11538, as its recipe builds it now.
+/// llama.cpp build b11538, with its recipe's CMake options.
 pub fn b11538() -> Build {
     Build {
         project: "llama.cpp".into(),
@@ -365,6 +365,15 @@ pub fn b11538() -> Build {
         cmake_flags: recipe_flags(&LLAMA_CPP),
         patches: vec![],
         built_at: Timestamp::parse("2026-10-09T20:48:47Z").unwrap(),
+    }
+}
+
+/// llama.cpp build v1.0.0, named after its release.
+pub fn v1_0_0() -> Build {
+    Build {
+        id: BuildId::parse("v1.0.0").unwrap(),
+        commit: CommitId::parse("b1b770d90d94cad9e9ea5b993bdbc383a522fb28").unwrap(),
+        ..b11538()
     }
 }
 
@@ -388,6 +397,15 @@ impl FakeBuilds {
         Self {
             builds: vec![b11538()],
             current: Some(BuildId::parse("b11538").unwrap()),
+            ..Self::default()
+        }
+    }
+
+    /// v1.0.0, current.
+    pub fn current_v1_0_0() -> Self {
+        Self {
+            builds: vec![v1_0_0()],
+            current: Some(v1_0_0().id),
             ..Self::default()
         }
     }

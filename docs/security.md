@@ -340,9 +340,7 @@ gained a patch, or set one of its CMake options or changed its value, such as ll
 `LLAMA_USE_PREBUILT_UI=OFF`, is not built as its recipe says: `doctor` reports such a current
 build, failing when the inventory runs its project, and `up` and `gateway config` refuse it when
 a model runs on it, each with `ai-ctl build <project> --ref <id> --force`, or `ai-ctl build
-<project>` at the newest release when the project withdrew `<id>`, and with that command alone
-when `<id>` names no build any more, as llama.cpp's `b<N>` builds made before 0.3.1, which
-`--ref` would build under another id. The options ai-ctl
+<project>` at the newest release when the project withdrew `<id>`. The options ai-ctl
 sets for every project, such as the compilers' paths, are not compared, nor an option a recipe
 no longer sets, nor those it sets for a release alone, llama.cpp's `LLAMA_BUILD_IS_DEV=OFF`,
 which change what the server says of itself, not what it does. A patch is matched by its name: one rebased onto a newer release keeps its name

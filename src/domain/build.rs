@@ -61,15 +61,6 @@ impl BuildId {
         Self(commit.short().to_owned())
     }
 
-    /// Whether the id reads as one made from a commit: its short hash.
-    pub fn is_short_commit(&self) -> bool {
-        self.0.len() == SHORT_COMMIT
-            && self
-                .0
-                .bytes()
-                .all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
-    }
-
     pub fn as_str(&self) -> &str {
         &self.0
     }

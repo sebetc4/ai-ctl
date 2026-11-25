@@ -129,6 +129,16 @@
       "review": "2026-11-12-review-skill-v2-5-phase-2",
       "finding": 17,
       "reason": "older, effect none: the three duplicates come through nvml-wrapper 0.13.0, its newest release; the exception in deny.toml waits for the next change to the dependencies"
+    },
+    {
+      "fingerprint": "the CLI's contract | deploy/inventory.toml + docs/commands.md + docs/security.md | top level",
+      "axis": "the CLI's contract",
+      "effect": "maintenance",
+      "title": "the gateway's log carries three llama-server warnings no document explains",
+      "state": "open",
+      "review": "2026-11-24-0-3-1-release",
+      "finding": 1,
+      "reason": "older and documents only, no code of the release: what the inventory decides of llama-server's reasoning kept and Qwen-VL's minimum image tokens is a choice for the inventory's next measurement, not the release's fix"
     }
   ]
 }
