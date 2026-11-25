@@ -41,11 +41,8 @@ const LOG: &str = "build.log";
 /// The directory beside the binary that holds a copy of each patch applied
 /// to the build's sources.
 const PATCHES: &str = "patches";
-/// The metadata format this ai-ctl writes: format 2 added `patches`. It
-/// reads formats 1 to this one.
-// LEGACY: the builds installed before format 2 must stay readable, so
-// format 1 is read too, and `patches` defaults below. Format 1 goes once no
-// such build is kept or a rebuild has replaced them.
+/// The metadata format this ai-ctl writes and reads: format 2 added
+/// `patches`.
 const FORMAT: u32 = 2;
 
 /// `build.json`, as written to disk.
@@ -59,9 +56,6 @@ struct Metadata {
     toolkit: String,
     host_compiler: Compiler,
     cmake_flags: BTreeMap<String, String>,
-    /// Absent from format 1, whose builds have no patch.
-    // LEGACY: format 1 must stay readable (see `FORMAT`).
-    #[serde(default)]
     patches: Vec<String>,
     built_at: String,
 }
@@ -102,8 +96,8 @@ fn to_json(build: &Build) -> Result<String> {
 fn from_json(text: &str) -> Result<Build> {
     let format = json_format(text).context("malformed build metadata")?;
     ensure!(
-        (1..=FORMAT).contains(&format),
-        "build metadata format {format} is not supported (this ai-ctl reads formats 1 and {FORMAT})"
+        format == FORMAT,
+        "build metadata format {format} is not supported (this ai-ctl reads format {FORMAT})"
     );
     let metadata: Metadata = serde_json::from_str(text).context("malformed build metadata")?;
     let version = |what: &str, text: &str| {
@@ -417,15 +411,6 @@ mod tests {
     }
 
     #[test]
-    fn a_build_of_format_1_has_no_patch() {
-        let format_1 = edited(|value| {
-            value["format"] = 1.into();
-            value.as_object_mut().unwrap().remove("patches");
-        });
-        assert_eq!(from_json(&format_1).unwrap(), build());
-    }
-
-    #[test]
     fn metadata_is_readable_json() {
         let text = to_json(&build()).unwrap();
         let value: serde_json::Value = serde_json::from_str(&text).unwrap();
@@ -452,16 +437,30 @@ mod tests {
 
     #[test]
     fn another_format_is_refused() {
-        let later = "build metadata format 3 is not supported (this ai-ctl reads formats 1 and 2)";
+        let later = "build metadata format 3 is not supported (this ai-ctl reads format 2)";
         assert_eq!(error(&edited(|value| value["format"] = 3.into())), later);
         let lto = edited(|value| {
             value["format"] = 3.into();
             value["lto"] = true.into();
         });
         assert_eq!(error(&lto), later);
-        let earlier =
-            "build metadata format 0 is not supported (this ai-ctl reads formats 1 and 2)";
-        assert_eq!(error(&edited(|value| value["format"] = 0.into())), earlier);
+        for earlier in [0, 1] {
+            assert_eq!(
+                error(&edited(|value| value["format"] = earlier.into())),
+                format!(
+                    "build metadata format {earlier} is not supported (this ai-ctl reads format 2)"
+                )
+            );
+        }
+        // Format 1's builds had no `patches`.
+        let format_1 = edited(|value| {
+            value["format"] = 1.into();
+            value.as_object_mut().unwrap().remove("patches");
+        });
+        assert_eq!(
+            error(&format_1),
+            "build metadata format 1 is not supported (this ai-ctl reads format 2)"
+        );
     }
 
     #[test]

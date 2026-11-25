@@ -1935,7 +1935,7 @@ mod tests {
                  recipe applies"
             )
         );
-        // A recipe with no patch, as llama.cpp's, and a build of format 1.
+        // A recipe with no patch, as llama.cpp's.
         assert_eq!(unlike_recipe(&LLAMA_CPP, &b11538()), None);
     }
 
@@ -1944,11 +1944,7 @@ mod tests {
         // b11538 as an ai-ctl before LLAMA_USE_PREBUILT_UI=OFF built it:
         // upstream's default, ON, downloaded the bucket's web UI.
         let built = |change: &dyn Fn(&mut BTreeMap<String, String>)| {
-            let mut flags: BTreeMap<String, String> = LLAMA_CPP
-                .cmake_flags
-                .iter()
-                .map(|(name, value)| ((*name).to_owned(), (*value).to_owned()))
-                .collect();
+            let mut flags = crate::application::fakes::recipe_flags(&LLAMA_CPP);
             // The builder's own, which follow the toolchain.
             flags.insert("GGML_CUDA".into(), "ON".into());
             flags.insert("CMAKE_CXX_COMPILER".into(), "/usr/bin/g++-15".into());
@@ -3073,27 +3069,6 @@ mod tests {
     }
 
     #[test]
-    fn a_nightly_build_of_llama_cpp_reads_as_built_from_a_commit() {
-        // As ai-ctl built llama.cpp before it took its releases `vX.Y.Z`.
-        let mut reading = Reading::of_llama_cpp();
-        reading.sources.project_tags.insert(
-            "llama.cpp",
-            vec!["v0.9.0", "v1.0.0", "v1.0.0-b12359-b1b770d"],
-        );
-        reading.builds.builds = vec![faithful(&LLAMA_CPP, "b12359")];
-        reading.builds.current = Some(id("b12359"));
-        let project = reading.the_project();
-        assert_eq!(project.current, Some(id("b12359")));
-        assert_eq!(
-            project.found,
-            Ok(Found {
-                newest: "v1.0.0".into(),
-                standing: Standing::FromCommit,
-            })
-        );
-    }
-
-    #[test]
     fn a_build_at_the_newest_release_its_recipe_no_longer_matches_is_named() {
         let mut build = faithful(&LLAMA_CPP, "v0.9.0");
         build.cmake_flags.remove("LLAMA_USE_PREBUILT_UI");
@@ -3464,38 +3439,6 @@ mod tests {
             "v0.9.0",
             Standing::OffRecipe("v0.9.0 was built without a flag".into()),
         )
-    }
-
-    #[test]
-    fn update_builds_the_newest_version_beside_a_nightly_build_which_use_brings_back() {
-        let mut world = World::updating();
-        world.sources.project_tags.insert(
-            "llama.cpp",
-            vec!["v0.9.0", "v1.0.0", "v1.0.0-b12359-b1b770d"],
-        );
-        world
-            .store
-            .builds
-            .borrow_mut()
-            .push(faithful(&LLAMA_CPP, "b12359"));
-        *world.store.current.borrow_mut() = Some(id("b12359"));
-        let (updated, _) = world.update(
-            &[standing_of(
-                "llama.cpp",
-                Some("b12359"),
-                "v1.0.0",
-                Standing::FromCommit,
-            )],
-            None,
-        );
-        assert_eq!(
-            updated.projects,
-            [built_update("llama.cpp", "v1.0.0", Some("b12359"))]
-        );
-        assert!(world.builds_of("llama.cpp").contains(&"b12359".to_owned()));
-        let previous = use_build(&world.store, "llama.cpp", "b12359", &mut |_| {}).unwrap();
-        assert_eq!(previous, Some(id("v1.0.0")));
-        assert_eq!(world.current_of("llama.cpp").unwrap(), "b12359");
     }
 
     #[test]

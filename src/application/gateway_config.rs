@@ -453,11 +453,7 @@ mod tests {
     #[test]
     fn a_current_build_without_one_of_its_recipes_cmake_options_is_refused() {
         // v1.0.0 built without LLAMA_USE_PREBUILT_UI=OFF, as before its recipe set it.
-        let mut flags: BTreeMap<String, String> = crate::domain::recipe::LLAMA_CPP
-            .cmake_flags
-            .iter()
-            .map(|(name, value)| ((*name).to_owned(), (*value).to_owned()))
-            .collect();
+        let mut flags = crate::application::fakes::recipe_flags(&crate::domain::recipe::LLAMA_CPP);
         flags.remove("LLAMA_USE_PREBUILT_UI");
         let builds = FakeBuilds {
             builds: vec![Build {

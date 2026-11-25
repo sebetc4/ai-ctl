@@ -939,6 +939,36 @@
       "test": "infrastructure::command::tests::a_program_runs_in_the_root_directory_not_the_callers",
       "review": "2026-11-18-release-0-3-1-closing-pass",
       "finding": 1
+    },
+    {
+      "id": "M102",
+      "kind": "a release option overriding a recipe's",
+      "file": "src/domain/recipe.rs",
+      "text": "    release_flags: &[(\"LLAMA_BUILD_IS_DEV\", \"OFF\")],",
+      "replacement": "    release_flags: &[(\"LLAMA_BUILD_IS_DEV\", \"OFF\"), (\"LLAMA_BUILD_TESTS\", \"ON\")],",
+      "test": "domain::build::tests::neither_the_builder_nor_a_release_overrides_an_option_a_recipe_sets",
+      "review": "2026-11-24-0-3-1-release",
+      "finding": 4
+    },
+    {
+      "id": "M103",
+      "kind": "an ensure forced true",
+      "file": "src/infrastructure/build_store.rs",
+      "text": "        format == FORMAT,",
+      "replacement": "        true,",
+      "test": "infrastructure::build_store::tests::another_format_is_refused",
+      "review": "2026-11-24-0-3-1-release",
+      "finding": 5
+    },
+    {
+      "id": "M104",
+      "kind": "an ensure forced true",
+      "file": "src/infrastructure/run_store.rs",
+      "text": "        format == FORMAT,",
+      "replacement": "        true,",
+      "test": "infrastructure::run_store::tests::another_format_or_an_unknown_field_is_refused",
+      "review": "2026-11-24-0-3-1-release",
+      "finding": 11
     }
   ]
 }

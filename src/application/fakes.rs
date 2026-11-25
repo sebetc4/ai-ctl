@@ -1277,7 +1277,7 @@ impl FakeMonitoring<'_> {
             sm_clock_mhz: 2000,
             power_w: 100.0,
             slowdown: Slowdown::default(),
-            clock_events: Some(0),
+            clock_events: 0,
         });
     }
 }

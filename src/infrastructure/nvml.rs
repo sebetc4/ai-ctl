@@ -239,7 +239,7 @@ fn read(device: &Device, scenario: Option<Scenario>) -> Result<GpuReading, NvmlE
         sm_clock_mhz: device.clock_info(Clock::SM)?,
         power_w: f64::from(device.power_usage()?) / 1000.0,
         slowdown: slowdown(clock_events),
-        clock_events: Some(clock_events),
+        clock_events,
     })
 }
 

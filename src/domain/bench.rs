@@ -700,12 +700,8 @@ pub struct GpuReading {
     pub sm_clock_mhz: u32,
     pub power_w: f64,
     pub slowdown: Slowdown,
-    /// NVML's clock-event reasons, every bit as it reported them; `None` in
-    /// a run saved before ai-ctl kept them.
-    // LEGACY: `None` only in the runs of format 1, which must stay readable
-    // for `bench list` and `bench compare`; the `Option` goes with the run
-    // store's read of that format.
-    pub clock_events: Option<u64>,
+    /// NVML's clock-event reasons, every bit as it reported them.
+    pub clock_events: u64,
 }
 
 /// The GPU over a part of a run.
@@ -1075,7 +1071,7 @@ pub mod testing {
             sm_clock_mhz,
             power_w,
             slowdown,
-            clock_events: None,
+            clock_events: 0,
         }
     }
 }
@@ -1395,7 +1391,7 @@ mod tests {
                 hardware: false,
                 policy: false,
             },
-            clock_events: None,
+            clock_events: 0,
         }
     }
 

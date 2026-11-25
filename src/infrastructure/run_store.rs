@@ -35,18 +35,10 @@ use crate::domain::timestamp::Timestamp;
 
 use super::files;
 
-/// The format this ai-ctl writes. Format 1 lacks each GPU reading's
-/// `policy` and `clock_events`; formats 1 and 2 hold a native build as its
-/// `build.json` held it, `format` included.
+/// The format this ai-ctl writes and reads. Format 1 lacked each GPU
+/// reading's `policy` and `clock_events`; formats 1 and 2 held a native
+/// build as its `build.json` held it, `format` included.
 const FORMAT: u32 = 3;
-/// The formats this ai-ctl reads.
-// LEGACY: the runs saved before format 3 must stay readable for `bench list`
-// and `bench compare`. Formats 1 and 2 leave this list, and the reads marked
-// LEGACY below go, once no such run is kept or they are migrated to format 3.
-const READS: [u32; 3] = [1, 2, 3];
-/// The format of `build.json` that runs of formats 1 and 2 hold.
-// LEGACY: read in the runs saved before format 3 only (see `READS`).
-const BUILD_JSON_FORMAT: u32 = 1;
 const EXTENSION: &str = ".json";
 
 /// The saved runs, in one directory.
@@ -181,21 +173,14 @@ enum SourceJson {
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct BuildJson {
-    /// `build.json`'s format, in runs of formats 1 and 2 only.
-    // LEGACY: the runs saved before format 3 must stay readable (see `READS`).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    format: Option<u32>,
     project: String,
     id: String,
     commit: String,
     toolkit: String,
     host_compiler: HostCompilerJson,
     cmake_flags: BTreeMap<String, String>,
-    /// Left out when the build has none, as before builds had patches.
-    // LEGACY: absent from the runs saved before builds had patches, which
-    // must stay readable (see `READS`); left out when empty, so that format 3
-    // keeps the shape it had before patches. A format that always writes the
-    // key would let the omission go once no such run is kept.
+    /// Left out when the build has none, as in format 3's first runs,
+    /// saved before builds had patches.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     patches: Vec<String>,
     built_at: String,
@@ -327,13 +312,8 @@ struct GpuReadingJson {
     power_capped: bool,
     thermal: bool,
     hardware: bool,
-    // LEGACY: absent from the runs of format 1, which must stay readable (see
-    // `READS`).
-    #[serde(default)]
     policy: bool,
-    // LEGACY: absent from the runs of format 1, as `policy` is.
-    #[serde(default)]
-    clock_events: Option<u64>,
+    clock_events: u64,
 }
 
 /// Serializes `run` as the content of its file.
@@ -388,8 +368,8 @@ pub fn to_json(run: &Run) -> Result<String> {
 pub fn from_json(text: &str) -> Result<Run> {
     let format = files::json_format(text).context("malformed run")?;
     ensure!(
-        READS.contains(&format),
-        "run format {format} is not supported (this ai-ctl reads formats 1, 2 and 3)"
+        format == FORMAT,
+        "run format {format} is not supported (this ai-ctl reads format {FORMAT})"
     );
     let json: RunJson = serde_json::from_str(text).context("malformed run")?;
     Ok(Run {
@@ -473,7 +453,6 @@ fn setup_json(setup: &Setup) -> Result<SetupJson> {
 
 fn build_json(build: &Build) -> BuildJson {
     BuildJson {
-        format: None,
         project: build.project.clone(),
         id: build.id.to_string(),
         commit: build.commit.to_string(),
@@ -490,15 +469,6 @@ fn build_json(build: &Build) -> BuildJson {
 }
 
 fn build(json: BuildJson) -> Result<Build> {
-    // LEGACY: a run saved before format 3, which must stay readable (see
-    // `READS`).
-    if let Some(format) = json.format {
-        ensure!(
-            format == BUILD_JSON_FORMAT,
-            "the build's format {format} is not supported (runs held build.json's format \
-             {BUILD_JSON_FORMAT})"
-        );
-    }
     let version = |what: &str, text: &str| {
         Version::parse(text).with_context(|| format!("{what} `{text}` is not a version"))
     };
@@ -833,47 +803,11 @@ mod tests {
     #[test]
     fn a_reading_keeps_every_clock_event_bit() {
         let mut run = run();
-        run.gpu[1].clock_events = Some(0x404);
+        run.gpu[1].clock_events = 0x404;
         let read = from_json(&to_json(&run).unwrap()).unwrap();
-        assert_eq!(read.gpu[1].clock_events, Some(0x404));
+        assert_eq!(read.gpu[1].clock_events, 0x404);
         assert!(read.gpu[0].slowdown.policy);
         assert_eq!(read, run);
-    }
-
-    #[test]
-    fn a_run_of_format_1_reads_without_policy_or_clock_events() {
-        let text = edited(|json| {
-            json["format"] = 1.into();
-            for reading in json["gpu"].as_array_mut().unwrap() {
-                let reading = reading.as_object_mut().unwrap();
-                reading.remove("policy");
-                reading.remove("clock_events");
-            }
-        });
-        let read = from_json(&text).unwrap();
-        assert_eq!(read.gpu.len(), run().gpu.len());
-        assert!(
-            read.gpu
-                .iter()
-                .all(|r| r.clock_events.is_none() && !r.slowdown.policy)
-        );
-    }
-
-    #[test]
-    fn a_run_of_format_2_reads_the_build_json_it_embedded() {
-        for format in [1, 2] {
-            let text = edited(|json| {
-                json["format"] = format.into();
-                json["setup"]["source"]["build"]["format"] = 1.into();
-            });
-            assert_eq!(from_json(&text).unwrap().setup, run().setup, "{format}");
-        }
-        assert_eq!(
-            error(&edited(
-                |json| json["setup"]["source"]["build"]["format"] = 2.into()
-            )),
-            "the build's format 2 is not supported (runs held build.json's format 1)"
-        );
     }
 
     fn edited(edit: impl FnOnce(&mut Value)) -> String {
@@ -888,8 +822,15 @@ mod tests {
 
     #[test]
     fn another_format_or_an_unknown_field_is_refused() {
-        let later = "run format 4 is not supported (this ai-ctl reads formats 1, 2 and 3)";
+        let later = "run format 4 is not supported (this ai-ctl reads format 3)";
         assert_eq!(error(&edited(|json| json["format"] = 4.into())), later);
+        // The runs an earlier ai-ctl saved, which `bench` reads no more.
+        for earlier in [1, 2] {
+            assert_eq!(
+                error(&edited(|json| json["format"] = earlier.into())),
+                format!("run format {earlier} is not supported (this ai-ctl reads format 3)")
+            );
+        }
         // A later format's new fields do not hide its format.
         let notes = edited(|json| {
             json["format"] = 4.into();
@@ -903,6 +844,28 @@ mod tests {
         assert!(
             missing.starts_with("malformed run: missing field `format`"),
             "{missing}"
+        );
+        // Each reading holds both, and a native build no `build.json` format.
+        for field in ["policy", "clock_events"] {
+            let missing = error(&edited(|json| {
+                json["gpu"][0].as_object_mut().unwrap().remove(field);
+            }));
+            assert!(
+                missing.starts_with(&format!("malformed run: missing field `{field}`")),
+                "{missing}"
+            );
+        }
+        let null = error(&edited(|json| json["gpu"][0]["clock_events"] = Value::Null));
+        assert!(
+            null.starts_with("malformed run: invalid type: null, expected u64"),
+            "{null}"
+        );
+        let format = error(&edited(|json| {
+            json["setup"]["source"]["build"]["format"] = 1.into()
+        }));
+        assert!(
+            format.starts_with("malformed run: unknown field `format`"),
+            "{format}"
         );
         let unknown = error(&edited(|json| json["speed"] = 1.into()));
         assert!(

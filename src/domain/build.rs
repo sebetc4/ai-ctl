@@ -450,20 +450,33 @@ mod tests {
     }
 
     #[test]
-    fn the_builder_overrides_no_option_a_recipe_sets() {
-        // A build is compared with its recipe's options: one the builder
-        // overrode would leave every build unlike its recipe.
+    fn neither_the_builder_nor_a_release_overrides_an_option_a_recipe_sets() {
+        // A build is compared with its recipe's options: one the builder or
+        // a release option overrode would leave every build unlike its
+        // recipe.
         for recipe in crate::domain::recipe::RECIPES {
-            let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"), &commit_id());
-            for (name, value) in recipe.cmake_flags {
-                assert_eq!(
-                    flags.get(*name).map(String::as_str),
-                    Some(*value),
-                    "{}: {name}",
-                    recipe.project
-                );
+            for id in [commit_id(), release_id(recipe)] {
+                let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"), &id);
+                for (name, value) in recipe.cmake_flags {
+                    assert_eq!(
+                        flags.get(*name).map(String::as_str),
+                        Some(*value),
+                        "{} {id}: {name}",
+                        recipe.project
+                    );
+                }
             }
         }
+    }
+
+    /// The id of a build of one of `recipe`'s releases.
+    fn release_id(recipe: &Recipe) -> BuildId {
+        let id = match recipe.tags {
+            TagPattern::Version { prefix } => format!("{prefix}1.0.0"),
+            TagPattern::NumberedWithCommit { prefix } => format!("{prefix}1-a"),
+        };
+        assert!(recipe.tags.release(&id).is_some(), "{id}");
+        BuildId::parse(&id).unwrap()
     }
 
     #[test]

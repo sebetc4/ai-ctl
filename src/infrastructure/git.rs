@@ -572,16 +572,6 @@ mod tests {
     }
 
     #[test]
-    fn llama_cpp_nightly_tags_are_no_release() {
-        // `git ls-remote --tags --refs` of llama.cpp's `b[0-9]*`, on
-        // 2026-11-09.
-        let listing = include_str!("../../tests/fixtures/llama.cpp-git-ls-remote-excerpt.txt");
-        let tags = remote_tag_names(listing);
-        assert_eq!(tags.len(), 58);
-        assert_eq!(LLAMA_CPP.tags.newest(tags.iter().map(String::as_str)), None);
-    }
-
-    #[test]
     fn a_listing_gives_tags_alone() {
         assert_eq!(
             remote_tag_names(
