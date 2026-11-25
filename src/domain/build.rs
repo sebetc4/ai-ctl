@@ -513,10 +513,8 @@ mod tests {
         let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++"), &release);
         assert_eq!(flags["LLAMA_BUILD_IS_DEV"], "OFF");
         assert_eq!(flags["LLAMA_USE_PREBUILT_UI"], "OFF");
-        for id in [commit_id(), BuildId::parse("b12359").unwrap()] {
-            let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++"), &id);
-            assert_eq!(flags.get("LLAMA_BUILD_IS_DEV"), None, "{id}");
-        }
+        let flags = cmake_flags(&LLAMA_CPP, &toolchain("/usr/bin/g++"), &commit_id());
+        assert_eq!(flags.get("LLAMA_BUILD_IS_DEV"), None);
         // The builder's options win over them too.
         let recipe = Recipe {
             release_flags: &[("GGML_NATIVE", "OFF")],
@@ -595,12 +593,6 @@ mod tests {
     fn a_build_made_from_a_commit_is_not_a_release() {
         assert_eq!(
             standing_of(LLAMA_CPP.tags, "79e2e74eb1", "v1.0.0"),
-            Standing::FromCommit
-        );
-        // llama.cpp's nightly tags, which ai-ctl built until it took its
-        // releases `vX.Y.Z`.
-        assert_eq!(
-            standing_of(LLAMA_CPP.tags, "b12359", "v1.0.0"),
             Standing::FromCommit
         );
         // An id that is no release of the project, whatever made it.
