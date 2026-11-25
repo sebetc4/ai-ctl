@@ -312,9 +312,10 @@ ai-ctl up | down ──► starts and stops llama-swap
 
 llama-swap reads the `model` field of each request, stops the running backend when the requested
 model needs its place, starts the right one and forwards the request. Its `capacity` router
-decides which models may run together, by their VRAM budgets; with the shipped inventory, each chat model and each image model runs
-alone, and only the speech models share the GPU, with one another (§6.4). llama-server's router
-mode is not used: llama-swap is the only layer that swaps ([gpu/llama-swap.md](gpu/llama-swap.md)).
+decides which models may run together, by their VRAM budgets; with the shipped inventory, the 27B
+and each image model run alone, the 35B beside whisper large-v3-turbo alone, and the speech models
+share the GPU with one another (§6.4). llama-server's router mode is not used: llama-swap is the
+only layer that swaps ([gpu/llama-swap.md](gpu/llama-swap.md)).
 
 ### 6.2 VRAM Budget of the 27B
 

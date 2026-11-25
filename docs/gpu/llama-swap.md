@@ -45,9 +45,10 @@ What follows from it:
   ([stack.md §7](../stack.md#7-client-configuration)).
 - **A resident process exists**, holding no VRAM: llama-swap, between `ai-ctl up` and
   `ai-ctl down`.
-- **Most switches are swaps.** Each chat model and each image model needs 21 to 23 GB and runs
-  alone; only the speech models share the GPU, with one another. A sentence read aloud or an
-  image asked from a chat evicts the chat model, which loads again for the next message
+- **Most switches are swaps.** The chat and image models need 19926 to 23859 MiB each
+  ([below](#the-backends)): the 27B and each image model run alone, the 35B beside whisper
+  large-v3-turbo alone, and the speech models share the GPU with one another. A sentence read
+  aloud or an image asked from a chat evicts the chat model, which loads again for the next message
   ([openwebui.md](../openwebui.md)). The agents' client batches work by domain.
 
 ---
