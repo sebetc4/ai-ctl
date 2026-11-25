@@ -931,16 +931,6 @@
       "finding": 1
     },
     {
-      "id": "M101",
-      "kind": "a call removed",
-      "file": "src/infrastructure/command.rs",
-      "text": "command.args(args).current_dir(\"/\");",
-      "replacement": "command.args(args);",
-      "test": "infrastructure::command::tests::a_program_runs_in_the_root_directory_not_the_callers",
-      "review": "2026-11-18-release-0-3-1-closing-pass",
-      "finding": 1
-    },
-    {
       "id": "M102",
       "kind": "a release option overriding a recipe's",
       "file": "src/domain/recipe.rs",

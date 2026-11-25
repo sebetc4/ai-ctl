@@ -482,9 +482,10 @@ mod tests {
     #[test]
     fn no_build_loads_a_library_from_the_working_directory() {
         // CMake's built-in RPATH editing pads the build tree's RUNPATH of a
-        // target with an install rule, as each server has, with a trailing
-        // `:`, which glibc reads as the working directory; ai-ctl installs
-        // the build tree's binary, never `cmake --install`.
+        // target with an install rule, as the servers of llama.cpp,
+        // whisper.cpp and stable-diffusion.cpp have, with a trailing `:`,
+        // which glibc reads as the working directory; ai-ctl installs the
+        // build tree's binary, never `cmake --install`.
         for recipe in crate::domain::recipe::RECIPES {
             let flags = cmake_flags(recipe, &toolchain("/usr/bin/g++"), &commit_id());
             for name in [

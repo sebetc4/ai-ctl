@@ -318,14 +318,11 @@ repository's owners make it name, and `--ref <commit>` builds exactly the commit
 runs CMake and the compilers as the user, and its server serves every model.
 
 A server ai-ctl builds loads its libraries from the toolkit and the system alone: with CMake's
-default, the `RUNPATH` of a target that has an install rule, as each server has, ends in an empty
-element that glibc reads as the working directory, so a library another account left in `/tmp`
-ran in the server as the user when `doctor` ran there (2026-11-18); ai-ctl builds with the
-options that end it without one ([toolchain.md §3](toolchain.md#3-changing-the-cuda-version)).
-A server an earlier ai-ctl built keeps that element until it is built again: `doctor` and the
-smoke test of `build` and `build update` run each server in `/`, and llama-swap runs it in
-`~/.local/state/ai-ctl/gateway`, mode 0700; such a server run by hand is safe only in a directory
-no other account writes.
+default, the `RUNPATH` of a target that has an install rule, as the servers of llama.cpp,
+whisper.cpp and stable-diffusion.cpp have, ends in an empty element that glibc reads as the
+working directory, so that a library another account leaves in the directory the server runs in,
+such as `/tmp`, runs in it as the user (2026-11-18); ai-ctl builds with the options that end it
+without one ([toolchain.md §3](toolchain.md#3-changing-the-cuda-version)).
 
 `ai-ctl build outdated` reads each repository's tags with `git ls-remote`, and runs and writes
 nothing. `ai-ctl build update` builds each project behind at the newest release tag, by the steps
