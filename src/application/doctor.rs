@@ -19,6 +19,7 @@ use crate::domain::safetensors;
 
 use super::build::{
     self, Current, rebuild_reference, rebuild_remedy, smoke_test_failure, unlike_recipe,
+    unreadable_remedy,
 };
 use super::gateway_config::Configurator;
 use super::lifecycle::{
@@ -435,7 +436,7 @@ impl Doctor<'_> {
             Ok(Current::Unreadable { id, reason }) => {
                 return problem(
                     format!("the current build, {id}, cannot be read: {reason}"),
-                    rebuild_remedy(project, &id, id.as_str()),
+                    unreadable_remedy(project, &id),
                 );
             }
             Ok(Current::None) if used == Some(true) => {
@@ -1447,6 +1448,29 @@ mod tests {
             Some(
                 "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
                  newest release if the project withdrew v1.0.0"
+            )
+        );
+    }
+
+    #[test]
+    fn an_unreadable_build_named_after_its_commit_names_the_full_commit_its_remedy_needs() {
+        let unreadable = FakeBuilds {
+            current: Some(crate::domain::build::BuildId::parse("d628a98f09").unwrap()),
+            unreadable: vec![crate::application::ports::Unreadable {
+                dir: "/data/builds/llama.cpp/d628a98f09".into(),
+                reason: "no build.json".into(),
+            }],
+            ..FakeBuilds::default()
+        };
+        let check = builds_check(&unreadable, &FakePrograms::default(), installed());
+        assert_eq!(check.status, Status::Fail);
+        assert_eq!(
+            check.remedy.as_deref(),
+            Some(
+                "`ai-ctl build llama.cpp --ref d628a98f09 --force`, or `ai-ctl build llama.cpp` at \
+                 the newest release if the project withdrew d628a98f09; give `--ref` the full \
+                 commit d628a98f09 starts with once ai-ctl's clone of llama.cpp no longer holds \
+                 it"
             )
         );
     }

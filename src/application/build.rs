@@ -568,6 +568,22 @@ pub(crate) fn rebuild_reference(build: &Build) -> &str {
     }
 }
 
+/// How to build `project`'s current build `id` again when its directory
+/// cannot be read, its commit with it: from `id`, which for a build named
+/// after its commit resolves only in a clone that still holds the commit, a
+/// fresh partial clone fetching a commit by its full hash alone.
+pub(crate) fn unreadable_remedy(project: &str, id: &BuildId) -> String {
+    let remedy = rebuild_remedy(project, id, id.as_str());
+    if id.names_a_commit() {
+        format!(
+            "{remedy}; give `--ref` the full commit {id} starts with once ai-ctl's clone of \
+             {project} no longer holds it"
+        )
+    } else {
+        remedy
+    }
+}
+
 impl Current {
     /// The installed build, or the error that tells how to get one.
     pub fn installed(self, project: &str) -> Result<Build> {
@@ -579,7 +595,7 @@ impl Current {
             ),
             Current::Unreadable { id, reason } => bail!(
                 "the current build of {project}, {id}, cannot be read: {reason}; run {}",
-                rebuild_remedy(project, &id, id.as_str())
+                unreadable_remedy(project, &id)
             ),
         }
     }
@@ -2282,6 +2298,23 @@ mod tests {
         assert_eq!(current(&store, "llama.cpp").unwrap(), Current::None);
         store.current_fails = true;
         assert!(message(current(&store, "llama.cpp")).starts_with("cannot read"));
+    }
+
+    #[test]
+    fn an_unreadable_build_named_after_its_commit_names_the_full_commit_its_remedy_needs() {
+        // Its commit cannot be read, and a fresh partial clone resolves a
+        // commit no branch holds by its full hash alone.
+        let unreadable = Current::Unreadable {
+            id: id("d628a98f09"),
+            reason: "no build.json".into(),
+        };
+        assert_eq!(
+            message(unreadable.installed("llama.cpp")),
+            "the current build of llama.cpp, d628a98f09, cannot be read: no build.json; run \
+             `ai-ctl build llama.cpp --ref d628a98f09 --force`, or `ai-ctl build llama.cpp` at \
+             the newest release if the project withdrew d628a98f09; give `--ref` the full commit \
+             d628a98f09 starts with once ai-ctl's clone of llama.cpp no longer holds it"
+        );
     }
 
     #[test]

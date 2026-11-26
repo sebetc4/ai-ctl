@@ -64,6 +64,16 @@ impl BuildId {
     pub fn as_str(&self) -> &str {
         &self.0
     }
+
+    /// Whether the id has the form [`BuildId::from_commit`] gives, the
+    /// short commit of a build that is no release.
+    pub fn names_a_commit(&self) -> bool {
+        self.0.len() == SHORT_COMMIT
+            && self
+                .0
+                .bytes()
+                .all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
+    }
 }
 
 impl fmt::Display for BuildId {
@@ -339,6 +349,22 @@ mod tests {
     fn a_commit_build_id_keeps_ten_digits() {
         let commit = CommitId::parse(COMMIT).unwrap();
         assert_eq!(BuildId::from_commit(&commit).as_str(), "79e2e74eb1");
+    }
+
+    #[test]
+    fn only_ten_lower_case_hexadecimal_digits_name_a_commit() {
+        let commit = CommitId::parse(COMMIT).unwrap();
+        assert!(BuildId::from_commit(&commit).names_a_commit());
+        for id in [
+            "v1.0.0",
+            "b12359",
+            "79e2e74eb",
+            "79e2e74eb1a",
+            "79e2e74ebg",
+            "79E2E74EB1",
+        ] {
+            assert!(!BuildId::parse(id).unwrap().names_a_commit(), "{id}");
+        }
     }
 
     #[test]

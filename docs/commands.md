@@ -423,9 +423,11 @@ one made without a patch its recipe now applies or one of its CMake options at i
 the commands that build it again: `ai-ctl build <project> --ref <ref> --force`, `<ref>` its
 release or, for a build from a commit, its full commit, which builds under the release's id once
 a release tags it, or `ai-ctl build <project>` at the newest release when its project withdrew
-the release; when a path or value contains `${`, which llama-swap would read as a macro, or a control character or a
-line separator, when the GPU cannot be read, since the models are sized to its memory, or when
-the inventory's `vram_margin_mib` leaves the pool nothing of it. The error lists every value the
+the release; for a current build that cannot be read, `<ref>` is its id, its commit unreadable
+with it, and a build from a commit needs its full commit there once ai-ctl's clone of the project
+no longer holds the commit; when a path or value contains `${`, which llama-swap would read as a
+macro, or a control character or a line separator, when the GPU cannot be read, since the models
+are sized to its memory, or when the inventory's `vram_margin_mib` leaves the pool nothing of it. The error lists every value the
 configuration cannot hold, of every model.
 
 ```bash
