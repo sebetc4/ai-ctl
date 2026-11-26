@@ -148,7 +148,7 @@
       "state": "open",
       "review": "2026-11-25-review-skill-v3-closing-pass",
       "finding": 5,
-      "reason": "below the floor on older code: stable-diffusion.cpp's native key check (c33eebc, released as master-1131) bears on the next build of stable-diffusion.cpp, which reads it then, rebases or drops api-key.patch and reserves sd-server's new flags"
+      "reason": "below the floor on older code: stable-diffusion.cpp's native key check (c33eebc, released as master-1131) bears on the next build of stable-diffusion.cpp, which reads it then, rebases or drops api-key.patch and reserves sd-server's new flags; its PROBE not run, on the user's word of 2026-11-26"
     }
   ]
 }
