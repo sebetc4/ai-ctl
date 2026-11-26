@@ -336,8 +336,9 @@ refused, so that no server is built without what its patch adds. A build made be
 gained a patch, or set one of its CMake options or changed its value, such as llama.cpp's
 `LLAMA_USE_PREBUILT_UI=OFF`, is not built as its recipe says: `doctor` reports such a current
 build, failing when the inventory runs its project, and `up` and `gateway config` refuse it when
-a model runs on it, each with `ai-ctl build <project> --ref <id> --force`, or `ai-ctl build
-<project>` at the newest release when the project withdrew `<id>`. The options ai-ctl
+a model runs on it, each with `ai-ctl build <project> --ref <id> --force`, the build's full
+commit in place of an `<id>` named after its commit, or `ai-ctl build <project>` at the newest
+release when the project withdrew the release `<id>`. The options ai-ctl
 sets for every project, such as the compilers' paths, are not compared, nor an option a recipe
 no longer sets, nor those it sets for a release alone, llama.cpp's `LLAMA_BUILD_IS_DEV=OFF`,
 which change what the server says of itself, not what it does. A patch is matched by its name: one rebased onto a newer release keeps its name

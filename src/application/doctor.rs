@@ -17,7 +17,9 @@ use crate::domain::machine::{CdiSpec, Gpu, GpuProcess, Probed, Tool};
 use crate::domain::recipe::{RECIPES, Recipe, recipe};
 use crate::domain::safetensors;
 
-use super::build::{self, Current, rebuild_remedy, smoke_test_failure, unlike_recipe};
+use super::build::{
+    self, Current, rebuild_reference, rebuild_remedy, smoke_test_failure, unlike_recipe,
+};
 use super::gateway_config::Configurator;
 use super::lifecycle::{
     self, Configuration, Event, Inspection, Inspector, Serving, kill_command, models_list, named,
@@ -433,7 +435,7 @@ impl Doctor<'_> {
             Ok(Current::Unreadable { id, reason }) => {
                 return problem(
                     format!("the current build, {id}, cannot be read: {reason}"),
-                    rebuild_remedy(project, &id),
+                    rebuild_remedy(project, &id, id.as_str()),
                 );
             }
             Ok(Current::None) if used == Some(true) => {
@@ -451,7 +453,7 @@ impl Doctor<'_> {
             Err(err) => return problem(format!("{err:#}"), build_remedy),
         };
         let current = &build.id;
-        let rebuild = rebuild_remedy(project, current);
+        let rebuild = rebuild_remedy(project, current, rebuild_reference(&build));
         if let Some(unlike) = unlike_recipe(recipe, &build) {
             return problem(unlike, rebuild);
         }
@@ -1301,6 +1303,36 @@ mod tests {
             Some(
                 "`ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
                  newest release if the project withdrew v1.0.0"
+            )
+        );
+    }
+
+    #[test]
+    fn a_current_build_made_from_a_commit_is_built_again_from_its_full_hash() {
+        // A fresh partial clone resolves a commit no branch holds, such as a
+        // pull request's, by its full hash alone, not by the short one its id keeps.
+        let mut flags = crate::application::fakes::recipe_flags(&crate::domain::recipe::LLAMA_CPP);
+        flags.remove("LLAMA_USE_PREBUILT_UI");
+        let commit = "d628a98f0912345678901234567890abcdef0123";
+        let made = Build {
+            id: crate::domain::build::BuildId::parse("d628a98f09").unwrap(),
+            commit: crate::domain::build::CommitId::parse(commit).unwrap(),
+            cmake_flags: flags,
+            ..v1_0_0()
+        };
+        let builds = FakeBuilds {
+            current: Some(made.id.clone()),
+            builds: vec![made],
+            ..FakeBuilds::default()
+        };
+        let check = builds_check(&builds, &FakePrograms::default(), installed());
+        assert_eq!(check.status, Status::Fail);
+        assert_eq!(
+            check.remedy.as_deref(),
+            Some(
+                "`ai-ctl build llama.cpp --ref d628a98f0912345678901234567890abcdef0123 --force`, \
+                 or `ai-ctl build llama.cpp` at the newest release if the project withdrew \
+                 d628a98f09"
             )
         );
     }

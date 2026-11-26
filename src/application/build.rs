@@ -544,13 +544,28 @@ pub enum Current {
     Installed(Build),
 }
 
-/// How to build `project`'s current build `id` again: at its own release,
-/// or at the newest when the project withdrew it, whose tag the fetch drops.
-pub(crate) fn rebuild_remedy(project: &str, id: &BuildId) -> String {
+/// How to build `project`'s current build `id` again from `reference`, its
+/// release or, for a build named after its commit, its full commit: that
+/// release or that commit, under the release's id once a release tags the
+/// commit, or the newest release when the project withdrew the release,
+/// whose tag the fetch drops.
+pub(crate) fn rebuild_remedy(project: &str, id: &BuildId, reference: &str) -> String {
     format!(
-        "`ai-ctl build {project} --ref {id} --force`, or `ai-ctl build {project}` at the newest \
-         release if the project withdrew {id}"
+        "`ai-ctl build {project} --ref {reference} --force`, or `ai-ctl build {project}` at the \
+         newest release if the project withdrew {id}"
     )
+}
+
+/// What `--ref` builds `build` again from: its release tag, or the full
+/// commit of a build named after its commit, which a partial clone fetches
+/// when no branch holds it, where the short one resolves only among the
+/// commits the clone already holds.
+pub(crate) fn rebuild_reference(build: &Build) -> &str {
+    if build.id == BuildId::from_commit(&build.commit) {
+        build.commit.as_str()
+    } else {
+        build.id.as_str()
+    }
 }
 
 impl Current {
@@ -564,7 +579,7 @@ impl Current {
             ),
             Current::Unreadable { id, reason } => bail!(
                 "the current build of {project}, {id}, cannot be read: {reason}; run {}",
-                rebuild_remedy(project, &id)
+                rebuild_remedy(project, &id, id.as_str())
             ),
         }
     }
@@ -1026,7 +1041,7 @@ mod tests {
                 .push(format!("checkout {reference}"));
             let (commit, tags) = match reference {
                 // As `git tag --points-at` lists them, by name.
-                "v1.0.0" | "b12359" | "b1b770d" | "b1b770d90d" => (
+                "v1.0.0" | "b12359" | "b1b770d" | "b1b770d90d" | V1_0_0 => (
                     V1_0_0,
                     ["b12359", "v1.0.0", "v1.0.0-b12359-b1b770d"]
                         .map(str::to_owned)
@@ -2310,7 +2325,11 @@ mod tests {
             *world.store.builds.borrow_mut() =
                 vec![installed(current, 10), installed("v1.0.0", 20)];
             *world.store.current.borrow_mut() = Some(id(current));
-            let remedy = rebuild_remedy("llama.cpp", &id(current));
+            let remedy = rebuild_remedy(
+                "llama.cpp",
+                &id(current),
+                rebuild_reference(&installed(current, 10)),
+            );
             let command: Vec<&str> = remedy.split('`').nth(1).unwrap().split(' ').collect();
             let (build, options) = command.split_at(3);
             assert_eq!(build, ["ai-ctl", "build", "llama.cpp"], "{remedy}");

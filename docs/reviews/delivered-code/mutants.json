@@ -959,6 +959,36 @@
       "test": "infrastructure::run_store::tests::another_format_or_an_unknown_field_is_refused",
       "review": "2026-11-24-0-3-1-release",
       "finding": 11
+    },
+    {
+      "id": "M105",
+      "kind": "an if guard forced true",
+      "file": "src/application/build.rs",
+      "text": "    if build.id == BuildId::from_commit(&build.commit) {",
+      "replacement": "    if true {",
+      "test": "application::doctor::tests::a_current_build_without_one_of_its_recipes_cmake_options_is_built_again",
+      "review": "2026-11-25-review-skill-v3-closing-pass",
+      "finding": 2
+    },
+    {
+      "id": "M106",
+      "kind": "an if guard forced false",
+      "file": "src/application/build.rs",
+      "text": "    if build.id == BuildId::from_commit(&build.commit) {",
+      "replacement": "    if false {",
+      "test": "application::doctor::tests::a_current_build_made_from_a_commit_is_built_again_from_its_full_hash",
+      "review": "2026-11-25-review-skill-v3-closing-pass",
+      "finding": 2
+    },
+    {
+      "id": "M107",
+      "kind": "a sibling path left unguarded",
+      "file": "src/application/gateway_config.rs",
+      "text": "rebuild_remedy(project, &build.id, rebuild_reference(&build))",
+      "replacement": "rebuild_remedy(project, &build.id, build.id.as_str())",
+      "test": "application::gateway_config::tests::a_current_build_made_from_a_commit_is_built_again_from_its_full_hash",
+      "review": "2026-11-25-review-skill-v3-closing-pass",
+      "finding": 2
     }
   ]
 }

@@ -13,7 +13,7 @@ use crate::domain::gateway_config::{self, GatewayConfig, Runtime};
 use crate::domain::inventory::{Backend, BackendSource, Inventory};
 use crate::domain::machine::{Gpu, Probed};
 
-use super::build::{current, known_recipe, rebuild_remedy, unlike_recipe};
+use super::build::{current, known_recipe, rebuild_reference, rebuild_remedy, unlike_recipe};
 use super::ports::{BuildStore, GpuProbe, InventoryStore, found_gpu};
 
 /// A configuration, with what starting a gateway on it takes besides, and
@@ -124,7 +124,7 @@ impl Configurator<'_> {
                         if let Some(unlike) = unlike_recipe(recipe, &build) {
                             bail!(
                                 "{project} {unlike}; build it again with {}",
-                                rebuild_remedy(project, &build.id)
+                                rebuild_remedy(project, &build.id, rebuild_reference(&build))
                             );
                         }
                         entry.insert(build)
@@ -471,6 +471,39 @@ mod tests {
              without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets; build it again with \
              `ai-ctl build llama.cpp --ref v1.0.0 --force`, or `ai-ctl build llama.cpp` at the \
              newest release if the project withdrew v1.0.0"
+        );
+    }
+
+    #[test]
+    fn a_current_build_made_from_a_commit_is_built_again_from_its_full_hash() {
+        // A fresh partial clone resolves a commit no branch holds by its full
+        // hash alone, not by the short one its id keeps.
+        let mut flags = crate::application::fakes::recipe_flags(&crate::domain::recipe::LLAMA_CPP);
+        flags.remove("LLAMA_USE_PREBUILT_UI");
+        let made = Build {
+            id: BuildId::parse("d628a98f09").unwrap(),
+            commit: crate::domain::build::CommitId::parse(
+                "d628a98f0912345678901234567890abcdef0123",
+            )
+            .unwrap(),
+            cmake_flags: flags,
+            ..v1_0_0()
+        };
+        let builds = FakeBuilds {
+            current: Some(made.id.clone()),
+            builds: vec![made],
+            ..FakeBuilds::default()
+        };
+        assert_eq!(
+            message(generate(
+                FakeInventory(Ok(Some(inventory("/models")))),
+                &builds
+            )),
+            "backend `llama-native`, which `qwen3.8-27b` uses: llama.cpp d628a98f09 was built \
+             without LLAMA_USE_PREBUILT_UI=OFF, which its recipe sets; build it again with \
+             `ai-ctl build llama.cpp --ref d628a98f0912345678901234567890abcdef0123 --force`, \
+             or `ai-ctl build llama.cpp` at the newest release if the project withdrew \
+             d628a98f09"
         );
     }
 
