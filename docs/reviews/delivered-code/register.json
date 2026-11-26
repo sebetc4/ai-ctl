@@ -139,6 +139,16 @@
       "review": "2026-11-24-0-3-1-release",
       "finding": 1,
       "reason": "older and documents only, no code of the release: what the inventory decides of llama-server's reasoning kept and Qwen-VL's minimum image tokens is a choice for the inventory's next measurement, not the release's fix"
+    },
+    {
+      "fingerprint": "dependencies | docs/image/stable-diffusion-cpp.md + docs/security.md + src/domain/inventory.rs + src/domain/patches/stable-diffusion.cpp/api-key.patch + src/domain/recipe.rs | BackendKind::reserved_flags + STABLE_DIFFUSION_CPP + top level",
+      "axis": "dependencies",
+      "effect": "maintenance",
+      "title": "stable-diffusion.cpp now has a key check of its own, which ai-ctl's api-key.patch adds and its reserved flags ignore",
+      "state": "open",
+      "review": "2026-11-25-review-skill-v3-closing-pass",
+      "finding": 5,
+      "reason": "below the floor on older code: stable-diffusion.cpp's native key check (c33eebc, released as master-1131) bears on the next build of stable-diffusion.cpp, which reads it then, rebases or drops api-key.patch and reserves sd-server's new flags"
     }
   ]
 }
